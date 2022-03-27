@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "dynreg-testmod",
+  "version": "${version}",
+
+  "name": "DynReg Test Mod",
+  "description": "Test Mod for DynReg",
+  "authors": [
+    "BasiqueEvangelist"
+  ],
+
+  "license": "MPL-2.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.basiqueevangelist.dynreg.testmod.DynRegTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}

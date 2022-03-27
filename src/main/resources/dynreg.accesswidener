@@ -1,0 +1,25 @@
+accessWidener v2 named
+
+accessible method net/minecraft/util/registry/RegistryEntryList$ListBacked getEntries ()Ljava/util/List;
+accessible method net/minecraft/command/argument/RegistryKeyArgumentType getKey (Lcom/mojang/brigadier/context/CommandContext;Ljava/lang/String;Lnet/minecraft/util/registry/RegistryKey;Lcom/mojang/brigadier/exceptions/DynamicCommandExceptionType;)Lnet/minecraft/util/registry/RegistryKey;
+accessible field net/minecraft/util/registry/RegistryEntry$Reference registry Lnet/minecraft/util/registry/Registry;
+accessible field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
+accessible field net/minecraft/item/SpawnEggItem SPAWN_EGGS Ljava/util/Map;
+accessible field net/minecraft/recipe/FireworkStarRecipe TYPE_MODIFIER_MAP Ljava/util/Map;
+accessible field net/minecraft/item/MusicDiscItem MUSIC_DISCS Ljava/util/Map;
+accessible field net/minecraft/item/DyeItem DYES Ljava/util/Map;
+accessible field net/minecraft/world/poi/PointOfInterestType BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE Ljava/util/Map;
+accessible field net/minecraft/item/AxeItem STRIPPED_BLOCKS Ljava/util/Map;
+mutable field net/minecraft/item/AxeItem STRIPPED_BLOCKS Ljava/util/Map;
+accessible field net/minecraft/block/CandleCakeBlock CANDLES_TO_CANDLE_CAKES Ljava/util/Map;
+accessible field net/minecraft/block/FlowerPotBlock CONTENT_TO_POTTED Ljava/util/Map;
+accessible field net/minecraft/block/InfestedBlock REGULAR_TO_INFESTED_BLOCK Ljava/util/Map;
+accessible field net/minecraft/block/InfestedBlock REGULAR_TO_INFESTED_STATE Ljava/util/Map;
+accessible field net/minecraft/block/InfestedBlock INFESTED_TO_REGULAR_STATE Ljava/util/Map;
+accessible field net/minecraft/client/render/RenderLayers BLOCKS Ljava/util/Map;
+accessible field net/minecraft/client/render/RenderLayers FLUIDS Ljava/util/Map;
+accessible field net/minecraft/item/HoeItem TILLING_ACTIONS Ljava/util/Map;
+accessible field net/minecraft/item/ShovelItem PATH_STATES Ljava/util/Map;
+accessible method net/minecraft/block/Material$Builder burnable ()Lnet/minecraft/block/Material$Builder;
+accessible method net/minecraft/block/Material$Builder lightPassesThrough ()Lnet/minecraft/block/Material$Builder;
+accessible field net/minecraft/block/Material$Builder pistonBehavior Lnet/minecraft/block/piston/PistonBehavior;

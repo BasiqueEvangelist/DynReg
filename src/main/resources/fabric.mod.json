@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "dynreg",
+  "version": "${version}",
+
+  "name": "DynReg",
+  "description": "Add and remove registry entries at runtime",
+  "authors": [
+    "BasiqueEvangelist"
+  ],
+
+  "license": "MPL-2.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.basiqueevangelist.dynreg.DynReg"
+    ],
+    "client": [
+      "me.basiqueevangelist.dynreg.client.DynRegClient"
+    ]
+  },
+  "accessWidener": "dynreg.accesswidener",
+  "mixins": [
+    "dynreg.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}
