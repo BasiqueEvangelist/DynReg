@@ -1,6 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
+import me.basiqueevangelist.dynreg.util.BlockStateUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.PacketByteBuf;
@@ -58,11 +59,12 @@ public abstract class ChunkSectionMixin {
             for (int x = 0; x < 16; x++) {
                 for (int y = 0; y < 16; y++) {
                     for (int z = 0; z < 16; z++) {
-                        if (getBlockState(x, y, z).getBlock().wasDeleted()) {
-                            // TODO: FlashFreeze compat.
-                            // TODO: Make it possible to recreate a block and have its states migrated
+                        BlockState oldState = getBlockState(x, y, z);
 
-                            setBlockState(x, y, z, Blocks.AIR.getDefaultState());
+                        if (oldState.getBlock().wasDeleted()) {
+                            // TODO: FlashFreeze compat.
+
+                            setBlockState(x, y, z, BlockStateUtil.recreateState(oldState));
                         }
                     }
                 }
