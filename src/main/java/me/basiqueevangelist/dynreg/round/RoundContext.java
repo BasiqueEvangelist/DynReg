@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.round;
 
-import me.basiqueevangelist.dynreg.network.block.EntryDescription;
+import me.basiqueevangelist.dynreg.network.EntryDescription;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 

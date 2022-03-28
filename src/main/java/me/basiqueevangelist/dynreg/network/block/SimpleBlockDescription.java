@@ -1,6 +1,7 @@
 package me.basiqueevangelist.dynreg.network.block;
 
 import me.basiqueevangelist.dynreg.network.EntryDescriptions;
+import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
@@ -14,7 +15,7 @@ public class SimpleBlockDescription implements BlockDescription {
     }
 
     public SimpleBlockDescription(PacketByteBuf buf) {
-        settings = SimpleSerializers.readSettings(buf);
+        settings = SimpleSerializers.readBlockSettings(buf);
     }
 
     @Override
@@ -24,11 +25,6 @@ public class SimpleBlockDescription implements BlockDescription {
 
     @Override
     public void write(PacketByteBuf buf) {
-        SimpleSerializers.writeSettings(buf, settings);
-    }
-
-    @Override
-    public Identifier id() {
-        return EntryDescriptions.SIMPLE_BLOCK_ID;
+        SimpleSerializers.writeBlockSettings(buf, settings);
     }
 }

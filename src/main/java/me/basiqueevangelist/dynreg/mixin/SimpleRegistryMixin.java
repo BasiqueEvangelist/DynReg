@@ -3,8 +3,9 @@ package me.basiqueevangelist.dynreg.mixin;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
-import me.basiqueevangelist.dynreg.access.ExtendedRegistryEntryReference;
+import me.basiqueevangelist.dynreg.access.DeletableObject;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -76,7 +77,10 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         entryToLifecycle.remove(entry.value());
         cachedEntries = null;
 
-        ((ExtendedRegistryEntryReference) entry).dynreg$poison();
+        ((DeletableObjectInternal) entry).markAsDeleted();
+
+        if (entry.value() instanceof DeletableObjectInternal obj)
+            obj.markAsDeleted();
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
+import me.basiqueevangelist.dynreg.util.VersionTracker;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.DispenserBlock;
@@ -12,6 +13,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
 public final class ItemFixer {
+    public static VersionTracker ITEMS_VERSION = new VersionTracker();
+
     private ItemFixer() {
 
     }
@@ -33,5 +36,7 @@ public final class ItemFixer {
 
         CompostingChanceRegistry.INSTANCE.remove(item);
         FuelRegistry.INSTANCE.remove(item);
+
+        ITEMS_VERSION.bumpVersion();
     }
 }

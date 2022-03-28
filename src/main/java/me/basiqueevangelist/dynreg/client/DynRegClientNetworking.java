@@ -1,12 +1,10 @@
 package me.basiqueevangelist.dynreg.client;
 
-import com.mojang.datafixers.util.Pair;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.network.EntryDescriptions;
-import me.basiqueevangelist.dynreg.network.block.EntryDescription;
+import me.basiqueevangelist.dynreg.network.EntryDescription;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;

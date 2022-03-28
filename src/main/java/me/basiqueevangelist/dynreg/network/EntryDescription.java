@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.network.block;
+package me.basiqueevangelist.dynreg.network;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -9,9 +9,9 @@ public interface EntryDescription<T> {
 
     void write(PacketByteBuf buf);
 
-    Class<T> entryType();
-
     Registry<? super T> registry();
 
-    Identifier id();
+    default Identifier id() {
+        return EntryDescriptions.getDescriptionId(this);
+    }
 }

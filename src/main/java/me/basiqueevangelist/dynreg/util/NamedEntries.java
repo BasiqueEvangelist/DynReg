@@ -4,10 +4,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Rarity;
 
 public final class NamedEntries {
     public static final BiMap<String, Material> MATERIALS = HashBiMap.create();
     public static final BiMap<String, BlockSoundGroup> BLOCK_SOUND_GROUPS = HashBiMap.create();
+    public static final BiMap<String, Rarity> RARITIES = HashBiMap.create();
 
     private NamedEntries() {
 
@@ -138,5 +140,10 @@ public final class NamedEntries {
         BLOCK_SOUND_GROUPS.put("NETHER_STEM", BlockSoundGroup.NETHER_STEM);
         BLOCK_SOUND_GROUPS.put("CALCITE", BlockSoundGroup.CALCITE);
         BLOCK_SOUND_GROUPS.put("HONEY", BlockSoundGroup.HONEY);
+
+        RARITIES.put("COMMON", Rarity.COMMON);
+        RARITIES.put("UNCOMMON", Rarity.UNCOMMON);
+        RARITIES.put("RARE", Rarity.RARE);
+        RARITIES.put("EPIC", Rarity.EPIC);
     }
 }

@@ -1,24 +1,31 @@
-package me.basiqueevangelist.dynreg.network.block;
+package me.basiqueevangelist.dynreg.network;
 
-import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
+import me.basiqueevangelist.dynreg.access.InternalWritable;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class SimpleSerializers {
-    public static void writeSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
-        ((ExtendedBlockSettings) settings).dynreg$write(buf);
+    public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
+        ((InternalWritable) settings).dynreg$write(buf);
     }
 
-    public static AbstractBlock.Settings readSettings(PacketByteBuf buf) {
+    public static AbstractBlock.Settings readBlockSettings(PacketByteBuf buf) {
         Material material = SimpleSerializers.readMaterial(buf);
         MapColor color = MapColor.get(buf.readVarInt());
         boolean collidable = buf.readBoolean();
@@ -133,5 +140,113 @@ public class SimpleSerializers {
         SoundEvent fallSound = Registry.SOUND_EVENT.get(buf.readVarInt());
 
         return new BlockSoundGroup(volume, pitch, breakSound, stepSound, placeSound, hitSound, fallSound);
+    }
+
+    public static void writeFoodComponent(PacketByteBuf buf, FoodComponent component) {
+        byte flags = 0;
+
+        if (component.isMeat()) flags |= 1;
+        if (component.isAlwaysEdible()) flags |= 2;
+        if (component.isSnack()) flags |= 4;
+
+        buf.writeVarInt(component.getHunger());
+        buf.writeFloat(component.getSaturationModifier());
+        buf.writeByte(flags);
+        buf.writeVarInt(component.getStatusEffects().size());
+
+        for (var pair : component.getStatusEffects()) {
+            writeStatusEffectInstance(buf, pair.getFirst());
+            buf.writeFloat(pair.getSecond());
+        }
+    }
+
+    public static FoodComponent readFoodComponent(PacketByteBuf buf) {
+        int hunger = buf.readVarInt();
+        float saturationModifier = buf.readFloat();
+        byte flags = buf.readByte();
+        boolean isMeat = (flags & 1) != 0;
+        boolean isAlwaysEdible = (flags & 1) != 0;
+        boolean isSnack = (flags & 1) != 0;
+        int statusEffectsCount = buf.readVarInt();
+
+        FoodComponent.Builder builder = new FoodComponent.Builder();
+        builder.hunger(hunger);
+        builder.saturationModifier(saturationModifier);
+        if (isMeat) builder.meat();
+        if (isAlwaysEdible) builder.alwaysEdible();
+        if (isSnack) builder.snack();
+
+        for (int i = 0; i < statusEffectsCount; i++) {
+            StatusEffectInstance effect = readStatusEffectInstance(buf);
+            float chance = buf.readFloat();
+
+            builder.statusEffect(effect, chance);
+        }
+
+        return builder.build();
+    }
+
+    public static void writeStatusEffectInstance(PacketByteBuf buf, StatusEffectInstance effect) {
+        buf.writeVarInt(StatusEffect.getRawId(effect.getEffectType()));
+        buf.writeByte((byte)(effect.getAmplifier() & 0xff));
+        buf.writeVarInt(Math.min(effect.getDuration(), 32767));
+
+        byte flags = 0;
+
+        if (effect.isAmbient()) flags |= 1;
+        if (effect.shouldShowParticles()) flags |= 2;
+        if (effect.shouldShowIcon()) flags |= 4;
+
+        buf.writeByte(flags);
+    }
+
+    public static StatusEffectInstance readStatusEffectInstance(PacketByteBuf buf) {
+        StatusEffect effect = StatusEffect.byRawId(buf.readVarInt());
+        byte amplifier = buf.readByte();
+        int duration = buf.readVarInt();
+        byte flags = buf.readByte();
+        boolean ambient = (flags & 1) != 0;
+        boolean showParticles = (flags & 2) != 0;
+        boolean showIcon = (flags & 4) != 0;
+
+        return new StatusEffectInstance(effect, duration, amplifier, ambient, showParticles, showIcon);
+    }
+
+    public static void writeItemSettings(PacketByteBuf buf, Item.Settings settings) {
+        ((InternalWritable) settings).dynreg$write(buf);
+    }
+
+    public static Item.Settings readItemSettings(PacketByteBuf buf) {
+        int maxCount = buf.readVarInt();
+        int maxDamage = buf.readVarInt();
+
+        Item recipeRemainder = null;
+        if (buf.readBoolean())
+            recipeRemainder = Registry.ITEM.get(buf.readIdentifier());
+
+        ItemGroup group = null;
+        String groupName = buf.readString();
+        if (!groupName.equals(""))
+            group = ItemGroup.GROUPS[ArrayUtils.indexOf(ItemGroup.GROUPS, groupName)];
+
+        Rarity rarity = NamedEntries.RARITIES.get(buf.readString());
+
+        FoodComponent component = null;
+        if (buf.readBoolean())
+            component = readFoodComponent(buf);
+
+        boolean fireproof = buf.readBoolean();
+
+        Item.Settings settings = new Item.Settings();
+
+        settings.maxCount(maxCount);
+        if (maxDamage > 0) settings.maxDamage(maxDamage);
+        if (recipeRemainder != null) settings.recipeRemainder(recipeRemainder);
+        if (group != null) settings.group(group);
+        settings.rarity(rarity);
+        if (component != null) settings.food(component);
+        if (fireproof) settings.fireproof();
+
+        return settings;
     }
 }

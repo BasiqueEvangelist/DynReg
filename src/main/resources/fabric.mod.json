@@ -24,7 +24,25 @@
   "mixins": [
     "dynreg.mixins.json"
   ],
-
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    },
+    "loom:injected_interfaces":{
+      "net/minecraft/class_2248": [
+        "me/basiqueevangelist/dynreg/access/DeletableObject"
+      ],
+      "net/minecraft/class_1792": [
+        "me/basiqueevangelist/dynreg/access/DeletableObject"
+      ],
+      "net/minecraft/class_2591": [
+        "me/basiqueevangelist/dynreg/access/DeletableObject"
+      ],
+      "net/minecraft/class_6880\u0024class_6883": [
+        "me/basiqueevangelist/dynreg/access/DeletableObject"
+      ]
+    }
+  },
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",

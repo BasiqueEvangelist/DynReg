@@ -3,7 +3,8 @@ package me.basiqueevangelist.dynreg.testmod.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import me.basiqueevangelist.dynreg.network.block.SimpleBlockDescription;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import me.basiqueevangelist.dynreg.network.item.BlockItemDescription;
+import me.basiqueevangelist.dynreg.network.item.SimpleItemDescription;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -14,7 +15,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -36,13 +36,15 @@ public class CreateCommand {
     }
 
     private static int createItem(CommandContext<ServerCommandSource> ctx) {
-        RegistryUtils.unfreeze(Registry.ITEM);
-        Item item = new Item(new Item.Settings().group(ItemGroup.MISC));
+        DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
         Identifier id = IdentifierArgumentType.getIdentifier(ctx, "entry");
-        Registry.register(Registry.ITEM, id, item);
-        Registry.ITEM.freeze();
 
-        ctx.getSource().sendFeedback(new LiteralText("Created item " + id), true);
+        round.addTask(ctx1 -> {
+            ctx1.register(id, new SimpleItemDescription(new Item.Settings().group(ItemGroup.MISC)));
+            ctx.getSource().sendFeedback(new LiteralText("Created item " + id), false);
+        });
+
+        ctx.getSource().sendFeedback(new LiteralText("Added task to current round"), false);
         return 1;
     }
 
@@ -51,11 +53,12 @@ public class CreateCommand {
 
         DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
         round.addTask(ctx1 -> {
-            SimpleBlockDescription blockDesc = new SimpleBlockDescription(AbstractBlock.Settings.of(Material.WOOD, MapColor.BLACK));
-
-            ctx1.register(id, blockDesc);
+            Block block = ctx1.register(id, new SimpleBlockDescription(AbstractBlock.Settings.of(Material.WOOD, MapColor.BLACK)));
+            ctx1.register(id, new BlockItemDescription(block, new Item.Settings().group(ItemGroup.MISC)));
+            ctx.getSource().sendFeedback(new LiteralText("Created block " + id), false);
         });
-        ctx.getSource().sendFeedback(new LiteralText("Created block " + id), true);
+
+        ctx.getSource().sendFeedback(new LiteralText("Added task to current round"), false);
 
         return 1;
     }

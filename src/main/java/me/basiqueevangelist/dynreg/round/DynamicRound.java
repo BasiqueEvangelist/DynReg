@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.network.block.EntryDescription;
+import me.basiqueevangelist.dynreg.network.EntryDescription;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.minecraft.resource.ResourcePackManager;

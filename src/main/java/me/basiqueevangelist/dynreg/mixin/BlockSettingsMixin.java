@@ -1,8 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
-import me.basiqueevangelist.dynreg.network.block.SimpleSerializers;
-import me.basiqueevangelist.dynreg.util.NamedEntries;
+import me.basiqueevangelist.dynreg.access.InternalWritable;
+import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractBlock.Settings.class)
-public class BlockSettingsMixin implements ExtendedBlockSettings {
+public class BlockSettingsMixin implements InternalWritable {
 
     @Shadow Material material;
 

@@ -6,14 +6,16 @@
     "mixins": [
         "BlockMixin",
         "BlockSettingsMixin",
+        "ChunkSectionMixin",
+        "DeletableObjectsMixin",
         "FlowableFluidMixin",
         "IdListMixin",
-        "ReferenceRegistryEntryMixin",
+        "ItemSettingsMixin",
+        "ItemStackMixin",
         "SimpleRegistryMixin"
     ],
     "client": [
     ],
-    "plugin": "me.basiqueevangelist.dynreg.mixin.DynRegMixinPlugin",
     "injectors": {
         "defaultRequire": 1
   }
