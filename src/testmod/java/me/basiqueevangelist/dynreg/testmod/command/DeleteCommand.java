@@ -43,9 +43,8 @@ public class DeleteCommand {
         DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
         round.addTask(ctx1 -> {
             ctx1.removeEntry(entry.registry, key.getValue());
-            ctx.getSource().sendFeedback(new LiteralText("Removed " + key), true);
         });
-        round.run();
+        ctx.getSource().sendFeedback(new LiteralText("Removed " + key), true);
 
         return 0;
     }

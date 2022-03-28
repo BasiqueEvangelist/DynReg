@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.testmod;
 
+import me.basiqueevangelist.dynreg.testmod.command.ApplyCommand;
 import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import net.fabricmc.api.ModInitializer;
@@ -11,6 +12,7 @@ public class DynRegTest implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             DeleteCommand.register(dispatcher);
             CreateCommand.register(dispatcher);
+            ApplyCommand.register(dispatcher);
         });
     }
 }

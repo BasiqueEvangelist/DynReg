@@ -17,25 +17,34 @@ public final class DynRegNetworking {
     }
 
     public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
+    public static Identifier START_TIMER = new Identifier("dynreg", "start_timer");
     public static Identifier RELOAD_RESOURCES = new Identifier("dynreg", "reload_resources");
 
-    public static Packet<?> makeRoundFinishedPacket(List<RegistryKey<?>> removedEntries, Map<Identifier, EntryDescription> blocks) {
+    public static Packet<?> makeRoundFinishedPacket(List<RegistryKey<?>> removedEntries, Map<RegistryKey<?>, EntryDescription<?>> addedEntries) {
         PacketByteBuf buf = PacketByteBufs.create();
 
-        buf.writeCollection(removedEntries, (buf2, key) -> {
-            buf2.writeIdentifier(key.method_41185());
-            buf2.writeIdentifier(key.getValue());
-        });
+        buf.writeVarInt(removedEntries.size());
+        for (var key : removedEntries) {
+            buf.writeIdentifier(key.method_41185());
+            buf.writeIdentifier(key.getValue());
+        }
 
-        buf.writeMap(blocks, PacketByteBuf::writeIdentifier, (buf2, desc) -> {
-            buf2.writeIdentifier(desc.id());
-            desc.write(buf2);
-        });
+        buf.writeVarInt(addedEntries.size());
+        for (var entry : addedEntries.entrySet()) {
+            // The registry identifier isn't written, as the client can get it from the EntryDescription.
+            buf.writeIdentifier(entry.getKey().getValue());
 
+            buf.writeIdentifier(entry.getValue().id());
+            entry.getValue().write(buf);
+        }
         return ServerPlayNetworking.createS2CPacket(ROUND_FINISHED, buf);
     }
 
     public static Packet<?> makeResourceReloadPacket() {
         return ServerPlayNetworking.createS2CPacket(RELOAD_RESOURCES, PacketByteBufs.empty());
+    }
+
+    public static Packet<?> makeStartTimerPacket() {
+        return ServerPlayNetworking.createS2CPacket(START_TIMER, PacketByteBufs.empty());
     }
 }

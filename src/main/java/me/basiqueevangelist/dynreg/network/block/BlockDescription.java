@@ -13,7 +13,7 @@ public interface BlockDescription extends EntryDescription<Block> {
     }
 
     @Override
-    default Registry<Block> registry() {
+    default Registry<? super Block> registry() {
         return Registry.BLOCK;
     }
 }

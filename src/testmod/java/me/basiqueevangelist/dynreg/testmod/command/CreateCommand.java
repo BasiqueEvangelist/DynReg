@@ -54,9 +54,8 @@ public class CreateCommand {
             SimpleBlockDescription blockDesc = new SimpleBlockDescription(AbstractBlock.Settings.of(Material.WOOD, MapColor.BLACK));
 
             ctx1.register(id, blockDesc);
-            ctx.getSource().sendFeedback(new LiteralText("Created block " + id), true);
         });
-        round.run();
+        ctx.getSource().sendFeedback(new LiteralText("Created block " + id), true);
 
         return 1;
     }

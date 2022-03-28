@@ -3,6 +3,7 @@ package me.basiqueevangelist.dynreg.client;
 import com.mojang.datafixers.util.Pair;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.network.EntryDescriptions;
+import me.basiqueevangelist.dynreg.network.block.EntryDescription;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
@@ -15,8 +16,12 @@ public class DynRegClientNetworking {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/ClientNetworking");
     private static long ROUND_RECEIVE_TIME = 0;
 
-    @SuppressWarnings("unchecked")
     public static void init() {
+        ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.START_TIMER, ((client, handler, buf, responseSender) -> {
+            LOGGER.info("Applying dynamic round on client");
+            ROUND_RECEIVE_TIME = System.nanoTime();
+        }));
+
         ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.RELOAD_RESOURCES, (client, handler, buf, responseSender) -> {
             var future = client.reloadResources();
             future.thenAccept(unused -> {
@@ -36,34 +41,37 @@ public class DynRegClientNetworking {
                 RegistryUtils.unfreeze(registry);
             }
 
-            var removedEntries = buf.readList((buf2) -> {
-                Identifier registryId = buf2.readIdentifier();
-                Identifier entryId = buf2.readIdentifier();
+            var removedEntriesCount = buf.readVarInt();
 
-                return new Pair<>(registryId, entryId);
-            });
+            LOGGER.info(" - Removed {} entries", removedEntriesCount);
 
-            LOGGER.info(" - Removed {} entries", removedEntries.size());
+            for (int i = 0; i < removedEntriesCount; i++) {
+                Identifier registryId = buf.readIdentifier();
+                Identifier entryId = buf.readIdentifier();
 
-            for (var entry : removedEntries) {
                 //noinspection ConstantConditions
-                RegistryUtils.remove(Registry.REGISTRIES.get(entry.getFirst()), entry.getSecond());
+                RegistryUtils.remove(Registry.REGISTRIES.get(registryId), entryId);
             }
 
-            var addedEntries = buf.readMap(PacketByteBuf::readIdentifier, (buf2) -> {
-                Identifier id = buf2.readIdentifier();
-                return EntryDescriptions.getDescParser(id).apply(buf2);
-            });
+            var addedEntriesCount = buf.readVarInt();
 
-            LOGGER.info(" - Added {} entries", addedEntries.size());
+            LOGGER.info(" - Added {} entries", addedEntriesCount);
 
-            for (var entry : addedEntries.entrySet()) {
-                Registry.register((Registry<Object>) entry.getValue().registry(), entry.getKey(), (Object) entry.getValue().create());
+            for (int i = 0; i < addedEntriesCount; i++) {
+                Identifier entryId = buf.readIdentifier();
+                Identifier descId = buf.readIdentifier();
+                EntryDescription<?> desc = EntryDescriptions.getDescParser(descId).apply(buf);
+
+                registerDesc(entryId, desc);
             }
 
             for (Registry<?> registry : Registry.REGISTRIES) {
                 registry.freeze();
             }
         });
+    }
+
+    private static <T> void registerDesc(Identifier id, EntryDescription<T> desc) {
+        Registry.register(desc.registry(), id, desc.create());
     }
 }

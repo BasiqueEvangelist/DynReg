@@ -17,16 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DynamicRound {
     private static @Nullable DynamicRound currentRound;
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DynamicRound");
 
     private final List<DynamicRoundTask> tasks = new ArrayList<>();
+    private final CompletableFuture<Void> roundEnd = new CompletableFuture<>();
     private final MinecraftServer server;
     private boolean isScheduled = false;
     private final List<RegistryKey<?>> removedEntries = new ArrayList<>();
-    private final Map<Identifier, EntryDescription> addedEntries = new HashMap<>();
+    private final Map<RegistryKey<?>, EntryDescription<?>> addedEntries = new LinkedHashMap<>();
 
     public DynamicRound(MinecraftServer server) {
 
@@ -43,6 +45,10 @@ public class DynamicRound {
 
     public void addTask(DynamicRoundTask task) {
         tasks.add(task);
+    }
+
+    public CompletableFuture<Void> getRoundEndFuture() {
+        return roundEnd;
     }
 
     public void run() {
@@ -63,7 +69,11 @@ public class DynamicRound {
 
         var ctx = new Context();
         for (var task : tasks) {
-            task.perform(ctx);
+            try {
+                task.perform(ctx);
+            } catch (Exception e) {
+                LOGGER.error("Failed to run task", e);
+            }
         }
 
         for (Registry<?> registry : Registry.REGISTRIES) {
@@ -79,6 +89,9 @@ public class DynamicRound {
         for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
             if (!server.isHost(player.getGameProfile()))
                 player.networkHandler.sendPacket(dataPacket);
+            else
+                player.networkHandler.sendPacket(DynRegNetworking.makeStartTimerPacket());
+
             RegistrySyncManager.sendPacket(server, player);
             player.networkHandler.sendPacket(resourcesPacket);
         }
@@ -99,9 +112,11 @@ public class DynamicRound {
         var reloadFuture = server.reloadResources(dataPacks);
         reloadFuture.thenAccept(unused -> {
             LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
+            roundEnd.complete(null);
         });
         reloadFuture.exceptionally(e -> {
             LOGGER.warn("Failed to reload resources after round", e);
+            roundEnd.completeExceptionally(e);
             return null;
         });
     }
@@ -109,14 +124,22 @@ public class DynamicRound {
     private class Context implements RoundContext {
         @Override
         public <T> T register(Identifier id, EntryDescription<T> desc) {
-            addedEntries.put(id, desc);
+            addedEntries.put(RegistryKey.of(desc.registry().getKey(), id), desc);
             return Registry.register(desc.registry(), id, desc.create());
         }
 
         @Override
         public void removeEntry(Registry<?> registry, Identifier id) {
             RegistryUtils.remove(registry, id);
-            removedEntries.add(RegistryKey.of(registry.getKey(), id));
+
+            var key = RegistryKey.of(registry.getKey(), id);
+            var existingEntry = addedEntries.get(key);
+
+            if (existingEntry != null) {
+                addedEntries.remove(key);
+            } else {
+                removedEntries.add(RegistryKey.of(registry.getKey(), id));
+            }
         }
     }
 }
