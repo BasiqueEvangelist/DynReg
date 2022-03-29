@@ -1,10 +1,13 @@
 package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
+import me.basiqueevangelist.dynreg.client.DynRegClient;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.network.EntryDescription;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,8 +33,10 @@ public class DynamicRound {
     private final List<RegistryKey<?>> removedEntries = new ArrayList<>();
     private final Map<RegistryKey<?>, EntryDescription<?>> addedEntries = new LinkedHashMap<>();
 
-    public DynamicRound(MinecraftServer server) {
+    private boolean reloadDataPacks = true;
+    private boolean reloadResourcePacks = true;
 
+    private DynamicRound(MinecraftServer server) {
         this.server = server;
     }
 
@@ -45,6 +50,14 @@ public class DynamicRound {
 
     public void addTask(DynamicRoundTask task) {
         tasks.add(task);
+    }
+
+    public void noDataPackReload() {
+        reloadDataPacks = false;
+    }
+
+    public void noResourcePackReload() {
+        reloadResourcePacks = false;
     }
 
     public CompletableFuture<Void> getRoundEndFuture() {
@@ -80,45 +93,62 @@ public class DynamicRound {
             registry.freeze();
         }
 
-        LOGGER.info("- Removed {} entries", removedEntries.size());
-        LOGGER.info("- Added {} entries", addedEntries.size());
+        if (removedEntries.size() > 0)
+            LOGGER.info("- Removed {} entries", removedEntries.size());
+
+        if (addedEntries.size() > 0)
+            LOGGER.info("- Added {} entries", addedEntries.size());
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            for (var entry : addedEntries.entrySet())
+                DynRegClient.addRegisteredKey(entry.getKey().method_41185(), entry.getKey().getValue());
+
+            for (var entry : removedEntries)
+                DynRegClient.removeRegisteredKey(entry.method_41185(), entry.getValue());
+        }
 
         var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntries, addedEntries);
-        var resourcesPacket = DynRegNetworking.makeResourceReloadPacket();
-
         for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-            if (!server.isHost(player.getGameProfile()))
+            if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntries.size() > 0))
                 player.networkHandler.sendPacket(dataPacket);
             else
-                player.networkHandler.sendPacket(DynRegNetworking.makeStartTimerPacket());
+                player.networkHandler.sendPacket(DynRegNetworking.START_TIMER_PACKET);
 
             RegistrySyncManager.sendPacket(server, player);
-            player.networkHandler.sendPacket(resourcesPacket);
+
+            if (reloadResourcePacks)
+                player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
+            else
+                player.networkHandler.sendPacket(DynRegNetworking.STOP_TIMER_PACKET);
         }
 
-        ResourcePackManager resourcePackManager = server.getDataPackManager();
-        SaveProperties saveProperties = server.getSaveProperties();
-        Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
-        resourcePackManager.scanPacks();
-        Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
-        Collection<String> disabledDataPacks = saveProperties.getDataPackSettings().getDisabled();
+        if (reloadDataPacks) {
+            ResourcePackManager resourcePackManager = server.getDataPackManager();
+            SaveProperties saveProperties = server.getSaveProperties();
+            Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
+            resourcePackManager.scanPacks();
+            Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
+            Collection<String> disabledDataPacks = saveProperties.getDataPackSettings().getDisabled();
 
-        for(String string : resourcePackManager.getNames()) {
-            if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {
-                dataPacks.add(string);
+            for(String string : resourcePackManager.getNames()) {
+                if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {
+                    dataPacks.add(string);
+                }
             }
-        }
 
-        var reloadFuture = server.reloadResources(dataPacks);
-        reloadFuture.thenAccept(unused -> {
+            var reloadFuture = server.reloadResources(dataPacks);
+            reloadFuture.thenAccept(unused -> {
+                LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
+                roundEnd.complete(null);
+            });
+            reloadFuture.exceptionally(e -> {
+                LOGGER.warn("Failed to reload resources after round", e);
+                roundEnd.completeExceptionally(e);
+                return null;
+            });
+        } else {
             LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
-            roundEnd.complete(null);
-        });
-        reloadFuture.exceptionally(e -> {
-            LOGGER.warn("Failed to reload resources after round", e);
-            roundEnd.completeExceptionally(e);
-            return null;
-        });
+        }
     }
 
     private class Context implements RoundContext {

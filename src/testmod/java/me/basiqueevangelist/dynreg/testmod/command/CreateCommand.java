@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import me.basiqueevangelist.dynreg.network.block.SimpleBlockDescription;
 import me.basiqueevangelist.dynreg.network.item.BlockItemDescription;
 import me.basiqueevangelist.dynreg.network.item.SimpleItemDescription;
+import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
@@ -15,7 +16,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import me.basiqueevangelist.dynreg.round.DynamicRound;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;

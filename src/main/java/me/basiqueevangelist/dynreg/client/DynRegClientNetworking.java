@@ -7,6 +7,7 @@ import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,8 @@ public class DynRegClientNetworking {
 
                 //noinspection ConstantConditions
                 RegistryUtils.remove(Registry.REGISTRIES.get(registryId), entryId);
+
+                DynRegClient.removeRegisteredKey(registryId, entryId);
             }
 
             var addedEntriesCount = buf.readVarInt();
@@ -61,6 +64,8 @@ public class DynRegClientNetworking {
                 EntryDescription<?> desc = EntryDescriptions.getDescParser(descId).apply(buf);
 
                 registerDesc(entryId, desc);
+
+                DynRegClient.addRegisteredKey(desc.registry().getKey().getValue(), entryId);
             }
 
             for (Registry<?> registry : Registry.REGISTRIES) {

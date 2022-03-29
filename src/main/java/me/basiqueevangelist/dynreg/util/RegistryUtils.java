@@ -15,12 +15,17 @@ public final class RegistryUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void remove(Registry<T> registry, RegistryKey<T> key) {
-        ((ExtendedRegistry<T>) registry).dynreg$remove(key);
+    public static <T> void remove(RegistryKey<T> key) {
+        ((ExtendedRegistry<T>) getRegistryOf(key)).dynreg$remove(key);
     }
 
     @SuppressWarnings("unchecked")
     public static void remove(Registry<?> registry, Identifier id) {
-        remove((Registry<Object>) registry, (RegistryKey<Object>) RegistryKey.of(registry.getKey(), id));
+        ((ExtendedRegistry<Object>) registry).dynreg$remove(RegistryKey.of((RegistryKey<? extends Registry<Object>>) registry.getKey(), id));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Registry<T> getRegistryOf(RegistryKey<T> key) {
+        return (Registry<T>) Registry.REGISTRIES.getOrEmpty(key.method_41185()).orElseThrow();
     }
 }
