@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.client;
 
+import me.basiqueevangelist.dynreg.client.event.PostLeaveRoundCallback;
 import me.basiqueevangelist.dynreg.client.fixer.ClientBlockFixer;
 import me.basiqueevangelist.dynreg.client.round.ClientDynamicRound;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
@@ -20,17 +21,21 @@ public class DynRegClient implements ClientModInitializer {
         ClientBlockFixer.init();
         DynRegClientNetworking.init();
 
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+        PostLeaveRoundCallback.EVENT.register(round -> {
             if (REGISTERED_KEYS.size() > 0) {
-                var round = ClientDynamicRound.getRound();
                 round.addTask(() -> {
                     for (var key : REGISTERED_KEYS) {
                         RegistryUtils.remove(key);
                     }
                     REGISTERED_KEYS.clear();
                 });
-                round.run();
             }
+        });
+
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            var round = ClientDynamicRound.getRound();
+            PostLeaveRoundCallback.EVENT.invoker().onClientDisconnect(round);
+            round.run();
         });
     }
 
