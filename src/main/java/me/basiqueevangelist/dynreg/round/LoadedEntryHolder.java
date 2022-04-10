@@ -16,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class LoadedEntryHolder {
-    private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/LoadedEntryHolder");
     private static final Map<RegistryKey<?>, EntryDescription<?>> ADDED_ENTRIES = new LinkedHashMap<>();
 
     private LoadedEntryHolder() {
@@ -25,22 +24,7 @@ public final class LoadedEntryHolder {
 
     public static void init() {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            DynamicRound round = DynamicRound.getRound(null);
-            round.noResourcePackReload();
-            round.noDataPackReload();
-
-            round.addTask(ctx -> {
-                for (var key : ADDED_ENTRIES.keySet())
-                    try {
-                        RegistryUtils.remove(key);
-                    } catch (Exception e) {
-                        LOGGER.error("Couldn't remove {}", key, e);
-                    }
-                ADDED_ENTRIES.clear();
-
-            });
-
-            round.run();
+            ADDED_ENTRIES.clear();
         });
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
