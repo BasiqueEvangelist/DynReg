@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.util;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Rarity;
@@ -10,6 +11,7 @@ public final class NamedEntries {
     public static final BiMap<String, Material> MATERIALS = HashBiMap.create();
     public static final BiMap<String, BlockSoundGroup> BLOCK_SOUND_GROUPS = HashBiMap.create();
     public static final BiMap<String, Rarity> RARITIES = HashBiMap.create();
+    public static final BiMap<String, MapColor> MAP_COLORS = HashBiMap.create();
 
     private NamedEntries() {
 
@@ -145,5 +147,68 @@ public final class NamedEntries {
         RARITIES.put("UNCOMMON", Rarity.UNCOMMON);
         RARITIES.put("RARE", Rarity.RARE);
         RARITIES.put("EPIC", Rarity.EPIC);
+
+        MAP_COLORS.put("CLEAR", MapColor.CLEAR);
+        MAP_COLORS.put("PALE_GREEN", MapColor.PALE_GREEN);
+        MAP_COLORS.put("PALE_YELLOW", MapColor.PALE_YELLOW);
+        MAP_COLORS.put("WHITE_GRAY", MapColor.WHITE_GRAY);
+        MAP_COLORS.put("BRIGHT_RED", MapColor.BRIGHT_RED);
+        MAP_COLORS.put("PALE_PURPLE", MapColor.PALE_PURPLE);
+        MAP_COLORS.put("IRON_GRAY", MapColor.IRON_GRAY);
+        MAP_COLORS.put("DARK_GREEN", MapColor.DARK_GREEN);
+        MAP_COLORS.put("WHITE", MapColor.WHITE);
+        MAP_COLORS.put("LIGHT_BLUE_GRAY", MapColor.LIGHT_BLUE_GRAY);
+        MAP_COLORS.put("DIRT_BROWN", MapColor.DIRT_BROWN);
+        MAP_COLORS.put("STONE_GRAY", MapColor.STONE_GRAY);
+        MAP_COLORS.put("WATER_BLUE", MapColor.WATER_BLUE);
+        MAP_COLORS.put("OAK_TAN", MapColor.OAK_TAN);
+        MAP_COLORS.put("OFF_WHITE", MapColor.OFF_WHITE);
+        MAP_COLORS.put("ORANGE", MapColor.ORANGE);
+        MAP_COLORS.put("MAGENTA", MapColor.MAGENTA);
+        MAP_COLORS.put("LIGHT_BLUE", MapColor.LIGHT_BLUE);
+        MAP_COLORS.put("YELLOW", MapColor.YELLOW);
+        MAP_COLORS.put("LIME", MapColor.LIME);
+        MAP_COLORS.put("PINK", MapColor.PINK);
+        MAP_COLORS.put("GRAY", MapColor.GRAY);
+        MAP_COLORS.put("LIGHT_GRAY", MapColor.LIGHT_GRAY);
+        MAP_COLORS.put("CYAN", MapColor.CYAN);
+        MAP_COLORS.put("PURPLE", MapColor.PURPLE);
+        MAP_COLORS.put("BLUE", MapColor.BLUE);
+        MAP_COLORS.put("BROWN", MapColor.BROWN);
+        MAP_COLORS.put("GREEN", MapColor.GREEN);
+        MAP_COLORS.put("RED", MapColor.RED);
+        MAP_COLORS.put("BLACK", MapColor.BLACK);
+        MAP_COLORS.put("GOLD", MapColor.GOLD);
+        MAP_COLORS.put("DIAMOND_BLUE", MapColor.DIAMOND_BLUE);
+        MAP_COLORS.put("LAPIS_BLUE", MapColor.LAPIS_BLUE);
+        MAP_COLORS.put("EMERALD_GREEN", MapColor.EMERALD_GREEN);
+        MAP_COLORS.put("SPRUCE_BROWN", MapColor.SPRUCE_BROWN);
+        MAP_COLORS.put("DARK_RED", MapColor.DARK_RED);
+        MAP_COLORS.put("TERRACOTTA_WHITE", MapColor.TERRACOTTA_WHITE);
+        MAP_COLORS.put("TERRACOTTA_ORANGE", MapColor.TERRACOTTA_ORANGE);
+        MAP_COLORS.put("TERRACOTTA_MAGENTA", MapColor.TERRACOTTA_MAGENTA);
+        MAP_COLORS.put("TERRACOTTA_LIGHT_BLUE", MapColor.TERRACOTTA_LIGHT_BLUE);
+        MAP_COLORS.put("TERRACOTTA_YELLOW", MapColor.TERRACOTTA_YELLOW);
+        MAP_COLORS.put("TERRACOTTA_LIME", MapColor.TERRACOTTA_LIME);
+        MAP_COLORS.put("TERRACOTTA_PINK", MapColor.TERRACOTTA_PINK);
+        MAP_COLORS.put("TERRACOTTA_GRAY", MapColor.TERRACOTTA_GRAY);
+        MAP_COLORS.put("TERRACOTTA_LIGHT_GRAY", MapColor.TERRACOTTA_LIGHT_GRAY);
+        MAP_COLORS.put("TERRACOTTA_CYAN", MapColor.TERRACOTTA_CYAN);
+        MAP_COLORS.put("TERRACOTTA_PURPLE", MapColor.TERRACOTTA_PURPLE);
+        MAP_COLORS.put("TERRACOTTA_BLUE", MapColor.TERRACOTTA_BLUE);
+        MAP_COLORS.put("TERRACOTTA_BROWN", MapColor.TERRACOTTA_BROWN);
+        MAP_COLORS.put("TERRACOTTA_GREEN", MapColor.TERRACOTTA_GREEN);
+        MAP_COLORS.put("TERRACOTTA_RED", MapColor.TERRACOTTA_RED);
+        MAP_COLORS.put("TERRACOTTA_BLACK", MapColor.TERRACOTTA_BLACK);
+        MAP_COLORS.put("DULL_RED", MapColor.DULL_RED);
+        MAP_COLORS.put("DULL_PINK", MapColor.DULL_PINK);
+        MAP_COLORS.put("DARK_CRIMSON", MapColor.DARK_CRIMSON);
+        MAP_COLORS.put("TEAL", MapColor.TEAL);
+        MAP_COLORS.put("DARK_AQUA", MapColor.DARK_AQUA);
+        MAP_COLORS.put("DARK_DULL_PINK", MapColor.DARK_DULL_PINK);
+        MAP_COLORS.put("BRIGHT_TEAL", MapColor.BRIGHT_TEAL);
+        MAP_COLORS.put("DEEPSLATE_GRAY", MapColor.DEEPSLATE_GRAY);
+        MAP_COLORS.put("RAW_IRON_PINK", MapColor.RAW_IRON_PINK);
+        MAP_COLORS.put("LICHEN_GREEN", MapColor.LICHEN_GREEN);
     }
 }

@@ -20,6 +20,8 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Arrays;
+
 public class SimpleSerializers {
     public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
         ((InternalWritable) settings).dynreg$write(buf);
@@ -227,7 +229,7 @@ public class SimpleSerializers {
         ItemGroup group = null;
         String groupName = buf.readString();
         if (!groupName.equals(""))
-            group = ItemGroup.GROUPS[ArrayUtils.indexOf(ItemGroup.GROUPS, groupName)];
+            group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.id.equals(groupName)).findAny().orElseThrow();
 
         Rarity rarity = NamedEntries.RARITIES.get(buf.readString());
 

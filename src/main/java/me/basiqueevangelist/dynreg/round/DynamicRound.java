@@ -68,7 +68,10 @@ public class DynamicRound {
         if (isScheduled) return;
         isScheduled = true;
 
-        server.execute(this::doRun);
+        if (server == null)
+            doRun();
+        else
+            server.execute(this::doRun);
     }
 
     private void doRun() {
@@ -100,11 +103,22 @@ public class DynamicRound {
             LOGGER.info("- Added {} entries", addedEntries.size());
 
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            for (var entry : addedEntries.entrySet())
-                DynRegClient.addRegisteredKey(entry.getKey().method_41185(), entry.getKey().getValue());
-
             for (var entry : removedEntries)
                 DynRegClient.removeRegisteredKey(entry.method_41185(), entry.getValue());
+
+            for (var entry : addedEntries.entrySet())
+                DynRegClient.addRegisteredKey(entry.getKey().method_41185(), entry.getKey().getValue());
+        }
+
+        for (var entry : removedEntries)
+            LoadedEntryHolder.removeRegisteredKey(entry);
+
+        for (var entry : addedEntries.entrySet())
+            LoadedEntryHolder.addRegisteredKey(entry.getKey(), entry.getValue());
+
+        if (server == null) {
+            LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
+            return;
         }
 
         var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntries, addedEntries);
@@ -156,6 +170,19 @@ public class DynamicRound {
         public <T> T register(Identifier id, EntryDescription<T> desc) {
             addedEntries.put(RegistryKey.of(desc.registry().getKey(), id), desc);
             return Registry.register(desc.registry(), id, desc.create());
+        }
+
+        @Override
+        public void removeEntry(RegistryKey<?> key) {
+            RegistryUtils.remove(key);
+
+            var existingEntry = addedEntries.get(key);
+
+            if (existingEntry != null) {
+                addedEntries.remove(key);
+            } else {
+                removedEntries.add(key);
+            }
         }
 
         @Override

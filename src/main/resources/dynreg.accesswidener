@@ -23,3 +23,4 @@ accessible field net/minecraft/item/ShovelItem PATH_STATES Ljava/util/Map;
 accessible method net/minecraft/block/Material$Builder burnable ()Lnet/minecraft/block/Material$Builder;
 accessible method net/minecraft/block/Material$Builder lightPassesThrough ()Lnet/minecraft/block/Material$Builder;
 accessible field net/minecraft/block/Material$Builder pistonBehavior Lnet/minecraft/block/piston/PistonBehavior;
+accessible field net/minecraft/item/ItemGroup id Ljava/lang/String;

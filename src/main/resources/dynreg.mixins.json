@@ -12,6 +12,7 @@
         "IdListMixin",
         "ItemSettingsMixin",
         "ItemStackMixin",
+        "ResourceManagerHelperImplMixin",
         "SimpleRegistryMixin"
     ],
     "client": [

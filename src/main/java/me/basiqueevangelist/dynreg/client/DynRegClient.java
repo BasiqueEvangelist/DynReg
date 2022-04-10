@@ -8,12 +8,14 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
-import org.jetbrains.annotations.ApiStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DynRegClient implements ClientModInitializer {
+    private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DynRegClient");
     private static final List<RegistryKey<?>> REGISTERED_KEYS = new ArrayList<>();
 
     @Override
@@ -25,7 +27,11 @@ public class DynRegClient implements ClientModInitializer {
             if (REGISTERED_KEYS.size() > 0) {
                 round.addTask(() -> {
                     for (var key : REGISTERED_KEYS) {
-                        RegistryUtils.remove(key);
+                        try {
+                            RegistryUtils.remove(key);
+                        } catch (Exception e) {
+                            LOGGER.error("Couldn't remove {}", key, e);
+                        }
                     }
                     REGISTERED_KEYS.clear();
                 });
