@@ -1,9 +1,9 @@
-package me.basiqueevangelist.dynreg.network;
+package me.basiqueevangelist.dynreg.entry;
 
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.network.block.SimpleBlockDescription;
-import me.basiqueevangelist.dynreg.network.item.BlockItemDescription;
-import me.basiqueevangelist.dynreg.network.item.SimpleItemDescription;
+import me.basiqueevangelist.dynreg.entry.block.SimpleBlockDescription;
+import me.basiqueevangelist.dynreg.entry.item.BlockItemDescription;
+import me.basiqueevangelist.dynreg.entry.item.SimpleItemDescription;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 

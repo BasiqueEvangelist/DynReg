@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.network.item;
+package me.basiqueevangelist.dynreg.entry.item;
 
 import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import net.minecraft.block.Block;

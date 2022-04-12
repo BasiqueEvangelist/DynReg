@@ -1,15 +1,12 @@
-package me.basiqueevangelist.dynreg.round;
+package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.network.EntryDescription;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.minecraft.network.Packet;
 import net.minecraft.util.registry.RegistryKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

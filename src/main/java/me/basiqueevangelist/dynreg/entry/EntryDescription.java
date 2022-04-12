@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.network;
+package me.basiqueevangelist.dynreg.entry;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;

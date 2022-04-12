@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg;
 
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
 import me.basiqueevangelist.dynreg.fixer.ItemFixer;
-import me.basiqueevangelist.dynreg.round.LoadedEntryHolder;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;

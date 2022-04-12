@@ -1,6 +1,6 @@
-package me.basiqueevangelist.dynreg.network.item;
+package me.basiqueevangelist.dynreg.entry.item;
 
-import me.basiqueevangelist.dynreg.network.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 

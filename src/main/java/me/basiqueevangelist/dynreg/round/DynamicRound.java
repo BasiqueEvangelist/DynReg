@@ -2,8 +2,9 @@ package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.network.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;

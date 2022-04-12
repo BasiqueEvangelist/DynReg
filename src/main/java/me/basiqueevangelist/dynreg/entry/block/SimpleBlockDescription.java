@@ -1,11 +1,9 @@
-package me.basiqueevangelist.dynreg.network.block;
+package me.basiqueevangelist.dynreg.entry.block;
 
-import me.basiqueevangelist.dynreg.network.EntryDescriptions;
 import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 
 public class SimpleBlockDescription implements BlockDescription {
     private final AbstractBlock.Settings settings;

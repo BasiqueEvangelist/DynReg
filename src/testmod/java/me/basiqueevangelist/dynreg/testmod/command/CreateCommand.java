@@ -2,9 +2,9 @@ package me.basiqueevangelist.dynreg.testmod.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import me.basiqueevangelist.dynreg.network.block.SimpleBlockDescription;
-import me.basiqueevangelist.dynreg.network.item.BlockItemDescription;
-import me.basiqueevangelist.dynreg.network.item.SimpleItemDescription;
+import me.basiqueevangelist.dynreg.entry.block.SimpleBlockDescription;
+import me.basiqueevangelist.dynreg.entry.item.BlockItemDescription;
+import me.basiqueevangelist.dynreg.entry.item.SimpleItemDescription;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;

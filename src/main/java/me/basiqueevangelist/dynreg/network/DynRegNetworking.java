@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.network;
 
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.Packet;

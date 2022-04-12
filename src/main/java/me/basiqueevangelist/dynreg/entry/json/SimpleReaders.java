@@ -1,12 +1,12 @@
-package me.basiqueevangelist.dynreg.data;
+package me.basiqueevangelist.dynreg.entry.json;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import me.basiqueevangelist.dynreg.network.block.SimpleBlockDescription;
-import me.basiqueevangelist.dynreg.network.item.BlockItemDescription;
-import me.basiqueevangelist.dynreg.network.item.SimpleItemDescription;
+import me.basiqueevangelist.dynreg.entry.block.SimpleBlockDescription;
+import me.basiqueevangelist.dynreg.entry.item.BlockItemDescription;
+import me.basiqueevangelist.dynreg.entry.item.SimpleItemDescription;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -23,7 +23,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Locale;

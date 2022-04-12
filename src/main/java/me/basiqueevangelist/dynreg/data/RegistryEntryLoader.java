@@ -2,7 +2,8 @@ package me.basiqueevangelist.dynreg.data;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.network.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;

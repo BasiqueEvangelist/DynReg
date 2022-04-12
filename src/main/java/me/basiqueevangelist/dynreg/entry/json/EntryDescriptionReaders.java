@@ -1,8 +1,8 @@
-package me.basiqueevangelist.dynreg.data;
+package me.basiqueevangelist.dynreg.entry.json;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.network.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
