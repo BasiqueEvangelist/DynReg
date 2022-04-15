@@ -5,6 +5,7 @@ import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
+import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.resource.Resource;
@@ -34,17 +35,17 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Reg
     public static final RegistryEntryLoader INSTANCE = new RegistryEntryLoader();
 
     static {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ADDED_RESOURCES.clear();
-        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ADDED_RESOURCES.clear());
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public CompletableFuture<Map<RegistryKey<?>, EntryDescription<?>>> load(ResourceManager manager, Profiler profiler, Executor executor) {
-        Map<RegistryKey<?>, EntryDescription<?>> descriptions = new TreeMap<>(Comparator.comparing(x -> {
-            return ((Registry) Registry.REGISTRIES).getRawId(Registry.REGISTRIES.get(x.method_41185()));
-        }));
+        Map<RegistryKey<?>, EntryDescription<?>> descriptions = new TreeMap<>((a, b) -> {
+            if (a.method_41185().equals(b.method_41185()))
+                return a.getValue().compareTo(b.getValue());
+
+            return Integer.compare(RegistryUtils.getRawIdOfRegistryOf(a), RegistryUtils.getRawIdOfRegistryOf(b));
+        });
 
         for (Registry<?> registry : Registry.REGISTRIES) {
             var startPath = "entries/" + registry.getKey().getValue().getPath();

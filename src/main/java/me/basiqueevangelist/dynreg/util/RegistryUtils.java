@@ -28,4 +28,9 @@ public final class RegistryUtils {
     public static <T> Registry<T> getRegistryOf(RegistryKey<T> key) {
         return (Registry<T>) Registry.REGISTRIES.getOrEmpty(key.method_41185()).orElseThrow();
     }
+
+    @SuppressWarnings("unchecked")
+    public static int getRawIdOfRegistryOf(RegistryKey<?> key) {
+        return ((Registry<Registry<?>>) Registry.REGISTRIES).getRawId(getRegistryOf(key));
+    }
 }

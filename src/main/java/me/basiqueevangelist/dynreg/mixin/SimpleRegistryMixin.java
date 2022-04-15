@@ -65,6 +65,12 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         }
 
         RegistryEntry.Reference<T> entry = (RegistryEntry.Reference<T>) getEntry(key).orElseThrow();
+
+        ((DeletableObjectInternal) entry).markAsDeleted();
+
+        if (entry.value() instanceof DeletableObjectInternal obj)
+            obj.markAsDeleted();
+
         int rawId = entryToRawId.getInt(entry.value());
         RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
         dynreg$entryDeletedEvent.invoker().onEntryDeleted(rawId, entry);
@@ -76,11 +82,6 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
         cachedEntries = null;
-
-        ((DeletableObjectInternal) entry).markAsDeleted();
-
-        if (entry.value() instanceof DeletableObjectInternal obj)
-            obj.markAsDeleted();
     }
 
     @Override

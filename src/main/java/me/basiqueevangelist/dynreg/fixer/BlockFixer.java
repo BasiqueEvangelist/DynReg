@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.fixer;
 
+import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.IdListUtils;
@@ -21,6 +22,8 @@ public final class BlockFixer {
 
     public static void init() {
         RegistryEntryDeletedCallback.event(Registry.BLOCK).register(BlockFixer::onBlockDeleted);
+
+        DebugContext.addSupplied("dynreg:block_version", () -> BLOCKS_VERSION.getVersion());
     }
 
     private static void onBlockDeleted(int rawId, RegistryEntry.Reference<Block> entry) {

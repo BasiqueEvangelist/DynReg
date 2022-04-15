@@ -18,7 +18,8 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven {
-		url 'https://maven.bymartrixx.me'
+		name 'Basiquemaven'
+		url 'https://porez.ml/maven'
 	}
 }
 
@@ -61,6 +62,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:qsl_base:${project.quilt_base_version}+${project.minecraft_version}"
+	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:registry:1.0.0+${project.minecraft_version}"
 
 	testmodImplementation sourceSets.main.output
 }
