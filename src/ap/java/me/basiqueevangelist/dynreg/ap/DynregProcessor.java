@@ -49,7 +49,7 @@ public class DynregProcessor extends AbstractProcessor {
             target
                 .getEnclosedElements()
                 .stream()
-                .filter(x -> x.getKind() == ElementKind.FIELD)
+                .filter(x -> x.getKind() == ElementKind.FIELD || x.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(x -> (VariableElement) x)
                 .filter(x -> processingEnv.getTypeUtils().isSameType(x.asType(), elementType))
                 .forEach(x -> {
