@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg;
 
 import me.basiqueevangelist.dynreg.compat.CompatLoader;
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
+import me.basiqueevangelist.dynreg.fixer.GlobalFixer;
 import me.basiqueevangelist.dynreg.fixer.ItemFixer;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
@@ -28,6 +29,7 @@ public class DynReg implements ModInitializer {
 
         ItemFixer.init();
         BlockFixer.init();
+        GlobalFixer.init();
 
         ReactiveEntryTracker.init();
         LoadedEntryHolder.init();

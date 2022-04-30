@@ -1,6 +1,5 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.DeletableObject;
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
@@ -13,8 +12,8 @@ public class DeletableObjectsMixin implements DeletableObjectInternal {
     private boolean dynreg$deleted = false;
 
     @Override
-    public void markAsDeleted() {
-        dynreg$deleted = true;
+    public void dynreg$setDeleted(boolean value) {
+        dynreg$deleted = value;
     }
 
     @Override

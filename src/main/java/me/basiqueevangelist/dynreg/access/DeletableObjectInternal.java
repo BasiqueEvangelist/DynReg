@@ -4,5 +4,5 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public interface DeletableObjectInternal extends DeletableObject {
-    void markAsDeleted();
+    void dynreg$setDeleted(boolean value);
 }
