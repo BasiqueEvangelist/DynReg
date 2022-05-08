@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.fixer;
 
+import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
@@ -21,6 +22,8 @@ public final class ItemFixer {
 
     public static void init() {
         RegistryEntryDeletedCallback.event(Registry.ITEM).register(ItemFixer::onItemDeleted);
+
+        DebugContext.addSupplied("dynreg:item_version", () -> ITEMS_VERSION.getVersion());
     }
 
     private static void onItemDeleted(int rawId, RegistryEntry.Reference<Item> entry) {

@@ -4,6 +4,7 @@ import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
 import me.basiqueevangelist.dynreg.util.BlockStateUtil;
 import me.basiqueevangelist.dynreg.util.DefaultedIndexIterable;
+import me.basiqueevangelist.dynreg.util.PaletteUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.PacketByteBuf;
@@ -28,6 +29,8 @@ public abstract class ChunkSectionMixin {
     @Shadow public abstract BlockState getBlockState(int x, int y, int z);
 
     @Shadow public abstract BlockState setBlockState(int x, int y, int z, BlockState state);
+
+    @Shadow public abstract PalettedContainer<BlockState> getBlockStateContainer();
 
     private int dynreg$blocksVersion = -1;
 
@@ -60,7 +63,6 @@ public abstract class ChunkSectionMixin {
     @Inject(method = "toPacket", at = @At("RETURN"))
     private void leaveSend(PacketByteBuf buf, CallbackInfo ci) {
         DebugContext.removeData("dynreg:chunk_section_version");
-        DebugContext.removeData("dynreg:upgraded_blocks");
     }
 
     @Unique
@@ -72,7 +74,7 @@ public abstract class ChunkSectionMixin {
 
             if (!hasAny(state -> state.getBlock().wasDeleted())) return;
 
-            int totalUpgraded = 0;
+            PaletteUtils.tryClean(getBlockStateContainer().data.palette(), BlockStateUtil::recreateState);
 
             for (int x = 0; x < 16; x++) {
                 for (int y = 0; y < 16; y++) {
@@ -83,14 +85,10 @@ public abstract class ChunkSectionMixin {
                             // TODO: FlashFreeze compat.
 
                             setBlockState(x, y, z, BlockStateUtil.recreateState(oldState));
-
-                            totalUpgraded++;
                         }
                     }
                 }
             }
-
-            DebugContext.addData("dynreg:upgraded_blocks", totalUpgraded);
         }
     }
 }

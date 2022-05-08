@@ -21,6 +21,12 @@ repositories {
 		name 'Basiquemaven'
 		url 'https://porez.ml/maven'
 	}
+	maven {
+		url "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 
@@ -72,6 +78,8 @@ dependencies {
 
 	compileOnly sourceSets.ap.output
 	annotationProcessor sourceSets.ap.runtimeClasspath
+
+	modCompileOnly "maven.modrinth:lithium:${project.lithium_version}"
 
 	apImplementation "com.squareup:javapoet:1.13.0"
 

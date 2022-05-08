@@ -14,7 +14,12 @@
         "ItemSettingsMixin",
         "ItemStackMixin",
         "ResourceManagerHelperImplMixin",
-        "SimpleRegistryMixin"
+        "SimpleRegistryMixin",
+        "palette.ArrayPaletteMixin",
+        "palette.BiMapPaletteMixin",
+        "palette.IdListPaletteMixin",
+        "palette.LithiumHashPaletteMixin",
+        "palette.SingularPaletteMixin"
     ],
     "client": [
     ],

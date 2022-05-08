@@ -24,3 +24,7 @@ accessible method net/minecraft/block/Material$Builder burnable ()Lnet/minecraft
 accessible method net/minecraft/block/Material$Builder lightPassesThrough ()Lnet/minecraft/block/Material$Builder;
 accessible field net/minecraft/block/Material$Builder pistonBehavior Lnet/minecraft/block/piston/PistonBehavior;
 accessible field net/minecraft/item/ItemGroup id Ljava/lang/String;
+accessible field net/minecraft/util/collection/Int2ObjectBiMap values [Ljava/lang/Object;
+accessible field net/minecraft/util/collection/Int2ObjectBiMap idToValues [Ljava/lang/Object;
+accessible field net/minecraft/world/chunk/PalettedContainer data Lnet/minecraft/world/chunk/PalettedContainer$Data;
+accessible class net/minecraft/world/chunk/PalettedContainer$Data
