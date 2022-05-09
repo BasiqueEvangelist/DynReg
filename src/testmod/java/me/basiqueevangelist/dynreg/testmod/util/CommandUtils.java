@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -40,19 +41,9 @@ public final class CommandUtils {
         return (RegistryEntry.Reference<?>) ((Registry<Object>) registry).getEntry((RegistryKey<Object>) RegistryKey.of(registry.getKey(), id)).orElseThrow(() -> NO_SUCH_ENTRY.create(registry.getKey().getValue(), id));
     }
 
-    public static CompletableFuture<Suggestions> suggestRegistries(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
-        for (Identifier id : Registry.REGISTRIES.getIds()) {
-            builder.suggest(String.valueOf(id));
-        }
-
-        return builder.buildFuture();
-    }
-
-    public static CompletableFuture<Suggestions> suggestEntriesOfRegistry(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) throws CommandSyntaxException {
-        Registry<?> registry = getRegistry(ctx);
-
-        for (Identifier id : registry.getIds()) {
-            builder.suggest(String.valueOf(id));
+    public static CompletableFuture<Suggestions> suggestEntries(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
+        for (var data : LoadedEntryHolder.getEntries().keySet()) {
+            builder.suggest(String.valueOf(data));
         }
 
         return builder.buildFuture();

@@ -22,23 +22,20 @@ public class DeleteCommand {
             literal("dynreg")
                 .then(literal("testmod")
                     .then(literal("remove")
-                        .then(argument("registry", RegistryKeyArgumentType.registryKey(RegistryKey.ofRegistry(new Identifier("root"))))
-                            .suggests(CommandUtils::suggestRegistries)
                             .then(argument("entry", IdentifierArgumentType.identifier())
-                                .suggests(CommandUtils::suggestEntriesOfRegistry)
-                                .executes(DeleteCommand::removeEntry)))))
+                                .suggests(CommandUtils::suggestEntries)
+                                .executes(DeleteCommand::removeEntry))))
         );
     }
 
     private static int removeEntry(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        RegistryEntry.Reference<?> entry = CommandUtils.getEntry(ctx);
-        RegistryKey<?> key = entry.registryKey();
+        Identifier entryId = IdentifierArgumentType.getIdentifier(ctx, "entry");
 
         DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
-        round.addTask(ctx1 -> {
-            ctx1.removeEntry(entry.registry, key.getValue());
-        });
-        ctx.getSource().sendFeedback(new LiteralText("Removed " + key), true);
+        round.removeEntry(entryId);
+        round.run();
+
+        ctx.getSource().sendFeedback(new LiteralText("Removed " + entryId), true);
 
         return 0;
     }

@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg.data;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.entry.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
@@ -21,74 +21,62 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<RegistryKey<?>, EntryDescription<?>>> {
+public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Identifier, RegistrationEntry>> {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/RegistryEntryLoader");
-    private static final HashSet<RegistryKey<?>> ADDED_RESOURCES = new HashSet<>();
+    private static final HashSet<Identifier> ADDED_ENTRIES = new HashSet<>();
 
     public static final RegistryEntryLoader INSTANCE = new RegistryEntryLoader();
 
     static {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ADDED_RESOURCES.clear());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ADDED_ENTRIES.clear());
     }
 
     @Override
-    public CompletableFuture<Map<RegistryKey<?>, EntryDescription<?>>> load(ResourceManager manager, Profiler profiler, Executor executor) {
-        Map<RegistryKey<?>, EntryDescription<?>> descriptions = new TreeMap<>((a, b) -> {
-            if (a.method_41185().equals(b.method_41185()))
-                return a.getValue().compareTo(b.getValue());
+    public CompletableFuture<Map<Identifier, RegistrationEntry>> load(ResourceManager manager, Profiler profiler, Executor executor) {
+        return CompletableFuture.supplyAsync(() -> {
+            Map<Identifier, RegistrationEntry> descriptions = new HashMap<>();
 
-            return Integer.compare(RegistryUtils.getRawIdOfRegistryOf(a), RegistryUtils.getRawIdOfRegistryOf(b));
-        });
-
-        for (Registry<?> registry : Registry.REGISTRIES) {
-            var startPath = "entries/" + registry.getKey().getValue().getPath();
-            var startLen = startPath.length() + 1;
-            var resources = manager.findResources(startPath, path -> path.endsWith(".json"));
+            var resources = manager.findResources("entries", path -> path.endsWith(".json"));
 
             for (Identifier resourceId : resources) {
-                var realId = new Identifier(resourceId.getNamespace(), resourceId.getPath().substring(startLen, resourceId.getPath().length() - 5));
+                var realId = new Identifier(resourceId.getNamespace(), resourceId.getPath().substring("entries".length() + 1, resourceId.getPath().length() - 5));
 
                 try (Resource resource = manager.getResource(resourceId);
                      var br = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
                     JsonObject obj = JsonHelper.deserialize(br, true);
                     Identifier type = new Identifier(JsonHelper.getString(obj, "type"));
-                    EntryDescription<?> desc = EntryDescriptionReaders.getReader(type).apply(obj);
+                    RegistrationEntry desc = EntryDescriptionReaders.getReader(type).apply(realId, obj);
 
-                    descriptions.put(RegistryKey.of(desc.registry().getKey(), realId), desc);
+                    descriptions.put(realId, desc);
                 } catch (IOException e) {
-                    LOGGER.error("Encountered error while loading {} of {}", resourceId, registry.getKey().getValue(), e);
+                    LOGGER.error("Encountered error while loading {}", resourceId, e);
                 }
             }
-        }
 
-        return CompletableFuture.completedFuture(descriptions);
+            return descriptions;
+        }, executor);
     }
 
     @Override
-    public CompletableFuture<Void> apply(Map<RegistryKey<?>, EntryDescription<?>> data, ResourceManager manager, Profiler profiler, Executor executor) {
+    public CompletableFuture<Void> apply(Map<Identifier, RegistrationEntry> data, ResourceManager manager, Profiler profiler, Executor executor) {
         DynamicRound round = DynamicRound.getRound(DynReg.SERVER);
 
-        round.addTask(ctx -> {
-            for (var key : ADDED_RESOURCES) {
-                ctx.removeEntry(key);
-            }
-            ADDED_RESOURCES.clear();
+        for (var key : ADDED_ENTRIES) {
+            round.removeEntry(key);
+        }
+        ADDED_ENTRIES.clear();
 
-            for (var entry : data.entrySet()) {
-                var id = entry.getKey().getValue();
-                var desc = entry.getValue();
-
-                ctx.register(id, desc);
-                ADDED_RESOURCES.add(entry.getKey());
-            }
-        });
+        for (var entry : data.entrySet()) {
+            round.addEntry(entry.getValue());
+            ADDED_ENTRIES.add(entry.getKey());
+        }
 
         round.noDataPackReload();
 

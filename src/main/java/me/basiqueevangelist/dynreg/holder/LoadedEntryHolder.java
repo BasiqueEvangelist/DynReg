@@ -1,36 +1,32 @@
 package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.entry.EntryDescription;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.minecraft.network.Packet;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.Identifier;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class LoadedEntryHolder {
-    private static final Map<RegistryKey<?>, EntryDescription<?>> ADDED_ENTRIES = new LinkedHashMap<>();
+    private static final Map<Identifier, EntryData> ADDED_ENTRIES = new LinkedHashMap<>();
 
     private LoadedEntryHolder() {
 
     }
 
     public static void init() {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ADDED_ENTRIES.clear();
-        });
-
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (ADDED_ENTRIES.size() == 0) return;
 
             boolean isHost = server.isHost(handler.player.getGameProfile());
 
             if (!isHost) {
-                Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(Collections.emptyList(), ADDED_ENTRIES);
+                // FIX: make this less stream-y.
+                Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(Collections.emptyList(), ADDED_ENTRIES.values().stream().map(EntryData::entry).toList());
 
                 sender.sendPacket(packet);
             } else {
@@ -42,11 +38,15 @@ public final class LoadedEntryHolder {
         });
     }
 
-    public static void addRegisteredKey(RegistryKey<?> key, EntryDescription<?> value) {
-        ADDED_ENTRIES.put(key, value);
+    public static void addEntry(EntryData data) {
+        ADDED_ENTRIES.put(data.entry().id(), data);
     }
 
-    public static void removeRegisteredKey(RegistryKey<?> key) {
-        ADDED_ENTRIES.remove(key);
+    public static void removeEntry(Identifier id) {
+        ADDED_ENTRIES.remove(id);
+    }
+
+    public static Map<Identifier, EntryData> getEntries() {
+        return ADDED_ENTRIES;
     }
 }

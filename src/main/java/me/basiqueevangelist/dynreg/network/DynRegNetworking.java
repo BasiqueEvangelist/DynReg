@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.network;
 
-import me.basiqueevangelist.dynreg.entry.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.Packet;
@@ -8,6 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,22 +22,20 @@ public final class DynRegNetworking {
     public static Identifier STOP_TIMER = new Identifier("dynreg", "stop_timer");
     public static Identifier RELOAD_RESOURCES = new Identifier("dynreg", "reload_resources");
 
-    public static Packet<?> makeRoundFinishedPacket(List<RegistryKey<?>> removedEntries, Map<RegistryKey<?>, EntryDescription<?>> addedEntries) {
+    public static Packet<?> makeRoundFinishedPacket(List<Identifier> removedEntries, Collection<RegistrationEntry> addedEntries) {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeVarInt(removedEntries.size());
         for (var key : removedEntries) {
-            buf.writeIdentifier(key.method_41185());
-            buf.writeIdentifier(key.getValue());
+            buf.writeIdentifier(key);
         }
 
         buf.writeVarInt(addedEntries.size());
-        for (var entry : addedEntries.entrySet()) {
-            // The registry identifier isn't written, as the client can get it from the EntryDescription.
-            buf.writeIdentifier(entry.getKey().getValue());
+        for (var entry : addedEntries) {
+            buf.writeIdentifier(entry.typeId());
+            buf.writeIdentifier(entry.id());
 
-            buf.writeIdentifier(entry.getValue().id());
-            entry.getValue().write(buf);
+            entry.write(buf);
         }
         return ServerPlayNetworking.createS2CPacket(ROUND_FINISHED, buf);
     }

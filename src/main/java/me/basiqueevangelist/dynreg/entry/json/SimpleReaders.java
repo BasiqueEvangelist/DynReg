@@ -4,9 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import me.basiqueevangelist.dynreg.entry.block.SimpleBlockDescription;
-import me.basiqueevangelist.dynreg.entry.item.BlockItemDescription;
-import me.basiqueevangelist.dynreg.entry.item.SimpleItemDescription;
+import me.basiqueevangelist.dynreg.entry.block.SimpleBlockEntry;
+import me.basiqueevangelist.dynreg.entry.item.SimpleItemEntry;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -32,17 +31,12 @@ public final class SimpleReaders {
 
     }
 
-    public static BlockItemDescription readBlockItem(JsonObject obj) {
-        Identifier blockId = new Identifier(JsonHelper.getString(obj, "block"));
-        return new BlockItemDescription(() -> Registry.BLOCK.get(blockId), readItemSettings(obj));
+    public static SimpleItemEntry readSimpleItem(Identifier id, JsonObject obj) {
+        return new SimpleItemEntry(id, readItemSettings(obj));
     }
 
-    public static SimpleItemDescription readSimpleItem(JsonObject obj) {
-        return new SimpleItemDescription(readItemSettings(obj));
-    }
-
-    public static SimpleBlockDescription readSimpleBlock(JsonObject obj) {
-        return new SimpleBlockDescription(readBlockSettings(obj));
+    public static SimpleBlockEntry readSimpleBlock(Identifier id, JsonObject obj) {
+        return new SimpleBlockEntry(id, readBlockSettings(obj), readItemSettings(obj));
     }
 
     public static Item.Settings readItemSettings(JsonObject obj) {
@@ -161,7 +155,7 @@ public final class SimpleReaders {
 
     public static BlockSoundGroup readBlockSoundGroup(JsonElement el) {
         if (el instanceof JsonPrimitive prim && prim.isString()) {
-            return NamedEntries.BLOCK_SOUND_GROUPS.get(prim.getAsString());
+            return NamedEntries.BLOCK_SOUND_GROUPS.get(prim.getAsString().toUpperCase(Locale.ROOT));
         } else if (el instanceof JsonObject obj) {
             float volume = JsonHelper.getFloat(obj, "volume");
             float pitch = JsonHelper.getFloat(obj, "pitch");

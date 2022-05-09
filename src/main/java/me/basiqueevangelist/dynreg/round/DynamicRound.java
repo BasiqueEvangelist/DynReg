@@ -2,9 +2,10 @@ package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
+import me.basiqueevangelist.dynreg.holder.EntryData;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.entry.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
@@ -13,6 +14,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
@@ -27,12 +29,11 @@ public class DynamicRound {
     private static @Nullable DynamicRound currentRound;
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DynamicRound");
 
-    private final List<DynamicRoundTask> tasks = new ArrayList<>();
+    private final List<Identifier> removedEntries = new ArrayList<>();
+    private final Map<Identifier, RegistrationEntry> addedEntries = new HashMap<>();
     private final CompletableFuture<Void> roundEnd = new CompletableFuture<>();
     private final MinecraftServer server;
     private boolean isScheduled = false;
-    private final List<RegistryKey<?>> removedEntries = new ArrayList<>();
-    private final Map<RegistryKey<?>, EntryDescription<?>> addedEntries = new LinkedHashMap<>();
 
     private boolean reloadDataPacks = true;
     private boolean reloadResourcePacks = true;
@@ -49,8 +50,12 @@ public class DynamicRound {
         return currentRound;
     }
 
-    public void addTask(DynamicRoundTask task) {
-        tasks.add(task);
+    public void removeEntry(Identifier id) {
+        removedEntries.add(id);
+    }
+
+    public void addEntry(RegistrationEntry entry) {
+        addedEntries.put(entry.id(), entry);
     }
 
     public void noDataPackReload() {
@@ -80,49 +85,50 @@ public class DynamicRound {
         long time = System.nanoTime();
         currentRound = null;
 
+        var idToEntry = new HashMap<Identifier, RegistrationEntry>();
+
+        for (var entry : addedEntries.values()) {
+            idToEntry.put(entry.id(), entry);
+        }
+
         for (Registry<?> registry : Registry.REGISTRIES) {
             RegistryUtils.unfreeze(registry);
         }
 
-        var ctx = new Context();
-        for (var task : tasks) {
-            try {
-                task.perform(ctx);
-            } catch (Exception e) {
-                LOGGER.error("Failed to run task", e);
+        for (Identifier oldEntryId : removedEntries) {
+            RoundInternals.removeEntry(oldEntryId);
+        }
+
+        EntryScanner scanner = new EntryScanner(addedEntries.values());
+
+        var deps = scanner.scan();
+        var visited = new HashSet<Identifier>();
+        var visiting = new HashSet<Identifier>();
+        var order = new ArrayList<Identifier>();
+
+        for (var entry : addedEntries.values()) {
+            if (!visited.contains(entry.id()) && TopologicalSorts.sort(deps, visited, visiting, order::add, entry.id())) {
+                LOGGER.warn("Entry order cycle!");
             }
+
+        }
+
+        Collections.reverse(order);
+
+        for (var entryId : order) {
+            RoundInternals.registerEntry(idToEntry.get(entryId));
         }
 
         for (Registry<?> registry : Registry.REGISTRIES) {
             registry.freeze();
         }
 
-        if (removedEntries.size() > 0)
-            LOGGER.info("- Removed {} entries", removedEntries.size());
-
-        if (addedEntries.size() > 0)
-            LOGGER.info("- Added {} entries", addedEntries.size());
-
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            for (var entry : removedEntries)
-                DynRegClient.removeRegisteredKey(entry.method_41185(), entry.getValue());
-
-            for (var entry : addedEntries.entrySet())
-                DynRegClient.addRegisteredKey(entry.getKey().method_41185(), entry.getKey().getValue());
-        }
-
-        for (var entry : removedEntries)
-            LoadedEntryHolder.removeRegisteredKey(entry);
-
-        for (var entry : addedEntries.entrySet())
-            LoadedEntryHolder.addRegisteredKey(entry.getKey(), entry.getValue());
-
         if (server == null) {
             LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
             return;
         }
 
-        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntries, addedEntries);
+        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntries, addedEntries.values());
         for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
             if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntries.size() > 0))
                 player.networkHandler.sendPacket(dataPacket);
@@ -163,41 +169,6 @@ public class DynamicRound {
             });
         } else {
             LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
-        }
-    }
-
-    private class Context implements RoundContext {
-        @Override
-        public <T> T register(Identifier id, EntryDescription<T> desc) {
-            addedEntries.put(RegistryKey.of(desc.registry().getKey(), id), desc);
-            return Registry.register(desc.registry(), id, desc.create());
-        }
-
-        @Override
-        public void removeEntry(RegistryKey<?> key) {
-            RegistryUtils.remove(key);
-
-            var existingEntry = addedEntries.get(key);
-
-            if (existingEntry != null) {
-                addedEntries.remove(key);
-            } else {
-                removedEntries.add(key);
-            }
-        }
-
-        @Override
-        public void removeEntry(Registry<?> registry, Identifier id) {
-            RegistryUtils.remove(registry, id);
-
-            var key = RegistryKey.of(registry.getKey(), id);
-            var existingEntry = addedEntries.get(key);
-
-            if (existingEntry != null) {
-                addedEntries.remove(key);
-            } else {
-                removedEntries.add(RegistryKey.of(registry.getKey(), id));
-            }
         }
     }
 }

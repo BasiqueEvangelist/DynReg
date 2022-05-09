@@ -1,70 +1,63 @@
 package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.block.BlockDescription;
-import me.basiqueevangelist.dynreg.entry.item.BlockItemDescription;
+import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
 import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-import java.util.function.Supplier;
-
-public class FlowerPotBlockDescription implements BlockDescription {
+public class FlowerPotBlockDescription implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("flower_pot_block");
 
+    private final Identifier id;
+    private final Identifier contentId;
     private final AbstractBlock.Settings settings;
-    private final Supplier<Block> contentSupplier;
-    private Block content;
 
-    public FlowerPotBlockDescription(Block content, AbstractBlock.Settings settings) {
+    public FlowerPotBlockDescription(Identifier id, Identifier contentId, AbstractBlock.Settings settings) {
+        this.id = id;
         this.settings = settings;
-        this.content = content;
-        this.contentSupplier = null;
+        this.contentId = contentId;
     }
 
-    public FlowerPotBlockDescription(Supplier<Block> contentSupplier, AbstractBlock.Settings settings) {
-        this.settings = settings;
-        this.contentSupplier = contentSupplier;
-        this.content = null;
+    public FlowerPotBlockDescription(Identifier id, PacketByteBuf buf) {
+        this.id = id;
+        this.contentId = buf.readIdentifier();
+        this.settings = SimpleSerializers.readBlockSettings(buf);
     }
 
-    public FlowerPotBlockDescription(PacketByteBuf buf) {
-        settings = SimpleSerializers.readBlockSettings(buf);
-        contentSupplier = null;
-        content = Registry.BLOCK.get(buf.readIdentifier());
-    }
-
-    public FlowerPotBlockDescription(JsonObject obj) {
-        Identifier blockId = new Identifier(JsonHelper.getString(obj, "content"));
-        this.contentSupplier = () -> Registry.BLOCK.get(blockId);
+    public FlowerPotBlockDescription(Identifier id, JsonObject obj) {
+        this.id = id;
+        this.contentId = new Identifier(JsonHelper.getString(obj, "content"));
         this.settings = SimpleReaders.readBlockSettings(obj);
-        this.content = null;
     }
 
-    private Block getContent() {
-        if (content == null) {
-            content = contentSupplier.get();
-        }
+    @Override
+    public void scan(EntryScanContext ctx) {
+        ctx.announce(Registry.BLOCK, id)
+            .dependency(Registry.BLOCK, contentId);
+    }
 
-        return content;
+    @Override
+    public void register(EntryRegisterContext ctx) {
+        ctx.register(Registry.BLOCK, id, new FlowerPotBlock(Registry.BLOCK.get(contentId), settings));
     }
 
     @Override
     public void write(PacketByteBuf buf) {
+        buf.writeIdentifier(contentId);
         SimpleSerializers.writeBlockSettings(buf, settings);
-        //noinspection deprecation
-        buf.writeIdentifier(getContent().getRegistryEntry().registryKey().getValue());
     }
 
     @Override
-    public Block create() {
-        return new FlowerPotBlock(getContent(), settings);
+    public Identifier id() {
+        return id;
     }
 }

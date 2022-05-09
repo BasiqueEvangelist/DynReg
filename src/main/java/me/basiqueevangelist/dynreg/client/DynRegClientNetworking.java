@@ -1,8 +1,9 @@
 package me.basiqueevangelist.dynreg.client;
 
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.entry.EntryDescriptions;
-import me.basiqueevangelist.dynreg.entry.EntryDescription;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.round.RoundInternals;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;
@@ -41,39 +42,25 @@ public class DynRegClientNetworking {
 
             var removedEntriesCount = buf.readVarInt();
 
-            LOGGER.info(" - Removed {} entries", removedEntriesCount);
-
             for (int i = 0; i < removedEntriesCount; i++) {
-                Identifier registryId = buf.readIdentifier();
                 Identifier entryId = buf.readIdentifier();
 
-                //noinspection ConstantConditions
-                RegistryUtils.remove(Registry.REGISTRIES.get(registryId), entryId);
-
-                DynRegClient.removeRegisteredKey(registryId, entryId);
+                RoundInternals.removeEntry(entryId);
             }
 
             var addedEntriesCount = buf.readVarInt();
 
-            LOGGER.info(" - Added {} entries", addedEntriesCount);
-
             for (int i = 0; i < addedEntriesCount; i++) {
-                Identifier entryId = buf.readIdentifier();
-                Identifier descId = buf.readIdentifier();
-                EntryDescription<?> desc = EntryDescriptions.getDescParser(descId).apply(buf);
+                Identifier typeId = buf.readIdentifier();
+                Identifier entryid = buf.readIdentifier();
+                RegistrationEntry entry = RegistrationEntries.getEntryDeserializer(typeId).apply(entryid, buf);
 
-                registerDesc(entryId, desc);
-
-                DynRegClient.addRegisteredKey(desc.registry().getKey().getValue(), entryId);
+                RoundInternals.registerEntry(entry);
             }
 
             for (Registry<?> registry : Registry.REGISTRIES) {
                 registry.freeze();
             }
         });
-    }
-
-    private static <T> void registerDesc(Identifier id, EntryDescription<T> desc) {
-        Registry.register(desc.registry(), id, desc.create());
     }
 }
