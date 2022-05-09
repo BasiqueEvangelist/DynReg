@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.client;
 
 import me.basiqueevangelist.dynreg.client.event.PostLeaveRoundCallback;
 import me.basiqueevangelist.dynreg.client.fixer.ClientBlockFixer;
+import me.basiqueevangelist.dynreg.client.fixer.ClientItemFixer;
 import me.basiqueevangelist.dynreg.client.round.ClientDynamicRound;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.round.RoundInternals;
@@ -21,6 +22,7 @@ public class DynRegClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientBlockFixer.init();
+        ClientItemFixer.init();
         DynRegClientNetworking.init();
 
         PostLeaveRoundCallback.EVENT.register(round -> {

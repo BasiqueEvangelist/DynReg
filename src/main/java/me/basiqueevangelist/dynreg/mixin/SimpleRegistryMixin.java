@@ -81,7 +81,6 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         keyToEntry.remove(key);
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
-        cachedEntries = null;
     }
 
     @Override
@@ -90,5 +89,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
 
         if (valueToEntryFunction != null)
             this.unfrozenValueToEntry = new IdentityHashMap<>();
+
+        cachedEntries = null;
     }
 }
