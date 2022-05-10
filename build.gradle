@@ -59,6 +59,7 @@ loom {
 
 	runConfigs.forEach {
 		it.vmArg "-Dmixin.debug.export=true"
+		it.vmArg "-Ddynreg.debug=true"
 	}
 
 	accessWidenerPath = file("src/main/resources/dynreg.accesswidener")
