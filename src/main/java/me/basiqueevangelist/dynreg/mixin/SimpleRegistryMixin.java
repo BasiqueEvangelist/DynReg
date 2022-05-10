@@ -1,11 +1,12 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import com.mojang.serialization.Lifecycle;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
-import me.basiqueevangelist.dynreg.access.DeletableObject;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -44,6 +47,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     @Shadow @Final private Map<T, Lifecycle> entryToLifecycle;
     @Shadow private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList;
     @Shadow @Nullable private List<RegistryEntry.Reference<T>> cachedEntries;
+    @Shadow private int nextId;
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
         for (var callback : callbacks) {
             callback.onEntryDeleted(rawId, entry);
@@ -52,6 +56,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         if (entry.value() instanceof RegistryEntryDeletedCallback<?> callback)
             ((RegistryEntryDeletedCallback<T>)callback).onEntryDeleted(rawId, entry);
     });
+    private final IntList dynreg$freeIds = new IntArrayList();
 
     @Override
     public Event<RegistryEntryDeletedCallback<T>> dynreg$getEntryDeletedEvent() {
@@ -81,6 +86,15 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         keyToEntry.remove(key);
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
+        dynreg$freeIds.add(rawId);
+    }
+
+    @Redirect(method = "add", at = @At(value = "FIELD", target = "Lnet/minecraft/util/registry/SimpleRegistry;nextId:I"))
+    private int getNextId(SimpleRegistry<T> instance) {
+        if (!dynreg$freeIds.isEmpty())
+            return dynreg$freeIds.removeInt(0);
+
+        return nextId;
     }
 
     @Override
