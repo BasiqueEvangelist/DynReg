@@ -2,9 +2,13 @@ package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.mixin.fabric.ApiProviderHashMapAccessor;
+import me.basiqueevangelist.dynreg.mixin.fabric.BlockApiLookupImplAccessor;
+import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.IdListUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
 import net.minecraft.util.registry.Registry;
@@ -26,6 +30,7 @@ public final class BlockFixer {
         DebugContext.addSupplied("dynreg:block_version", () -> BLOCKS_VERSION.getVersion());
     }
 
+    @SuppressWarnings("unchecked")
     private static void onBlockDeleted(int rawId, RegistryEntry.Reference<Block> entry) {
         Block block = entry.value();
 
@@ -65,6 +70,12 @@ public final class BlockFixer {
             CandleCakeBlock.CANDLES_TO_CANDLE_CAKES,
             FlowerPotBlock.CONTENT_TO_POTTED,
             InfestedBlock.REGULAR_TO_INFESTED_BLOCK);
+
+        for (var lookup : BlockApiLookupImplAccessor.getLOOKUPS()) {
+            var apiProviderMap = ((BlockApiLookupImplAccessor) lookup).getProviderMap();
+            var map = ApiLookupUtil.getActualMap(apiProviderMap);
+            map.remove(block);
+        }
 
         BLOCKS_VERSION.bumpVersion();
     }

@@ -2,10 +2,16 @@ package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.mixin.fabric.ApiProviderHashMapAccessor;
+import me.basiqueevangelist.dynreg.mixin.fabric.BlockApiLookupImplAccessor;
+import me.basiqueevangelist.dynreg.mixin.fabric.ItemApiLookupImplAccessor;
+import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
@@ -39,6 +45,12 @@ public final class ItemFixer {
 
         CompostingChanceRegistry.INSTANCE.remove(item);
         FuelRegistry.INSTANCE.remove(item);
+
+        for (var lookup : ItemApiLookupImplAccessor.getLOOKUPS()) {
+            var apiProviderMap = ((ItemApiLookupImplAccessor) lookup).getProviderMap();
+            var map = ApiLookupUtil.getActualMap(apiProviderMap);
+            map.remove(item);
+        }
 
         ITEMS_VERSION.bumpVersion();
     }

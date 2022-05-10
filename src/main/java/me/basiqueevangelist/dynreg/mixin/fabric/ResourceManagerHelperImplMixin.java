@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.mixin;
+package me.basiqueevangelist.dynreg.mixin.fabric;
 
 import me.basiqueevangelist.dynreg.data.RegistryEntryLoader;
 import net.fabricmc.fabric.impl.resource.loader.ResourceManagerHelperImpl;
