@@ -29,3 +29,4 @@ accessible field net/minecraft/util/collection/Int2ObjectBiMap idToValues [Ljava
 accessible field net/minecraft/world/chunk/PalettedContainer data Lnet/minecraft/world/chunk/PalettedContainer$Data;
 accessible class net/minecraft/world/chunk/PalettedContainer$Data
 accessible field net/minecraft/client/render/item/ItemModels modelIds Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible class net/minecraft/world/chunk/PaletteResizeListener

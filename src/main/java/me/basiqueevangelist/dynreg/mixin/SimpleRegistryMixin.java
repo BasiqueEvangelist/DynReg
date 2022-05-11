@@ -77,8 +77,8 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
             obj.dynreg$setDeleted(true);
 
         int rawId = entryToRawId.getInt(entry.value());
-        RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
         dynreg$entryDeletedEvent.invoker().onEntryDeleted(rawId, entry);
+        RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
 
         rawIdToEntry.set(rawId, null);
         entryToRawId.removeInt(entry);

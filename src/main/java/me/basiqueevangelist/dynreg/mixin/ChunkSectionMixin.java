@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
+import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
 import me.basiqueevangelist.dynreg.util.BlockStateUtil;
@@ -10,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.IdListPalette;
 import net.minecraft.world.chunk.PalettedContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,7 +34,7 @@ public abstract class ChunkSectionMixin {
 
     @Shadow public abstract PalettedContainer<BlockState> getBlockStateContainer();
 
-    private int dynreg$blocksVersion = -1;
+    private int dynreg$blocksVersion = BlockFixer.BLOCKS_VERSION.getVersion();
 
     @ModifyArg(method = "<init>(ILnet/minecraft/util/registry/Registry;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/PalettedContainer;<init>(Lnet/minecraft/util/collection/IndexedIterable;Ljava/lang/Object;Lnet/minecraft/world/chunk/PalettedContainer$PaletteProvider;)V", ordinal = 0))
     private IndexedIterable<BlockState> wrapIterable(IndexedIterable<BlockState> idList) {
@@ -74,7 +76,11 @@ public abstract class ChunkSectionMixin {
 
             if (!hasAny(state -> state.getBlock().wasDeleted())) return;
 
-            PaletteUtils.tryClean(getBlockStateContainer().data.palette(), BlockStateUtil::recreateState);
+            var palette = getBlockStateContainer().data.palette();
+
+            if (!(palette instanceof IdListPalette<BlockState>)) {
+                PaletteUtils.tryClean(palette, BlockStateUtil::recreateState);
+            }
 
             for (int x = 0; x < 16; x++) {
                 for (int y = 0; y < 16; y++) {
@@ -88,6 +94,10 @@ public abstract class ChunkSectionMixin {
                         }
                     }
                 }
+            }
+
+            if (palette instanceof ExtendedIdListPalette ext) {
+                ext.dynreg$updateVersion();
             }
         }
     }

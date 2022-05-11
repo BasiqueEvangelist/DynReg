@@ -2,23 +2,26 @@ package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
-import me.basiqueevangelist.dynreg.mixin.fabric.ApiProviderHashMapAccessor;
 import me.basiqueevangelist.dynreg.mixin.fabric.BlockApiLookupImplAccessor;
 import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.IdListUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
-import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
 import net.minecraft.block.*;
 import net.minecraft.item.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestType;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public final class BlockFixer {
     public static VersionTracker BLOCKS_VERSION = new VersionTracker();
+
+    static final Set<RemovedStateIdList> REMOVED_ID_LISTS = Collections.newSetFromMap(new WeakHashMap<>());
 
     private BlockFixer() {
 
@@ -35,6 +38,10 @@ public final class BlockFixer {
         Block block = entry.value();
 
         for (BlockState state : block.getStateManager().getStates()) {
+            for (RemovedStateIdList list : REMOVED_ID_LISTS) {
+                list.getRemovedStateIds().put(Block.STATE_IDS.getRawId(state), state);
+            }
+
             IdListUtils.remove(Block.STATE_IDS, state);
 
             ClearUtils.clearMapKeys(state,
@@ -79,4 +86,5 @@ public final class BlockFixer {
 
         BLOCKS_VERSION.bumpVersion();
     }
+
 }
