@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.function.Function;
 
 @Pseudo
-@Mixin(LithiumHashPalette.class)
+@Mixin(value = LithiumHashPalette.class, remap = false)
 public class LithiumHashPaletteMixin<T> implements CleanablePalette<T> {
 
     @Shadow private T[] entries;

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
-@Mixin(ApiProviderHashMap.class)
+@Mixin(value = ApiProviderHashMap.class, remap = false)
 public interface ApiProviderHashMapAccessor<K, V> {
     @Accessor
     Map<K, V> getLookups();

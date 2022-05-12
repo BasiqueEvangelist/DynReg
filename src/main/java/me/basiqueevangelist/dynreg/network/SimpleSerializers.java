@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.network;
 
-import me.basiqueevangelist.dynreg.access.InternalWritable;
+import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
@@ -18,13 +18,31 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 
 public class SimpleSerializers {
     public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
-        ((InternalWritable) settings).dynreg$write(buf);
+        SimpleSerializers.writeMaterial(buf, settings.material);
+        buf.writeVarInt(((ExtendedBlockSettings) settings).dynreg$getMapColor().id);
+        buf.writeBoolean(settings.collidable);
+        SimpleSerializers.writeBlockSoundGroup(buf, settings.soundGroup);
+        buf.writeFloat(settings.resistance);
+        buf.writeFloat(settings.hardness);
+        buf.writeBoolean(settings.toolRequired);
+        buf.writeBoolean(settings.randomTicks);
+        buf.writeFloat(settings.slipperiness);
+        buf.writeFloat(settings.velocityMultiplier);
+        buf.writeFloat(settings.jumpVelocityMultiplier);
+
+        buf.writeBoolean(settings.lootTableId != null);
+        if (settings.lootTableId != null) {
+            buf.writeIdentifier(settings.lootTableId);
+        }
+
+        buf.writeBoolean(settings.opaque);
+        buf.writeBoolean(settings.isAir);
+        buf.writeBoolean(settings.dynamicBounds);
     }
 
     public static AbstractBlock.Settings readBlockSettings(PacketByteBuf buf) {
@@ -214,8 +232,25 @@ public class SimpleSerializers {
         return new StatusEffectInstance(effect, duration, amplifier, ambient, showParticles, showIcon);
     }
 
+    @SuppressWarnings("deprecation")
     public static void writeItemSettings(PacketByteBuf buf, Item.Settings settings) {
-        ((InternalWritable) settings).dynreg$write(buf);
+        buf.writeVarInt(settings.maxCount);
+        buf.writeVarInt(settings.maxDamage);
+
+        buf.writeBoolean(settings.recipeRemainder != null);
+        if (settings.recipeRemainder != null) {
+            buf.writeIdentifier(settings.recipeRemainder.getRegistryEntry().registryKey().getValue());
+        }
+
+        buf.writeString(settings.group == null ? "" : settings.group.getName());
+        buf.writeString(NamedEntries.RARITIES.inverse().get(settings.rarity));
+
+        buf.writeBoolean(settings.foodComponent != null);
+        if (settings.foodComponent != null) {
+            SimpleSerializers.writeFoodComponent(buf, settings.foodComponent);
+        }
+
+        buf.writeBoolean(settings.fireproof);
     }
 
     public static Item.Settings readItemSettings(PacketByteBuf buf) {

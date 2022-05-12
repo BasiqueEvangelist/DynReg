@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(BlockApiLookupImpl.class)
+@Mixin(value = BlockApiLookupImpl.class, remap = false)
 public interface BlockApiLookupImplAccessor {
     @Accessor
     static ApiLookupMap<BlockApiLookup<?, ?>> getLOOKUPS() {

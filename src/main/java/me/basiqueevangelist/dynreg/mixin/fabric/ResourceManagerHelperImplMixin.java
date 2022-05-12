@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.Map;
 
-@Mixin(ResourceManagerHelperImpl.class)
+@Mixin(value = ResourceManagerHelperImpl.class, remap = false)
 public class ResourceManagerHelperImplMixin {
     @Shadow @Final private static Map<ResourceType, ResourceManagerHelperImpl> registryMap;
 
