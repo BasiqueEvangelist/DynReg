@@ -1,5 +1,5 @@
 package me.basiqueevangelist.dynreg.access;
 
-public interface ExtendedIdList<T> {
-    void dynreg$remove(T value);
+public interface ExtendedIdList {
+    void dynreg$clear();
 }

@@ -264,7 +264,7 @@ public class SimpleSerializers {
         ItemGroup group = null;
         String groupName = buf.readString();
         if (!groupName.equals(""))
-            group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.id.equals(groupName)).findAny().orElseThrow();
+            group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(groupName)).findAny().orElseThrow();
 
         Rarity rarity = NamedEntries.RARITIES.get(buf.readString());
 

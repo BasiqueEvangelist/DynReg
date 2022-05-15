@@ -15,7 +15,6 @@ import java.util.function.Function;
 @Mixin(IdListPalette.class)
 public class IdListPaletteMixin<T> implements CleanablePalette<T>, ExtendedIdListPalette {
     private RemovedStateIdList dynreg$removedBlockList = new RemovedStateIdList();
-    private int dynreg$version = BlockFixer.BLOCKS_VERSION.getVersion();
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> defaultElement) {
@@ -37,7 +36,6 @@ public class IdListPaletteMixin<T> implements CleanablePalette<T>, ExtendedIdLis
 
     @Override
     public void dynreg$updateVersion() {
-        dynreg$version = BlockFixer.BLOCKS_VERSION.getVersion();
         dynreg$removedBlockList.getRemovedStateIds().clear();
     }
 

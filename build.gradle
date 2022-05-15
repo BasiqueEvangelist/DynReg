@@ -81,6 +81,7 @@ dependencies {
 	annotationProcessor sourceSets.ap.runtimeClasspath
 
 	modCompileOnly "maven.modrinth:lithium:${project.lithium_version}"
+	modLocalRuntime "maven.modrinth:lazydfu:0.1.2"
 
 	apImplementation "com.squareup:javapoet:1.13.0"
 

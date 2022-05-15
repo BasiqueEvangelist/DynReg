@@ -5,7 +5,6 @@ import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.resource.Resource;
@@ -13,8 +12,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +21,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -66,7 +62,7 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
 
     @Override
     public CompletableFuture<Void> apply(Map<Identifier, RegistrationEntry> data, ResourceManager manager, Profiler profiler, Executor executor) {
-        DynamicRound round = DynamicRound.getRound(DynReg.SERVER);
+        DynamicRound round = new DynamicRound(DynReg.SERVER);
 
         for (var key : ADDED_ENTRIES) {
             round.removeEntry(key);

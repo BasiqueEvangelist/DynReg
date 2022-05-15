@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.round;
 
 import me.basiqueevangelist.dynreg.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.holder.EntryData;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -14,28 +15,33 @@ import java.util.*;
 public class EntryScanner implements EntryScanContext {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/EntryScanner");
 
-    private Collection<RegistrationEntry> entries;
-    private final Map<Identifier, Set<Identifier>> dependents = new HashMap<>();
-    private final Map<RegistryKey<?>, List<Identifier>> pendingDeps = new HashMap<>();
-    private final Map<RegistryKey<?>, Identifier> keyToEntry = new HashMap<>();
-    private Identifier currentEntry = null;
+    private final Map<Identifier, EntryData> entryDatas = new HashMap<>();
+    private final Map<RegistryKey<?>, List<EntryData>> pendingDeps = new HashMap<>();
+    private final Map<RegistryKey<?>, EntryData> keyToEntry = new HashMap<>();
+    private EntryData currentEntry = null;
 
     public EntryScanner(Collection<RegistrationEntry> entries) {
-        this.entries = entries;
+        for (RegistrationEntry entry : entries) {
+            entryDatas.put(entry.id(), new EntryData(entry));
+        }
     }
 
-    public Map<Identifier, Set<Identifier>> scan() {
-        for (var entry : entries) {
-            this.currentEntry = entry.id();
+    public Map<Identifier, EntryData> scan() {
+        for (var entry : entryDatas.values()) {
+            this.currentEntry = entry;
 
-            entry.scan(this);
+            try {
+                entry.entry().scan(this);
+            } catch (Exception e) {
+                LOGGER.error("Encountered error while scanning {}", entry.entry().id(), e);
+            }
         }
 
         if (!pendingDeps.isEmpty()) {
-            LOGGER.warn("Entry scanner");
+            LOGGER.warn("Entry scanner exited with pending dependencies");
         }
 
-        return dependents;
+        return entryDatas;
     }
 
     @Override
@@ -50,10 +56,11 @@ public class EntryScanner implements EntryScanContext {
         var pendingKeyDeps = pendingDeps.remove(key);
 
         if (pendingKeyDeps != null) {
-            for (Identifier pendingEntry : pendingKeyDeps) {
-                if (pendingEntry.equals(currentEntry)) continue;
+            for (EntryData pendingEntry : pendingKeyDeps) {
+                if (pendingEntry ==  currentEntry) continue;
 
-                dependents.computeIfAbsent(currentEntry, unused -> new HashSet<>()).add(pendingEntry);
+                currentEntry.dependents().add(pendingEntry);
+                pendingEntry.dependencies().add(currentEntry);
             }
         }
 
@@ -62,7 +69,13 @@ public class EntryScanner implements EntryScanContext {
 
     @Override
     public void announceDependency(Identifier entryId) {
-        dependents.computeIfAbsent(entryId, unused -> new HashSet<>()).add(currentEntry);
+        var dependency = entryDatas.get(entryId);
+
+        if (dependency == null)
+            throw new NoSuchElementException("Entry '" + entryId + "' doesn't exist");
+
+        dependency.dependents().add(currentEntry);
+        currentEntry.dependencies().add(dependency);
     }
 
     private class Builder implements ScanBuilder {
@@ -87,7 +100,8 @@ public class EntryScanner implements EntryScanContext {
             if (otherEntry != null) {
                 if (otherEntry.equals(currentEntry)) return this;
 
-                dependents.computeIfAbsent(otherEntry, unused -> new HashSet<>()).add(currentEntry);
+                otherEntry.dependents().add(currentEntry);
+                currentEntry.dependencies().add(otherEntry);
             } else {
                 pendingDeps.computeIfAbsent(key, unused -> new ArrayList<>()).add(currentEntry);
             }

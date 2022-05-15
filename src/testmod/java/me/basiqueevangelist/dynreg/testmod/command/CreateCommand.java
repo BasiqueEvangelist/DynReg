@@ -34,7 +34,7 @@ public class CreateCommand {
     }
 
     private static int createItem(CommandContext<ServerCommandSource> ctx) {
-        DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
+        DynamicRound round = new DynamicRound(ctx.getSource().getServer());
         Identifier id = IdentifierArgumentType.getIdentifier(ctx, "entry");
 
         round.addEntry(new SimpleItemEntry(id, new Item.Settings().group(ItemGroup.MISC)));
@@ -49,7 +49,7 @@ public class CreateCommand {
     private static int createBlock(CommandContext<ServerCommandSource> ctx) {
         Identifier id = IdentifierArgumentType.getIdentifier(ctx, "entry");
 
-        DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
+        DynamicRound round = new DynamicRound(ctx.getSource().getServer());
         round.addEntry(new SimpleBlockEntry(id, AbstractBlock.Settings.of(Material.WOOD, MapColor.BLACK), new Item.Settings().group(ItemGroup.MISC)));
         round.run();
 

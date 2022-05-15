@@ -30,11 +30,10 @@ public final class LoadedEntryHolder {
 
                 sender.sendPacket(packet);
             } else {
-                sender.sendPacket(DynRegNetworking.START_TIMER_PACKET);
+                sender.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
             }
 
             RegistrySyncManager.sendPacket(server, handler.player);
-            sender.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
         });
     }
 

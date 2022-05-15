@@ -6,12 +6,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import me.basiqueevangelist.dynreg.testmod.util.CommandUtils;
 import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -28,10 +25,10 @@ public class DeleteCommand {
         );
     }
 
-    private static int removeEntry(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private static int removeEntry(CommandContext<ServerCommandSource> ctx) {
         Identifier entryId = IdentifierArgumentType.getIdentifier(ctx, "entry");
 
-        DynamicRound round = DynamicRound.getRound(ctx.getSource().getServer());
+        DynamicRound round = new DynamicRound(ctx.getSource().getServer());
         round.removeEntry(entryId);
         round.run();
 

@@ -7,18 +7,19 @@ import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import me.basiqueevangelist.dynreg.util.TopSort;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
-import org.jetbrains.annotations.Nullable;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,36 +27,40 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class DynamicRound {
-    private static @Nullable DynamicRound currentRound;
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DynamicRound");
 
-    private final List<Identifier> removedEntries = new ArrayList<>();
+    private final List<Identifier> removedEntryIds = new ArrayList<>();
     private final Map<Identifier, RegistrationEntry> addedEntries = new HashMap<>();
     private final CompletableFuture<Void> roundEnd = new CompletableFuture<>();
+    private final List<Runnable> tasks = new ArrayList<>();
     private final MinecraftServer server;
-    private boolean isScheduled = false;
+    private final /* MinecraftClient */ Object client;
 
     private boolean reloadDataPacks = true;
     private boolean reloadResourcePacks = true;
 
-    private DynamicRound(MinecraftServer server) {
+    public DynamicRound(MinecraftServer server) {
         this.server = server;
+        this.client = null;
     }
 
-    public static DynamicRound getRound(MinecraftServer server) {
-        if (currentRound == null) {
-            currentRound = new DynamicRound(server);
-        }
-
-        return currentRound;
+    @Environment(EnvType.CLIENT)
+    public DynamicRound(MinecraftClient client) {
+        this.server = null;
+        this.client = client;
+        this.reloadDataPacks = false;
     }
 
     public void removeEntry(Identifier id) {
-        removedEntries.add(id);
+        removedEntryIds.add(id);
     }
 
     public void addEntry(RegistrationEntry entry) {
         addedEntries.put(entry.id(), entry);
+    }
+
+    public void addTask(Runnable task) {
+        tasks.add(task);
     }
 
     public void noDataPackReload() {
@@ -71,104 +76,126 @@ public class DynamicRound {
     }
 
     public void run() {
-        if (isScheduled) return;
-        isScheduled = true;
+        try {
+            LOGGER.info("Starting dynamic round");
+            long time = System.nanoTime();
 
-        if (server == null)
-            doRun();
-        else
-            server.execute(this::doRun);
-    }
-
-    private void doRun() {
-        LOGGER.info("Starting dynamic round");
-        long time = System.nanoTime();
-        currentRound = null;
-
-        var idToEntry = new HashMap<Identifier, RegistrationEntry>();
-
-        for (var entry : addedEntries.values()) {
-            idToEntry.put(entry.id(), entry);
-        }
-
-        for (Registry<?> registry : Registry.REGISTRIES) {
-            RegistryUtils.unfreeze(registry);
-        }
-
-        for (Identifier oldEntryId : removedEntries) {
-            RoundInternals.removeEntry(oldEntryId);
-        }
-
-        EntryScanner scanner = new EntryScanner(addedEntries.values());
-
-        var deps = scanner.scan();
-        var visited = new HashSet<Identifier>();
-        var visiting = new HashSet<Identifier>();
-        var order = new ArrayList<Identifier>();
-
-        for (var entry : addedEntries.values()) {
-            if (!visited.contains(entry.id()) && TopologicalSorts.sort(deps, visited, visiting, order::add, entry.id())) {
-                LOGGER.warn("Entry order cycle!");
+            for (Registry<?> registry : Registry.REGISTRIES) {
+                RegistryUtils.unfreeze(registry);
             }
 
-        }
+            var removedEntries = new ArrayList<EntryData>();
 
-        Collections.reverse(order);
+            for (Identifier oldEntryId : removedEntryIds) {
+                var entry = LoadedEntryHolder.getEntries().get(oldEntryId);
 
-        for (var entryId : order) {
-            RoundInternals.registerEntry(idToEntry.get(entryId));
-        }
+                if (entry == null) {
+                    LOGGER.warn("Removed entry {} was already removed", oldEntryId);
+                    continue;
+                }
 
-        for (Registry<?> registry : Registry.REGISTRIES) {
-            registry.freeze();
-        }
+                removedEntries.add(entry);
+            }
 
-        if (server == null) {
-            LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
-            return;
-        }
-
-        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntries, addedEntries.values());
-        for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-            if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntries.size() > 0))
-                player.networkHandler.sendPacket(dataPacket);
-            else
-                player.networkHandler.sendPacket(DynRegNetworking.START_TIMER_PACKET);
-
-            RegistrySyncManager.sendPacket(server, player);
-
-            if (reloadResourcePacks)
-                player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
-            else
-                player.networkHandler.sendPacket(DynRegNetworking.STOP_TIMER_PACKET);
-        }
-
-        if (reloadDataPacks) {
-            ResourcePackManager resourcePackManager = server.getDataPackManager();
-            SaveProperties saveProperties = server.getSaveProperties();
-            Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
-            resourcePackManager.scanPacks();
-            Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
-            Collection<String> disabledDataPacks = saveProperties.getDataPackSettings().getDisabled();
-
-            for(String string : resourcePackManager.getNames()) {
-                if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {
-                    dataPacks.add(string);
+            for (int i = 0; i < removedEntries.size(); i++) {
+                for (var dependent : removedEntries.get(i).dependents()) {
+                    if (!removedEntries.contains(dependent))
+                        removedEntries.add(dependent);
                 }
             }
 
-            var reloadFuture = server.reloadResources(dataPacks);
-            reloadFuture.thenAccept(unused -> {
+            for (var removedEntry : removedEntries) {
+                for (var dependency : removedEntry.dependencies())
+                    dependency.dependents().remove(removedEntry);
+
+                removedEntry.entry().onRemoved();
+
+                for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
+                    RegistryUtils.remove(registeredKey);
+                }
+
+                LoadedEntryHolder.removeEntry(removedEntry.entry().id());
+            }
+
+            EntryScanner scanner = new EntryScanner(addedEntries.values());
+
+            var entries = scanner.scan();
+            var cycle = new MutableBoolean(false);
+            var order = TopSort.topSort(entries.values(), EntryData::dependents, cycle);
+
+            for (var entry : order) {
+                try {
+                    entry.entry().register(entry.createRegistrationContext());
+
+                    LoadedEntryHolder.addEntry(entry);
+                } catch (Exception e) {
+                    LOGGER.error("Encountered error while registering {}", entry.entry().id(), e);
+                }
+            }
+
+            for (var task : tasks) {
+                task.run();
+            }
+
+            for (Registry<?> registry : Registry.REGISTRIES) {
+                registry.freeze();
+            }
+
+            CompletableFuture<Void> reloadFuture = null;
+
+            if (server != null) {
+                var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntryIds, addedEntries.values());
+                for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
+                    if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntryIds.size() > 0))
+                        player.networkHandler.sendPacket(dataPacket);
+                    else
+                        player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
+
+                    RegistrySyncManager.sendPacket(server, player);
+
+                }
+
+                if (reloadDataPacks) {
+                    ResourcePackManager resourcePackManager = server.getDataPackManager();
+                    SaveProperties saveProperties = server.getSaveProperties();
+                    Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
+                    resourcePackManager.scanPacks();
+                    Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
+                    Collection<String> disabledDataPacks = saveProperties.getDataPackSettings().getDisabled();
+
+                    for (String string : resourcePackManager.getNames()) {
+                        if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {
+                            dataPacks.add(string);
+                        }
+                    }
+
+                    reloadFuture = server.reloadResources(dataPacks);
+
+                }
+            }
+
+            if (client != null && reloadResourcePacks) {
+                reloadFuture = DynRegClient.reloadClientResources(client);
+            }
+
+            if (reloadFuture != null) {
+                reloadFuture.thenAccept(unused -> {
+                    LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
+                    roundEnd.complete(null);
+                });
+                reloadFuture.exceptionally(e -> {
+                    LOGGER.warn("Failed to reload resources after round", e);
+                    roundEnd.completeExceptionally(e);
+                    return null;
+                });
+            } else {
                 LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
                 roundEnd.complete(null);
-            });
-            reloadFuture.exceptionally(e -> {
-                LOGGER.warn("Failed to reload resources after round", e);
-                roundEnd.completeExceptionally(e);
-                return null;
-            });
-        } else {
-            LOGGER.info("Finished dynamic round after {} seconds", (System.nanoTime() - time) / 1000000000D);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Encountered error while running dynamic round", e);
+            roundEnd.completeExceptionally(e);
+            throw e;
         }
     }
 }

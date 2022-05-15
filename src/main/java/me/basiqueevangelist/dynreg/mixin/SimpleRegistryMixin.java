@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
@@ -19,7 +20,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -56,11 +59,21 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         if (entry.value() instanceof RegistryEntryDeletedCallback<?> callback)
             ((RegistryEntryDeletedCallback<T>)callback).onEntryDeleted(rawId, entry);
     });
+    private final Event<RegistryFrozenCallback<T>> dynreg$registryFrozenEvent = EventFactory.createArrayBacked(RegistryFrozenCallback.class, callbacks -> () -> {
+        for (var callback : callbacks) {
+            callback.onRegistryFrozen();
+        }
+    });
     private final IntList dynreg$freeIds = new IntArrayList();
 
     @Override
     public Event<RegistryEntryDeletedCallback<T>> dynreg$getEntryDeletedEvent() {
         return dynreg$entryDeletedEvent;
+    }
+
+    @Override
+    public Event<RegistryFrozenCallback<T>> dynreg$getRegistryFrozenEvent() {
+        return dynreg$registryFrozenEvent;
     }
 
     @Override
@@ -81,12 +94,13 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
 
         rawIdToEntry.set(rawId, null);
-        entryToRawId.removeInt(entry);
+        entryToRawId.removeInt(entry.value());
         idToEntry.remove(key.getValue());
         keyToEntry.remove(key);
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
         dynreg$freeIds.add(rawId);
+        cachedEntries = null;
     }
 
     @Redirect(method = "add", at = @At(value = "FIELD", target = "Lnet/minecraft/util/registry/SimpleRegistry;nextId:I"))
@@ -105,5 +119,10 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
             this.unfrozenValueToEntry = new IdentityHashMap<>();
 
         cachedEntries = null;
+    }
+
+    @Inject(method = "freeze", at = @At("HEAD"))
+    private void onFreeze(CallbackInfoReturnable<Registry<T>> cir) {
+        dynreg$registryFrozenEvent.invoker().onRegistryFrozen();
     }
 }

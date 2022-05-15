@@ -30,9 +30,10 @@ public final class ReactiveEntryTracker {
             event.addPhaseOrdering(Event.DEFAULT_PHASE, END_PHASE);
 
             event.register(START_PHASE, (rawId, id, object) -> {
-                var entry = (RegistryEntry.Reference<?>) registry.getEntry(rawId).orElseThrow();
+                var entry = (RegistryEntry.Reference<?>) registry.getEntry(rawId).orElse(null);
 
-                preObjectRegistered(registry, entry, true);
+                if (entry != null)
+                    preObjectRegistered(registry, entry, true);
             });
 
             event.register(END_PHASE, (rawId, id, object) -> postObjectRegistered(registry));
@@ -52,6 +53,7 @@ public final class ReactiveEntryTracker {
     public static void postObjectRegistered(Registry<?> registry) {
         List<RegistryEntry.Reference<?>> currentStack = STACKS.computeIfAbsent(registry, unused -> new ArrayList<>());
 
-        currentStack.remove(currentStack.size() - 1);
+        if (currentStack.size() > 0)
+            currentStack.remove(currentStack.size() - 1);
     }
 }

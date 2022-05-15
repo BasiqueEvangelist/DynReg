@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.client.event;
 
-import me.basiqueevangelist.dynreg.client.round.ClientDynamicRound;
+import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
@@ -11,5 +11,5 @@ public interface PostLeaveRoundCallback {
         }
     });
 
-    void onClientDisconnect(ClientDynamicRound round);
+    void onClientDisconnect(DynamicRound round);
 }
