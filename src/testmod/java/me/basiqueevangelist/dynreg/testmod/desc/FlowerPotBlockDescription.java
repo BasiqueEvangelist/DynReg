@@ -7,7 +7,9 @@ import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
 import me.basiqueevangelist.dynreg.network.SimpleSerializers;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
+import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -18,41 +20,41 @@ public class FlowerPotBlockDescription implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("flower_pot_block");
 
     private final Identifier id;
-    private final Identifier contentId;
+    private final LazyEntryRef<Block> content;
     private final AbstractBlock.Settings settings;
 
     public FlowerPotBlockDescription(Identifier id, Identifier contentId, AbstractBlock.Settings settings) {
         this.id = id;
         this.settings = settings;
-        this.contentId = contentId;
+        this.content = new LazyEntryRef<>(Registry.BLOCK, contentId);
     }
 
     public FlowerPotBlockDescription(Identifier id, PacketByteBuf buf) {
         this.id = id;
-        this.contentId = buf.readIdentifier();
+        this.content = LazyEntryRef.read(buf, Registry.BLOCK);
         this.settings = SimpleSerializers.readBlockSettings(buf);
     }
 
     public FlowerPotBlockDescription(Identifier id, JsonObject obj) {
         this.id = id;
-        this.contentId = new Identifier(JsonHelper.getString(obj, "content"));
+        this.content = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(obj, "content")));
         this.settings = SimpleReaders.readBlockSettings(obj);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registry.BLOCK, id)
-            .dependency(Registry.BLOCK, contentId);
+            .dependency(content);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
-        ctx.register(Registry.BLOCK, id, new FlowerPotBlock(Registry.BLOCK.get(contentId), settings));
+        ctx.register(Registry.BLOCK, id, new FlowerPotBlock(content.get(), settings));
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeIdentifier(contentId);
+        buf.writeIdentifier(content.id());
         SimpleSerializers.writeBlockSettings(buf, settings);
     }
 
