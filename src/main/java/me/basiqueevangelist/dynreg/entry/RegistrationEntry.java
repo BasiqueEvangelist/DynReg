@@ -20,6 +20,10 @@ public interface RegistrationEntry {
 
     Identifier id();
 
+    default boolean isSynced() {
+        return true;
+    }
+
     default Identifier typeId() {
         return RegistrationEntries.getEntryId(this);
     }

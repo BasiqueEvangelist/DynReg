@@ -84,6 +84,7 @@ public class DynamicRound {
                 RegistryUtils.unfreeze(registry);
             }
 
+            var removedSyncedEntryIds = new ArrayList<Identifier>();
             var removedEntries = new ArrayList<EntryData>();
 
             for (Identifier oldEntryId : removedEntryIds) {
@@ -108,6 +109,9 @@ public class DynamicRound {
                 for (var dependency : removedEntry.dependencies())
                     dependency.dependents().remove(removedEntry);
 
+                if (removedEntry.entry().isSynced())
+                    removedSyncedEntryIds.add(removedEntry.entry().id());
+
                 removedEntry.entry().onRemoved();
 
                 for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
@@ -122,9 +126,13 @@ public class DynamicRound {
             var entries = scanner.scan();
             var cycle = new MutableBoolean(false);
             var order = TopSort.topSort(entries.values(), EntryData::dependents, cycle);
+            var addedSyncedEntries = new ArrayList<RegistrationEntry>();
 
             for (var entry : order) {
                 try {
+                    if (entry.entry().isSynced())
+                        addedSyncedEntries.add(entry.entry());
+
                     entry.entry().register(entry.createRegistrationContext());
 
                     LoadedEntryHolder.addEntry(entry);
@@ -144,7 +152,7 @@ public class DynamicRound {
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
-                var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedEntryIds, addedEntries.values());
+                var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntryIds, addedSyncedEntries);
                 for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
                     if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntryIds.size() > 0))
                         player.networkHandler.sendPacket(dataPacket);

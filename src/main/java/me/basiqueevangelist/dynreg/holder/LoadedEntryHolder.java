@@ -29,7 +29,12 @@ public final class LoadedEntryHolder {
 
             if (!isHost) {
                 // FIX: make this less stream-y.
-                Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(Collections.emptyList(), ADDED_ENTRIES.values().stream().map(EntryData::entry).toList());
+                Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(Collections.emptyList(), ADDED_ENTRIES
+                    .values()
+                    .stream()
+                    .map(EntryData::entry)
+                    .filter(RegistrationEntry::isSynced)
+                    .toList());
 
                 sender.sendPacket(packet);
             } else {
