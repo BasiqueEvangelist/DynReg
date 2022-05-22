@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
+import com.google.common.collect.BiMap;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -9,16 +10,16 @@ import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
+import me.basiqueevangelist.dynreg.util.StackTracingMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
+import net.fabricmc.fabric.mixin.registry.sync.MixinIdRegistry;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.*;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -30,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Mixin(SimpleRegistry.class)
+@Mixin(value = SimpleRegistry.class, priority = 1100)
 public abstract class SimpleRegistryMixin<T> extends Registry<T> implements ExtendedRegistry<T> {
     @Shadow private boolean frozen;
     @Shadow @Final @Nullable private Function<T, RegistryEntry.Reference<T>> valueToEntryFunction;
@@ -44,6 +45,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
 
     @Shadow @Final private Object2IntMap<T> entryToRawId;
     @Shadow @Final private ObjectList<RegistryEntry.Reference<T>> rawIdToEntry;
+    @Mutable
     @Shadow @Final private Map<Identifier, RegistryEntry.Reference<T>> idToEntry;
     @Shadow @Final private Map<RegistryKey<T>, RegistryEntry.Reference<T>> keyToEntry;
     @Shadow @Final private Map<T, RegistryEntry.Reference<T>> valueToEntry;
@@ -51,6 +53,12 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     @Shadow private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList;
     @Shadow @Nullable private List<RegistryEntry.Reference<T>> cachedEntries;
     @Shadow private int nextId;
+
+    @SuppressWarnings("ReferenceToMixin")
+    @Shadow @Dynamic(mixin = MixinIdRegistry.class) private Object2IntMap<Identifier> fabric_prevIndexedEntries;
+    @SuppressWarnings("ReferenceToMixin")
+    @Shadow @Dynamic(mixin = MixinIdRegistry.class) private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
+
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
         for (var callback : callbacks) {
             callback.onEntryDeleted(rawId, entry);
@@ -100,6 +108,9 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
         dynreg$freeIds.add(rawId);
+        fabric_prevEntries.remove(key.getValue());
+        fabric_prevIndexedEntries.removeInt(key.getValue());
+
         cachedEntries = null;
     }
 
@@ -124,5 +135,10 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     @Inject(method = "freeze", at = @At("HEAD"))
     private void onFreeze(CallbackInfoReturnable<Registry<T>> cir) {
         dynreg$registryFrozenEvent.invoker().onRegistryFrozen();
+    }
+
+    @Override
+    public void dynreg$installStackTracingMap() {
+        this.idToEntry = new StackTracingMap<>(this.idToEntry);
     }
 }

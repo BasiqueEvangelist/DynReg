@@ -12,4 +12,6 @@ public interface ExtendedRegistry<T> {
     void dynreg$remove(RegistryKey<T> key);
 
     void dynreg$unfreeze();
+
+    void dynreg$installStackTracingMap();
 }

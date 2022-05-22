@@ -1,9 +1,10 @@
 package me.basiqueevangelist.dynreg.holder;
 
+import me.basiqueevangelist.dynreg.DynReg;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.minecraft.network.Packet;
 import net.minecraft.util.Identifier;
 
@@ -13,13 +14,15 @@ import java.util.Map;
 
 public final class LoadedEntryHolder {
     private static final Map<Identifier, EntryData> ADDED_ENTRIES = new LinkedHashMap<>();
+    private static final Identifier ROUND_SYNC_PHASE = DynReg.id("round_sync");
 
     private LoadedEntryHolder() {
 
     }
 
     public static void init() {
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+        ServerPlayConnectionEvents.JOIN.addPhaseOrdering(ROUND_SYNC_PHASE, Event.DEFAULT_PHASE);
+        ServerPlayConnectionEvents.JOIN.register(ROUND_SYNC_PHASE, (handler, sender, server) -> {
             if (ADDED_ENTRIES.size() == 0) return;
 
             boolean isHost = server.isHost(handler.player.getGameProfile());
@@ -32,8 +35,6 @@ public final class LoadedEntryHolder {
             } else {
                 sender.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
             }
-
-            RegistrySyncManager.sendPacket(server, handler.player);
         });
     }
 
