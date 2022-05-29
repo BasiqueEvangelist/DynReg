@@ -152,15 +152,17 @@ public class DynamicRound {
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
-                var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntryIds, addedSyncedEntries);
-                for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-                    if (!server.isHost(player.getGameProfile()) && (addedEntries.size() > 0 || removedEntryIds.size() > 0))
-                        player.networkHandler.sendPacket(dataPacket);
-                    else
-                        player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
+                if ((addedSyncedEntries.size() > 0 || removedSyncedEntryIds.size() > 0)) {
+                    var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntryIds, addedSyncedEntries);
+                    for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
+                        if (!server.isHost(player.getGameProfile()))
+                            player.networkHandler.sendPacket(dataPacket);
+                        else
+                            player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
 
-                    RegistrySyncManager.sendPacket(server, player);
+                        RegistrySyncManager.sendPacket(server, player);
 
+                    }
                 }
 
                 if (reloadDataPacks) {
