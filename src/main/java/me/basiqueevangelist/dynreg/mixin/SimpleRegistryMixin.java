@@ -108,8 +108,12 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
         dynreg$freeIds.add(rawId);
-        fabric_prevEntries.remove(key.getValue());
-        fabric_prevIndexedEntries.removeInt(key.getValue());
+
+        if (fabric_prevEntries != null)
+            fabric_prevEntries.remove(key.getValue());
+
+        if (fabric_prevIndexedEntries != null)
+            fabric_prevIndexedEntries.removeInt(key.getValue());
 
         cachedEntries = null;
     }
