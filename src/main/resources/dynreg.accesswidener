@@ -51,3 +51,5 @@ accessible field net/minecraft/block/AbstractBlock$Settings lootTableId Lnet/min
 accessible field net/minecraft/block/AbstractBlock$Settings opaque Z
 accessible field net/minecraft/block/AbstractBlock$Settings isAir Z
 accessible field net/minecraft/block/AbstractBlock$Settings dynamicBounds Z
+accessible field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
+mutable field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;

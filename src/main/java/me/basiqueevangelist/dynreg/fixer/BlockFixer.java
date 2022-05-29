@@ -11,6 +11,7 @@ import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -75,6 +76,10 @@ public final class BlockFixer {
             ClearUtils.clearMaps(state,
                 InfestedBlock.REGULAR_TO_INFESTED_STATE,
                 InfestedBlock.INFESTED_TO_REGULAR_STATE);
+        }
+
+        for (BlockEntityType<?> beType : Registry.BLOCK_ENTITY_TYPE) {
+            beType.blocks = ClearUtils.mutableifyAndRemove(beType.blocks, block);
         }
 
         Oxidizable.OXIDATION_LEVEL_INCREASES.get().remove(block);
