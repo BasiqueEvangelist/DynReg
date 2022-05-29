@@ -2,12 +2,11 @@ package me.basiqueevangelist.dynreg.testmod.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import me.basiqueevangelist.dynreg.testmod.util.CommandUtils;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -32,7 +31,7 @@ public class DeleteCommand {
         round.removeEntry(entryId);
         round.run();
 
-        ctx.getSource().sendFeedback(new LiteralText("Removed " + entryId), true);
+        ctx.getSource().sendFeedback(Text.of("Removed " + entryId), true);
 
         return 0;
     }

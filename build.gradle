@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 	id 'io.github.juuxel.loom-quiltflower' version '1.7.2'
 }
@@ -74,8 +74,8 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:qsl_base:${project.quilt_base_version}+${project.minecraft_version}"
-	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:registry:1.0.0+${project.minecraft_version}"
+	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:qsl_base:${project.quilt_base_version}+1.18.2"
+	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:registry:1.0.0+1.18.2"
 
 	compileOnly sourceSets.ap.output
 	annotationProcessor sourceSets.ap.runtimeClasspath

@@ -10,7 +10,7 @@ import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -19,8 +19,8 @@ import net.minecraft.util.registry.RegistryKey;
 import java.util.concurrent.CompletableFuture;
 
 public final class CommandUtils {
-    private static final DynamicCommandExceptionType NO_SUCH_REGISTRY = new DynamicCommandExceptionType(name -> new LiteralText(name + " is not a valid registry!"));
-    private static final Dynamic2CommandExceptionType NO_SUCH_ENTRY = new Dynamic2CommandExceptionType((registry, entry) -> new LiteralText(entry + " is not an entry of " + registry + "!"));
+    private static final DynamicCommandExceptionType NO_SUCH_REGISTRY = new DynamicCommandExceptionType(name -> Text.of(name + " is not a valid registry!"));
+    private static final Dynamic2CommandExceptionType NO_SUCH_ENTRY = new Dynamic2CommandExceptionType((registry, entry) -> Text.of(entry + " is not an entry of " + registry + "!"));
 
     private CommandUtils() {
 

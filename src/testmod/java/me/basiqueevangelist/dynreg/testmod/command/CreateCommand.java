@@ -12,7 +12,7 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -41,7 +41,7 @@ public class CreateCommand {
 
         round.run();
 
-        ctx.getSource().sendFeedback(new LiteralText("Created item " + id), false);
+        ctx.getSource().sendFeedback(Text.of("Created item " + id), false);
 
         return 1;
     }
@@ -53,7 +53,7 @@ public class CreateCommand {
         round.addEntry(new SimpleBlockEntry(id, AbstractBlock.Settings.of(Material.WOOD, MapColor.BLACK), new Item.Settings().group(ItemGroup.MISC)));
         round.run();
 
-        ctx.getSource().sendFeedback(new LiteralText("Created block " + id), false);
+        ctx.getSource().sendFeedback(Text.of("Created block " + id), false);
 
         return 1;
     }

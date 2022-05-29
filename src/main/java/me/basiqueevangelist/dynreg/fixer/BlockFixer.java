@@ -14,7 +14,7 @@ import net.minecraft.block.*;
 import net.minecraft.item.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,7 +67,7 @@ public final class BlockFixer {
             }
 
             ClearUtils.clearMapKeys(state,
-                PointOfInterestType.BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE);
+                PointOfInterestTypes.POI_STATES_TO_TYPE);
 
             ClearUtils.clearMapValues(state,
                 ShovelItem.PATH_STATES);

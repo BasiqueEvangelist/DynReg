@@ -6,7 +6,7 @@ import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockDescription;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
 
 public class DynRegTest implements ModInitializer {
@@ -18,7 +18,7 @@ public class DynRegTest implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, dedicated) -> {
             DeleteCommand.register(dispatcher);
             CreateCommand.register(dispatcher);
         });

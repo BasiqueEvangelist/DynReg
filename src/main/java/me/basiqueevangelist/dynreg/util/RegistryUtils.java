@@ -26,7 +26,7 @@ public final class RegistryUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> Registry<T> getRegistryOf(RegistryKey<T> key) {
-        return (Registry<T>) Registry.REGISTRIES.getOrEmpty(key.method_41185()).orElseThrow();
+        return (Registry<T>) Registry.REGISTRIES.getOrEmpty(key.getRegistry()).orElseThrow();
     }
 
     @SuppressWarnings("unchecked")

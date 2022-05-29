@@ -39,20 +39,20 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
         return CompletableFuture.supplyAsync(() -> {
             Map<Identifier, RegistrationEntry> descriptions = new HashMap<>();
 
-            var resources = manager.findResources("entries", path -> path.endsWith(".json"));
+            var resources = manager.findResources("entries", id -> id.getPath().endsWith(".json"));
 
-            for (Identifier resourceId : resources) {
-                var realId = new Identifier(resourceId.getNamespace(), resourceId.getPath().substring("entries".length() + 1, resourceId.getPath().length() - 5));
+            for (Map.Entry<Identifier, Resource> entry : resources.entrySet()) {
+                Identifier id = entry.getKey();
+                var realId = new Identifier(id.getNamespace(), id.getPath().substring("entries".length() + 1, id.getPath().length() - 5));
 
-                try (Resource resource = manager.getResource(resourceId);
-                     var br = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+                try (var br = new BufferedReader(new InputStreamReader(entry.getValue().getInputStream()))) {
                     JsonObject obj = JsonHelper.deserialize(br, true);
                     Identifier type = new Identifier(JsonHelper.getString(obj, "type"));
                     RegistrationEntry desc = EntryDescriptionReaders.getReader(type).apply(realId, obj);
 
                     descriptions.put(realId, desc);
                 } catch (IOException e) {
-                    LOGGER.error("Encountered error while loading {}", resourceId, e);
+                    LOGGER.error("Encountered error while loading {}", id, e);
                 }
             }
 
