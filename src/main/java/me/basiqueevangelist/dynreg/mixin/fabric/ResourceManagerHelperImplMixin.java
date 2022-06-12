@@ -18,7 +18,7 @@ import java.util.Map;
 public class ResourceManagerHelperImplMixin {
     @Shadow @Final private static Map<ResourceType, ResourceManagerHelperImpl> registryMap;
 
-    @Inject(method = "sort(Ljava/util/List;)V", at = @At("RETURN"), remap = false)
+    @Inject(method = "sort(Ljava/util/List;)V", at = @At("RETURN"))
     private void addRegistryEntryListener(List<ResourceReloader> listeners, CallbackInfo ci) {
         if (registryMap.get(ResourceType.SERVER_DATA) != (Object) this) return;
 

@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.mixin.fabric;
+package me.basiqueevangelist.dynreg.mixin.fabriccommon;
 
 import net.fabricmc.fabric.impl.lookup.custom.ApiProviderHashMap;
 import org.spongepowered.asm.mixin.Mixin;

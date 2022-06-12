@@ -76,6 +76,7 @@ dependencies {
 
 	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:qsl_base:${project.quilt_base_version}+1.18.2"
 	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:registry:1.0.0+1.18.2"
+	modCompileOnly "me.basiqueevangelist.repackaged-qsl.core:resource_loader:1.0.0+1.18.2"
 
 	compileOnly sourceSets.ap.output
 	annotationProcessor sourceSets.ap.runtimeClasspath

@@ -6,7 +6,7 @@ import me.basiqueevangelist.dynreg.access.ExtendedIdList;
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
-import me.basiqueevangelist.dynreg.mixin.fabric.BlockApiLookupImplAccessor;
+import me.basiqueevangelist.dynreg.mixin.fabriccommon.BlockApiLookupImplAccessor;
 import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import me.basiqueevangelist.dynreg.util.VersionTracker;

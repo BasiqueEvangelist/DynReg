@@ -2,6 +2,7 @@
     "required": true,
     "minVersion": "0.8",
     "package": "me.basiqueevangelist.dynreg.mixin",
+    "plugin": "me.basiqueevangelist.dynreg.mixin.Plugin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BlockMixin",
@@ -13,16 +14,17 @@
         "IdListMixin",
         "ItemStackMixin",
         "SimpleRegistryMixin",
-        "fabric.ApiProviderHashMapAccessor",
-        "fabric.BlockApiLookupImplAccessor",
-        "fabric.ItemApiLookupImplAccessor",
         "fabric.ResourceManagerHelperImplMixin",
+        "fabriccommon.ApiProviderHashMapAccessor",
+        "fabriccommon.BlockApiLookupImplAccessor",
+        "fabriccommon.ItemApiLookupImplAccessor",
         "palette.ArrayPaletteMixin",
         "palette.BiMapPaletteMixin",
+        "palette.BiomePaletteProviderMixin",
         "palette.IdListPaletteMixin",
         "palette.LithiumHashPaletteMixin",
-        "palette.BiomePaletteProviderMixin",
-        "palette.SingularPaletteMixin"
+        "palette.SingularPaletteMixin",
+        "quilt.ResourceLoaderImplMixin"
     ],
     "client": [
     ],

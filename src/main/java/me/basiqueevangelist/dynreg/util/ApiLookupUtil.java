@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.util;
 
-import me.basiqueevangelist.dynreg.mixin.fabric.ApiProviderHashMapAccessor;
+import me.basiqueevangelist.dynreg.mixin.fabriccommon.ApiProviderHashMapAccessor;
 import net.fabricmc.fabric.api.lookup.v1.custom.ApiProviderMap;
 
 import java.util.Map;

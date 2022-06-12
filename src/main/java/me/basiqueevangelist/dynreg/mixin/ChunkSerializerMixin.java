@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(ChunkSerializer.class)
 public class ChunkSerializerMixin {
-    @ModifyArg(method = {"<clinit>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/PalettedContainer;createCodec(Lnet/minecraft/util/collection/IndexedIterable;Lcom/mojang/serialization/Codec;Lnet/minecraft/world/chunk/PalettedContainer$PaletteProvider;Ljava/lang/Object;)Lcom/mojang/serialization/Codec;"))
+    @ModifyArg(method = {"<clinit>"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/PalettedContainer;method_44343(Lnet/minecraft/util/collection/IndexedIterable;Lcom/mojang/serialization/Codec;Lnet/minecraft/world/chunk/PalettedContainer$PaletteProvider;Ljava/lang/Object;)Lcom/mojang/serialization/Codec;"))
     private static IndexedIterable<BlockState> wrapIterable(IndexedIterable<BlockState> idList) {
         return new DefaultedIndexIterable<>(idList, Blocks.AIR.getDefaultState());
     }

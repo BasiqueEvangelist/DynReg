@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.mixin.fabric;
+package me.basiqueevangelist.dynreg.mixin.fabriccommon;
 
 import net.fabricmc.fabric.api.lookup.v1.custom.ApiLookupMap;
 import net.fabricmc.fabric.api.lookup.v1.custom.ApiProviderMap;
