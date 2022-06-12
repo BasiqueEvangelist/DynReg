@@ -19,7 +19,7 @@ repositories {
 	// for more information about repositories.
 	maven {
 		name 'Basiquemaven'
-		url 'https://porez.ml/maven'
+		url 'https://basique.top/maven'
 	}
 	maven {
 		url "https://api.modrinth.com/maven"

@@ -1,7 +1,5 @@
 package me.basiqueevangelist.dynreg.holder;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
@@ -12,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
 
 public final class DependencyManager {
     private static final Map<Registry<?>, DependencyManager> MANAGERS = new HashMap<>();
