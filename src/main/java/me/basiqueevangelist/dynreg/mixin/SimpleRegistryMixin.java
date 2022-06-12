@@ -92,11 +92,6 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
 
         RegistryEntry.Reference<T> entry = (RegistryEntry.Reference<T>) getEntry(key).orElseThrow();
 
-        ((DeletableObjectInternal) entry).dynreg$setDeleted(true);
-
-        if (entry.value() instanceof DeletableObjectInternal obj)
-            obj.dynreg$setDeleted(true);
-
         int rawId = entryToRawId.getInt(entry.value());
         dynreg$entryDeletedEvent.invoker().onEntryDeleted(rawId, entry);
         RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
