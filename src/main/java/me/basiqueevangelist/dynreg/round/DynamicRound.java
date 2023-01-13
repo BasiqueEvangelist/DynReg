@@ -6,11 +6,13 @@ import me.basiqueevangelist.dynreg.holder.EntryData;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.util.InfallibleCloseable;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import me.basiqueevangelist.dynreg.util.TopSort;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
@@ -36,8 +38,8 @@ public class DynamicRound {
     private final MinecraftServer server;
     private final /* MinecraftClient */ Object client;
 
-    private boolean reloadDataPacks = true;
-    private boolean reloadResourcePacks = true;
+    private boolean reloadDataPacks = false;
+//    private boolean reloadResourcePacks = false;
 
     public DynamicRound(MinecraftServer server) {
         this.server = server;
@@ -63,13 +65,16 @@ public class DynamicRound {
         tasks.add(task);
     }
 
-    public void noDataPackReload() {
-        reloadDataPacks = false;
+    public void dataPackReload() {
+        if (server == null)
+            throw new IllegalStateException("cannot force datapack on client");
+
+        reloadDataPacks = true;
     }
 
-    public void noResourcePackReload() {
-        reloadResourcePacks = false;
-    }
+//    public void resourcePackReload() {
+//        reloadResourcePacks = true;
+//    }
 
     public CompletableFuture<Void> getRoundEndFuture() {
         return roundEnd;
@@ -77,6 +82,12 @@ public class DynamicRound {
 
     public void run() {
         try {
+            InfallibleCloseable clientUnfreezer = () -> {};
+
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+                clientUnfreezer = DynRegClient.freezeClientThread();
+            }
+
             LOGGER.info("Starting dynamic round");
             long time = System.nanoTime();
 
@@ -149,6 +160,8 @@ public class DynamicRound {
                 registry.freeze();
             }
 
+            clientUnfreezer.close();
+
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
@@ -157,11 +170,8 @@ public class DynamicRound {
                     for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
                         if (!server.isHost(player.getGameProfile()))
                             player.networkHandler.sendPacket(dataPacket);
-                        else
-                            player.networkHandler.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
 
                         RegistrySyncManager.sendPacket(server, player);
-
                     }
                 }
 
@@ -184,9 +194,9 @@ public class DynamicRound {
                 }
             }
 
-            if (client != null && reloadResourcePacks) {
-                reloadFuture = DynRegClient.reloadClientResources(client);
-            }
+//            if (client != null && reloadResourcePacks) {
+//                reloadFuture = DynRegClient.reloadClientResources(client);
+//            }
 
             if (reloadFuture != null) {
                 reloadFuture.thenAccept(unused -> {

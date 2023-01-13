@@ -37,8 +37,6 @@ public final class LoadedEntryHolder {
                     .toList());
 
                 sender.sendPacket(packet);
-            } else {
-                sender.sendPacket(DynRegNetworking.RELOAD_RESOURCES_PACKET);
             }
         });
     }

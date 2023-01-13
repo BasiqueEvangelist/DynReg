@@ -15,19 +15,6 @@ public class DynRegClientNetworking {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/ClientNetworking");
 
     public static void init() {
-        ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.RELOAD_RESOURCES, ((client, handler, buf, responseSender) -> {
-            LOGGER.info("Applying dynamic round on client");
-            long recieveTime = System.nanoTime();
-            var future = client.reloadResources();
-            future.thenAccept(unused -> {
-                LOGGER.info("Applied dynamic round after {} seconds", (System.nanoTime() - recieveTime) / 1000000000D);
-            });
-            future.exceptionally(e -> {
-                LOGGER.warn("Failed to reload resources after round", e);
-                return null;
-            });
-        }));
-
         ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.ROUND_FINISHED, (client, handler, buf, responseSender) -> {
             try {
                 RegistrySyncManager.unmap();

@@ -15,7 +15,6 @@ public final class DynRegNetworking {
     }
 
     public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
-    public static Identifier RELOAD_RESOURCES = new Identifier("dynreg", "reload_resources");
 
     public static Packet<?> makeRoundFinishedPacket(Collection<Identifier> removedEntries, Collection<RegistrationEntry> addedEntries) {
         PacketByteBuf buf = PacketByteBufs.create();
@@ -34,6 +33,4 @@ public final class DynRegNetworking {
         }
         return ServerPlayNetworking.createS2CPacket(ROUND_FINISHED, buf);
     }
-
-    public static final Packet<?> RELOAD_RESOURCES_PACKET = ServerPlayNetworking.createS2CPacket(RELOAD_RESOURCES, PacketByteBufs.empty());
 }

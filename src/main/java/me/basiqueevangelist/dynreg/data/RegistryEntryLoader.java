@@ -74,8 +74,6 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
             ADDED_ENTRIES.add(entry.getKey());
         }
 
-        round.noDataPackReload();
-
         round.run();
 
         return CompletableFuture.completedFuture(null);
