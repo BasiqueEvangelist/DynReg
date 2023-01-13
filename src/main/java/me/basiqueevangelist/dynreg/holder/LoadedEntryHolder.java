@@ -1,6 +1,7 @@
 package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.DynReg;
+import me.basiqueevangelist.dynreg.client.DynRegClient;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -25,19 +26,26 @@ public final class LoadedEntryHolder {
         ServerPlayConnectionEvents.JOIN.register(ROUND_SYNC_PHASE, (handler, sender, server) -> {
             if (ADDED_ENTRIES.size() == 0) return;
 
+            boolean doResourceReload = server.getResourcePackProperties().isEmpty();
+
             boolean isHost = server.isHost(handler.player.getGameProfile());
 
-            if (!isHost) {
-                // FIX: make this less stream-y.
-                Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(Collections.emptyList(), ADDED_ENTRIES
-                    .values()
-                    .stream()
-                    .map(EntryData::entry)
-                    .flatMap(x -> Optional.ofNullable(x.toSynced(handler.player)).stream())
-                    .toList());
+            if (isHost) {
+                if (doResourceReload)
+                    DynRegClient.reloadClientResources();
 
-                sender.sendPacket(packet);
+                return;
             }
+
+            // FIX: make this less stream-y.
+            Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(doResourceReload, Collections.emptyList(), ADDED_ENTRIES
+                .values()
+                .stream()
+                .map(EntryData::entry)
+                .flatMap(x -> Optional.ofNullable(x.toSynced(handler.player)).stream())
+                .toList());
+
+            sender.sendPacket(packet);
         });
     }
 

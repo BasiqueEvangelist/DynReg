@@ -26,6 +26,9 @@ public class DynRegClientNetworking {
 
             var round = new DynamicRound(client);
 
+            if (!buf.readBoolean())
+                round.noResourcePackReload();
+
             var removedEntriesCount = buf.readVarInt();
 
             for (int i = 0; i < removedEntriesCount; i++) {

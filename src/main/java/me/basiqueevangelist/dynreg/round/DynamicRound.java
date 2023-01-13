@@ -39,7 +39,7 @@ public class DynamicRound {
     private final /* MinecraftClient */ Object client;
 
     private boolean reloadDataPacks = false;
-//    private boolean reloadResourcePacks = false;
+    private boolean reloadResourcePacks = true;
 
     public DynamicRound(MinecraftServer server) {
         this.server = server;
@@ -72,9 +72,9 @@ public class DynamicRound {
         reloadDataPacks = true;
     }
 
-//    public void resourcePackReload() {
-//        reloadResourcePacks = true;
-//    }
+    public void noResourcePackReload() {
+        reloadResourcePacks = false;
+    }
 
     public CompletableFuture<Void> getRoundEndFuture() {
         return roundEnd;
@@ -159,6 +159,13 @@ public class DynamicRound {
 
             if (server != null) {
                 for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
+                    if (server.isHost(player.getGameProfile())) {
+                        if (reloadResourcePacks)
+                            DynRegClient.reloadClientResources();
+
+                        continue;
+                    }
+
                     var addedSyncedEntries = new ArrayList<RegistrationEntry>();
                     var removedSyncedEntries = new ArrayList<Identifier>();
 
@@ -177,10 +184,9 @@ public class DynamicRound {
                     }
 
                     if ((removedSyncedEntries.size() > 0 || addedSyncedEntries.size() > 0)) {
-                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntries, addedSyncedEntries);
-                        if (!server.isHost(player.getGameProfile()))
-                            player.networkHandler.sendPacket(dataPacket);
+                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(reloadResourcePacks, removedSyncedEntries, addedSyncedEntries);
 
+                        player.networkHandler.sendPacket(dataPacket);
                         RegistrySyncManager.sendPacket(server, player);
                     }
                 }
@@ -204,9 +210,9 @@ public class DynamicRound {
                 }
             }
 
-//            if (client != null && reloadResourcePacks) {
-//                reloadFuture = DynRegClient.reloadClientResources(client);
-//            }
+            if (client != null && reloadResourcePacks) {
+                reloadFuture = DynRegClient.reloadClientResources();
+            }
 
             if (reloadFuture != null) {
                 reloadFuture.thenAccept(unused -> {

@@ -16,8 +16,11 @@ public final class DynRegNetworking {
 
     public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
 
-    public static Packet<?> makeRoundFinishedPacket(Collection<Identifier> removedEntries, Collection<RegistrationEntry> addedEntries) {
+    public static Packet<?> makeRoundFinishedPacket(boolean reloadResources, Collection<Identifier> removedEntries,
+                                                    Collection<RegistrationEntry> addedEntries) {
         PacketByteBuf buf = PacketByteBufs.create();
+
+        buf.writeBoolean(reloadResources);
 
         buf.writeVarInt(removedEntries.size());
         for (var key : removedEntries) {

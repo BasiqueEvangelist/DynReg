@@ -43,7 +43,7 @@ public class DynRegClient implements ClientModInitializer {
         }
     }
 
-    public static CompletableFuture<Void> reloadClientResources(Object client) {
-        return ((MinecraftClient) client).reloadResources();
+    public static CompletableFuture<Void> reloadClientResources() {
+        return MinecraftClient.getInstance().reloadResources();
     }
 }
