@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
@@ -14,7 +13,6 @@ import me.basiqueevangelist.dynreg.util.StackTracingMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
-import net.fabricmc.fabric.mixin.registry.sync.MixinIdRegistry;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.*;
@@ -54,10 +52,12 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     @Shadow @Nullable private List<RegistryEntry.Reference<T>> cachedEntries;
     @Shadow private int nextId;
 
-    @SuppressWarnings("ReferenceToMixin")
-    @Shadow @Dynamic(mixin = MixinIdRegistry.class) private Object2IntMap<Identifier> fabric_prevIndexedEntries;
-    @SuppressWarnings("ReferenceToMixin")
-    @Shadow @Dynamic(mixin = MixinIdRegistry.class) private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
+    @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
+    @Shadow @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
+    private Object2IntMap<Identifier> fabric_prevIndexedEntries;
+    @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
+    @Shadow @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
+    private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
 
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
         for (var callback : callbacks) {
