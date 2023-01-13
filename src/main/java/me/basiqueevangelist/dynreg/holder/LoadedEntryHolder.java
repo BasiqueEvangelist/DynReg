@@ -1,7 +1,6 @@
 package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -11,6 +10,7 @@ import net.minecraft.util.Identifier;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class LoadedEntryHolder {
     private static final Map<Identifier, EntryData> ADDED_ENTRIES = new LinkedHashMap<>();
@@ -33,7 +33,7 @@ public final class LoadedEntryHolder {
                     .values()
                     .stream()
                     .map(EntryData::entry)
-                    .filter(RegistrationEntry::isSynced)
+                    .flatMap(x -> Optional.ofNullable(x.toSynced(handler.player)).stream())
                     .toList());
 
                 sender.sendPacket(packet);

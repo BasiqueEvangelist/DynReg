@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.entry;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
@@ -20,8 +21,15 @@ public interface RegistrationEntry {
 
     Identifier id();
 
-    default boolean isSynced() {
-        return true;
+    /**
+     * Returns the entry sent to the player on sync.
+     * If nothing is to be synced, return {@code null}.
+     *
+     * @param player the player to sync with
+     * @return the entry that will be sent to the player
+     */
+    default RegistrationEntry toSynced(PlayerEntity player) {
+        return this;
     }
 
     default Identifier typeId() {

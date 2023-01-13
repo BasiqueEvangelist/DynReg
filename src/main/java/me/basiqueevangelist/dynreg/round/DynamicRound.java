@@ -82,9 +82,10 @@ public class DynamicRound {
 
     public void run() {
         try {
-            InfallibleCloseable clientUnfreezer = () -> {};
+            InfallibleCloseable clientUnfreezer = () -> {
+            };
 
-            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && client != null) {
                 clientUnfreezer = DynRegClient.freezeClientThread();
             }
 
@@ -95,7 +96,6 @@ public class DynamicRound {
                 RegistryUtils.unfreeze(registry);
             }
 
-            var removedSyncedEntryIds = new ArrayList<Identifier>();
             var removedEntries = new ArrayList<EntryData>();
 
             for (Identifier oldEntryId : removedEntryIds) {
@@ -120,9 +120,6 @@ public class DynamicRound {
                 for (var dependency : removedEntry.dependencies())
                     dependency.dependents().remove(removedEntry);
 
-                if (removedEntry.entry().isSynced())
-                    removedSyncedEntryIds.add(removedEntry.entry().id());
-
                 removedEntry.entry().onRemoved();
 
                 for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
@@ -137,13 +134,9 @@ public class DynamicRound {
             var entries = scanner.scan();
             var cycle = new MutableBoolean(false);
             var order = TopSort.topSort(entries.values(), EntryData::dependents, cycle);
-            var addedSyncedEntries = new ArrayList<RegistrationEntry>();
 
             for (var entry : order) {
                 try {
-                    if (entry.entry().isSynced())
-                        addedSyncedEntries.add(entry.entry());
-
                     entry.entry().register(entry.createRegistrationContext());
 
                     LoadedEntryHolder.addEntry(entry);
@@ -165,9 +158,26 @@ public class DynamicRound {
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
-                if ((addedSyncedEntries.size() > 0 || removedSyncedEntryIds.size() > 0)) {
-                    var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntryIds, addedSyncedEntries);
-                    for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
+                for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
+                    var addedSyncedEntries = new ArrayList<RegistrationEntry>();
+                    var removedSyncedEntries = new ArrayList<Identifier>();
+
+                    for (var entry : order) {
+                        var synced = entry.entry().toSynced(player);
+
+                        if (synced != null)
+                            addedSyncedEntries.add(synced);
+                    }
+
+                    for (var removed : removedEntries) {
+                        var synced = removed.entry().toSynced(player);
+
+                        if (synced != null)
+                            removedSyncedEntries.add(removed.entry().id());
+                    }
+
+                    if ((removedSyncedEntries.size() > 0 || addedSyncedEntries.size() > 0)) {
+                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(removedSyncedEntries, addedSyncedEntries);
                         if (!server.isHost(player.getGameProfile()))
                             player.networkHandler.sendPacket(dataPacket);
 
