@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 
 public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Identifier, RegistrationEntry>> {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/RegistryEntryLoader");
-    private static final HashSet<Identifier> ADDED_ENTRIES = new HashSet<>();
+    static final HashSet<Identifier> ADDED_ENTRIES = new HashSet<>();
 
     public static final RegistryEntryLoader INSTANCE = new RegistryEntryLoader();
 
@@ -74,9 +74,6 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
         ADDED_ENTRIES.clear();
 
         for (var entry : data.entrySet()) {
-            if (LoadedEntryHolder.entries().containsKey(entry.getKey()))
-                round.removeEntry(entry.getKey());
-
             round.addEntry(entry.getValue());
             ADDED_ENTRIES.add(entry.getKey());
         }

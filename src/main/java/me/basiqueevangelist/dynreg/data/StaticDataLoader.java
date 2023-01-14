@@ -17,6 +17,7 @@ public class StaticDataLoader {
 
             for (var entry : entries.values()) {
                 round.addEntry(entry);
+                RegistryEntryLoader.ADDED_ENTRIES.add(entry.id());
             }
 
             round.run();
