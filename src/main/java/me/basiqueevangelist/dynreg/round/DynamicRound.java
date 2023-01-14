@@ -40,6 +40,7 @@ public class DynamicRound {
 
     private boolean reloadDataPacks = false;
     private boolean reloadResourcePacks = true;
+    private boolean startupEntries = false;
 
     public DynamicRound(MinecraftServer server) {
         this.server = server;
@@ -76,8 +77,55 @@ public class DynamicRound {
         reloadResourcePacks = false;
     }
 
+    public void markAsStartup() {
+        startupEntries = true;
+    }
+
     public CompletableFuture<Void> getRoundEndFuture() {
         return roundEnd;
+    }
+
+    public int hash() {
+        var removedEntries = new ArrayList<EntryData>();
+
+        for (Identifier oldEntryId : removedEntryIds) {
+            var entry = LoadedEntryHolder.entries().get(oldEntryId);
+
+            if (entry == null) {
+                LOGGER.warn("Removed entry {} was already removed", oldEntryId);
+                continue;
+            }
+
+            removedEntries.add(entry);
+        }
+
+        for (int i = 0; i < removedEntries.size(); i++) {
+            for (var dependent : removedEntries.get(i).dependents()) {
+                if (!removedEntries.contains(dependent))
+                    removedEntries.add(dependent);
+            }
+        }
+
+        TreeMap<Identifier, RegistrationEntry> hashEntries = new TreeMap<>();
+
+        for (var oldEntry : LoadedEntryHolder.entries().entrySet()) {
+            hashEntries.put(oldEntry.getKey(), oldEntry.getValue().entry());
+        }
+
+        for (var removed : removedEntries) {
+            hashEntries.remove(removed.entry().id());
+        }
+
+        hashEntries.putAll(addedEntries);
+
+        int hash = 0;
+
+        for (var entry : hashEntries.entrySet()) {
+            hash = 31 * hash + entry.getKey().hashCode();
+            hash = 31 * hash + entry.getValue().hash();
+        }
+
+        return hash;
     }
 
     public void run() {
@@ -85,7 +133,7 @@ public class DynamicRound {
             InfallibleCloseable clientUnfreezer = () -> {
             };
 
-            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && client != null) {
+            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && server != null) {
                 clientUnfreezer = DynRegClient.freezeClientThread();
             }
 
@@ -99,7 +147,7 @@ public class DynamicRound {
             var removedEntries = new ArrayList<EntryData>();
 
             for (Identifier oldEntryId : removedEntryIds) {
-                var entry = LoadedEntryHolder.getEntries().get(oldEntryId);
+                var entry = LoadedEntryHolder.entries().get(oldEntryId);
 
                 if (entry == null) {
                     LOGGER.warn("Removed entry {} was already removed", oldEntryId);
@@ -129,7 +177,7 @@ public class DynamicRound {
                 LoadedEntryHolder.removeEntry(removedEntry.entry().id());
             }
 
-            EntryScanner scanner = new EntryScanner(addedEntries.values());
+            EntryScanner scanner = new EntryScanner(addedEntries.values(), startupEntries);
 
             var entries = scanner.scan();
             var cycle = new MutableBoolean(false);
@@ -157,6 +205,7 @@ public class DynamicRound {
 
             CompletableFuture<Void> reloadFuture = null;
 
+            int hash = LoadedEntryHolder.hash();
             if (server != null) {
                 for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
                     if (server.isHost(player.getGameProfile())) {
@@ -184,9 +233,10 @@ public class DynamicRound {
                     }
 
                     if ((removedSyncedEntries.size() > 0 || addedSyncedEntries.size() > 0)) {
-                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(reloadResourcePacks, removedSyncedEntries, addedSyncedEntries);
+                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(hash, reloadResourcePacks, removedSyncedEntries, addedSyncedEntries);
 
                         player.networkHandler.sendPacket(dataPacket);
+                        //noinspection UnstableApiUsage
                         RegistrySyncManager.sendPacket(server, player);
                     }
                 }

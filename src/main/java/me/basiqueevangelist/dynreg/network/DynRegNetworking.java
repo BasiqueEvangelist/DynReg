@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -16,15 +17,21 @@ public final class DynRegNetworking {
 
     public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
 
-    public static Packet<?> makeRoundFinishedPacket(boolean reloadResources, Collection<Identifier> removedEntries,
+    public static Packet<?> makeRoundFinishedPacket(int hash, boolean reloadResources,
+                                                    @Nullable Collection<Identifier> removedEntries,
                                                     Collection<RegistrationEntry> addedEntries) {
         PacketByteBuf buf = PacketByteBufs.create();
 
+        buf.writeInt(hash);
         buf.writeBoolean(reloadResources);
 
-        buf.writeVarInt(removedEntries.size());
-        for (var key : removedEntries) {
-            buf.writeIdentifier(key);
+        if (removedEntries == null) {
+            buf.writeVarInt(-1);
+        } else {
+            buf.writeVarInt(removedEntries.size());
+            for (var key : removedEntries) {
+                buf.writeIdentifier(key);
+            }
         }
 
         buf.writeVarInt(addedEntries.size());

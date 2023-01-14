@@ -1,0 +1,6 @@
+{
+    "type": "dynreg:simple_block",
+    "material": "plant",
+    "item_group": "building_blocks",
+    "sounds": "GRASS"
+}

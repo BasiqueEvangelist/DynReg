@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record EntryData(RegistrationEntry entry, List<RegistryKey<?>> registeredKeys, List<EntryData> dependencies,
-                        List<EntryData> dependents) {
+                        List<EntryData> dependents, boolean isStartup) {
     public EntryRegisterContext createRegistrationContext() {
         return new Context();
     }
 
-    public EntryData(RegistrationEntry entry) {
-        this(entry, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    public EntryData(RegistrationEntry entry, boolean isStartup) {
+        this(entry, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), isStartup);
     }
 
     private class Context implements EntryRegisterContext {

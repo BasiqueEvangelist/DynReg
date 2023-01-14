@@ -1,9 +1,6 @@
 package me.basiqueevangelist.dynreg.entry.block;
 
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.network.SimpleSerializers;
+import me.basiqueevangelist.dynreg.entry.*;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -38,8 +35,7 @@ public class SimpleBlockEntry implements RegistrationEntry {
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registry.BLOCK, id);
 
-        ctx.announce(Registry.ITEM, id)
-            .dependency(Registry.BLOCK, id);
+        ctx.announce(Registry.ITEM, id).dependency(Registry.BLOCK, id);
     }
 
     @Override
@@ -64,5 +60,13 @@ public class SimpleBlockEntry implements RegistrationEntry {
     @Override
     public Identifier id() {
         return id;
+    }
+
+    @Override
+    public int hash() {
+        int hash = id.hashCode();
+        hash = 31 * hash + SimpleHashers.hash(blockSettings);
+        hash = 31 * hash + (itemSettings != null ? SimpleHashers.hash(itemSettings) : 0);
+        return hash;
     }
 }

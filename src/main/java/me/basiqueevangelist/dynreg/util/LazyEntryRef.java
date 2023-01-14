@@ -34,4 +34,22 @@ public class LazyEntryRef<T> {
 
         return instance;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LazyEntryRef<?> that = (LazyEntryRef<?>) o;
+
+        if (!registry.equals(that.registry)) return false;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = registry.getKey().getValue().hashCode();
+        result = 31 * result + id.hashCode();
+        return result;
+    }
 }

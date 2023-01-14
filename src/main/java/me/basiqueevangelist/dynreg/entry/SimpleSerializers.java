@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.network;
+package me.basiqueevangelist.dynreg.entry;
 
 import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
 import me.basiqueevangelist.dynreg.util.NamedEntries;

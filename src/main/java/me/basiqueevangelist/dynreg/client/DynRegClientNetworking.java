@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.client;
 
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
@@ -14,12 +15,21 @@ import org.slf4j.LoggerFactory;
 public class DynRegClientNetworking {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/ClientNetworking");
 
+    @SuppressWarnings("UnstableApiUsage")
     public static void init() {
         ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.ROUND_FINISHED, (client, handler, buf, responseSender) -> {
             try {
                 RegistrySyncManager.unmap();
             } catch (RemapException e) {
                 LOGGER.error("Failed to unmap registries", e);
+            }
+
+            int serverHash = buf.readInt();
+            int clientHash = LoadedEntryHolder.hash();
+
+            if (serverHash == clientHash) {
+                LOGGER.info("Hashes match, not applying dynamic round");
+                return;
             }
 
             LOGGER.info("Applying dynamic round on client");
@@ -31,10 +41,16 @@ public class DynRegClientNetworking {
 
             var removedEntriesCount = buf.readVarInt();
 
-            for (int i = 0; i < removedEntriesCount; i++) {
-                Identifier entryId = buf.readIdentifier();
+            if (removedEntriesCount == -1) {
+                for (var entryId : LoadedEntryHolder.entries().keySet()) {
+                    round.removeEntry(entryId);
+                }
+            } else {
+                for (int i = 0; i < removedEntriesCount; i++) {
+                    Identifier entryId = buf.readIdentifier();
 
-                round.removeEntry(entryId);
+                    round.removeEntry(entryId);
+                }
             }
 
             var addedEntriesCount = buf.readVarInt();
@@ -51,7 +67,8 @@ public class DynRegClientNetworking {
                 }
             }
 
-            round.run();
+            if (round.hash() != LoadedEntryHolder.hash())
+                round.run();
         });
     }
 }

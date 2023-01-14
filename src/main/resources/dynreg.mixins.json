@@ -13,6 +13,7 @@
         "FlowableFluidMixin",
         "IdListMixin",
         "ItemStackMixin",
+        "MainMixin",
         "SimpleRegistryMixin",
         "fabric.ResourceManagerHelperImplMixin",
         "fabriccommon.ApiProviderHashMapAccessor",
@@ -27,6 +28,7 @@
         "quilt.ResourceLoaderImplMixin"
     ],
     "client": [
+        "client.MinecraftClientMixin"
     ],
     "injectors": {
         "defaultRequire": 1

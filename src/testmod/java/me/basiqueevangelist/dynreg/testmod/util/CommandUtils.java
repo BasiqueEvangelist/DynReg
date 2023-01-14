@@ -42,7 +42,7 @@ public final class CommandUtils {
     }
 
     public static CompletableFuture<Suggestions> suggestEntries(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
-        for (var data : LoadedEntryHolder.getEntries().keySet()) {
+        for (var data : LoadedEntryHolder.entries().keySet()) {
             builder.suggest(String.valueOf(data));
         }
 

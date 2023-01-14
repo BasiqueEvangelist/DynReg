@@ -20,9 +20,9 @@ public class EntryScanner implements EntryScanContext {
     private final Map<RegistryKey<?>, EntryData> keyToEntry = new HashMap<>();
     private EntryData currentEntry = null;
 
-    public EntryScanner(Collection<RegistrationEntry> entries) {
+    public EntryScanner(Collection<RegistrationEntry> entries, boolean isStartup) {
         for (RegistrationEntry entry : entries) {
-            entryDatas.put(entry.id(), new EntryData(entry));
+            entryDatas.put(entry.id(), new EntryData(entry, isStartup));
         }
     }
 
@@ -64,7 +64,7 @@ public class EntryScanner implements EntryScanContext {
             }
         }
 
-        return new Builder(key);
+        return new Builder();
     }
 
     @Override
@@ -79,12 +79,6 @@ public class EntryScanner implements EntryScanContext {
     }
 
     private class Builder implements ScanBuilder {
-        private final RegistryKey<?> key;
-
-        public Builder(RegistryKey<?> key) {
-            this.key = key;
-        }
-
         @Override
         public ScanBuilder dependency(Registry<?> registry, Identifier id) {
             return dependency(RegistryKey.of(registry.getKey(), id));

@@ -22,10 +22,11 @@ public class DynRegClient implements ClientModInitializer {
         DynRegClientNetworking.init();
 
         PostLeaveRoundCallback.EVENT.register(round -> {
-            if (LoadedEntryHolder.getEntries().size() > 0) {
-                for (var entryId : LoadedEntryHolder.getEntries().keySet())
-                    round.removeEntry(entryId);
-            }
+            for (var entryId : LoadedEntryHolder.entries().keySet())
+                round.removeEntry(entryId);
+
+            for (var entry : LoadedEntryHolder.startupEntries().values())
+                round.addEntry(entry.entry());
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {

@@ -1,9 +1,6 @@
 package me.basiqueevangelist.dynreg.entry.item;
 
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.network.SimpleSerializers;
+import me.basiqueevangelist.dynreg.entry.*;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -41,5 +38,12 @@ public class SimpleItemEntry implements RegistrationEntry {
     @Override
     public Identifier id() {
         return id;
+    }
+
+    @Override
+    public int hash() {
+        int hash = id.hashCode();
+        hash = 31 * hash + SimpleHashers.hash(settings);
+        return hash;
     }
 }

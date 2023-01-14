@@ -35,4 +35,6 @@ public interface RegistrationEntry {
     default Identifier typeId() {
         return RegistrationEntries.getEntryId(this);
     }
+
+    int hash();
 }
