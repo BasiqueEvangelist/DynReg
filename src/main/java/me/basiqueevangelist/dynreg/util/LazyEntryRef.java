@@ -27,6 +27,10 @@ public class LazyEntryRef<T> {
         return id;
     }
 
+    public void write(PacketByteBuf buf) {
+        buf.writeIdentifier(id);
+    }
+
     public T get() {
         if (instance == null) {
             instance = registry.get(id);

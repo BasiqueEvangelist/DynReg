@@ -20,12 +20,6 @@ public class FlowerPotBlockDescription implements RegistrationEntry {
     private final LazyEntryRef<Block> content;
     private final AbstractBlock.Settings settings;
 
-    public FlowerPotBlockDescription(Identifier id, Identifier contentId, AbstractBlock.Settings settings) {
-        this.id = id;
-        this.settings = settings;
-        this.content = new LazyEntryRef<>(Registry.BLOCK, contentId);
-    }
-
     public FlowerPotBlockDescription(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.content = LazyEntryRef.read(buf, Registry.BLOCK);
@@ -51,7 +45,7 @@ public class FlowerPotBlockDescription implements RegistrationEntry {
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeIdentifier(content.id());
+        content.write(buf);
         SimpleSerializers.writeBlockSettings(buf, settings);
     }
 
