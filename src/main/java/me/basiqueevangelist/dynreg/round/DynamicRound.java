@@ -2,16 +2,16 @@ package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
-import me.basiqueevangelist.dynreg.holder.EntryData;
-import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
-import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.event.ResyncCallback;
+import me.basiqueevangelist.dynreg.holder.EntryData;
+import me.basiqueevangelist.dynreg.holder.EntryHasher;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.util.InfallibleCloseable;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import me.basiqueevangelist.dynreg.util.TopSort;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
@@ -85,7 +85,7 @@ public class DynamicRound {
         return roundEnd;
     }
 
-    public int hash() {
+    public long hash() {
         var removedEntries = new ArrayList<EntryData>();
 
         for (Identifier oldEntryId : removedEntryIds) {
@@ -106,26 +106,25 @@ public class DynamicRound {
             }
         }
 
-        TreeMap<Identifier, RegistrationEntry> hashEntries = new TreeMap<>();
+        EntryHasher hasher = new EntryHasher();
 
         for (var oldEntry : LoadedEntryHolder.entries().entrySet()) {
-            hashEntries.put(oldEntry.getKey(), oldEntry.getValue().entry());
+            hasher.accept(oldEntry.getValue().entry());
         }
 
         for (var removed : removedEntries) {
-            hashEntries.remove(removed.entry().id());
+            hasher.remove(removed.entry());
         }
 
-        hashEntries.putAll(addedEntries);
-
-        int hash = 0;
-
-        for (var entry : hashEntries.entrySet()) {
-            hash = 31 * hash + entry.getKey().hashCode();
-            hash = 31 * hash + entry.getValue().hash();
+        for (var added : addedEntries.values()) {
+            hasher.accept(added);
         }
 
-        return hash;
+        return hasher.hash();
+    }
+
+    public boolean needsRunning() {
+        return tasks.size() > 0 || hash() != LoadedEntryHolder.hash();
     }
 
     public void run() {
@@ -205,40 +204,9 @@ public class DynamicRound {
 
             CompletableFuture<Void> reloadFuture = null;
 
-            int hash = LoadedEntryHolder.hash();
             if (server != null) {
                 for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-                    if (server.isHost(player.getGameProfile())) {
-                        if (reloadResourcePacks)
-                            DynRegClient.reloadClientResources();
-
-                        continue;
-                    }
-
-                    var addedSyncedEntries = new ArrayList<RegistrationEntry>();
-                    var removedSyncedEntries = new ArrayList<Identifier>();
-
-                    for (var entry : order) {
-                        var synced = entry.entry().toSynced(player);
-
-                        if (synced != null)
-                            addedSyncedEntries.add(synced);
-                    }
-
-                    for (var removed : removedEntries) {
-                        var synced = removed.entry().toSynced(player);
-
-                        if (synced != null)
-                            removedSyncedEntries.add(removed.entry().id());
-                    }
-
-                    if ((removedSyncedEntries.size() > 0 || addedSyncedEntries.size() > 0)) {
-                        var dataPacket = DynRegNetworking.makeRoundFinishedPacket(hash, reloadResourcePacks, removedSyncedEntries, addedSyncedEntries);
-
-                        player.networkHandler.sendPacket(dataPacket);
-                        //noinspection UnstableApiUsage
-                        RegistrySyncManager.sendPacket(server, player);
-                    }
+                    ResyncCallback.EVENT.invoker().onResync(server, player, reloadResourcePacks);
                 }
 
                 if (reloadDataPacks) {

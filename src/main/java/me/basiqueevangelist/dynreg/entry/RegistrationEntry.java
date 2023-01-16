@@ -3,6 +3,7 @@ package me.basiqueevangelist.dynreg.entry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The registration entry is the indivisible building block of dynamically-registered content.
@@ -28,7 +29,7 @@ public interface RegistrationEntry {
      * @param player the player to sync with
      * @return the entry that will be sent to the player
      */
-    default RegistrationEntry toSynced(PlayerEntity player) {
+    default @Nullable RegistrationEntry toSynced(PlayerEntity player) {
         return this;
     }
 

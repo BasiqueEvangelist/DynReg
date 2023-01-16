@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -35,17 +36,20 @@ public final class LoadedEntryHolder {
                 return;
             }
 
-            // FIX: make this less stream-y.
-            Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hash(), doResourceReload,
-                null,
-                ADDED_ENTRIES
-                    .values()
-                    .stream()
-                    .map(EntryData::entry)
-                    .flatMap(x -> Optional.ofNullable(x.toSynced(handler.player)).stream())
-                    .toList());
+            List<RegistrationEntry> syncedEntries = new ArrayList<>();
+            EntryHasher hasher = new EntryHasher();
 
-            sender.sendPacket(packet);
+            for (var entry : LoadedEntryHolder.entries().values()) {
+                var synced = entry.entry().toSynced(handler.player);
+
+                if (synced != null) {
+                    syncedEntries.add(synced);
+                    hasher.accept(synced);
+                }
+            }
+
+            Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hasher.hash(), doResourceReload, syncedEntries);
+            handler.sendPacket(packet);
         });
     }
 
@@ -60,28 +64,12 @@ public final class LoadedEntryHolder {
         ADDED_ENTRIES.remove(id);
     }
 
-    public static int hash() {
-        TreeMap<Identifier, EntryData> entries = new TreeMap<>(ADDED_ENTRIES);
-        int hash = 0;
+    public static long hash() {
+        var hasher = new EntryHasher();
 
-        for (var entry : entries.entrySet()) {
-            hash = 31 * hash + entry.getKey().hashCode();
-            hash = 31 * hash + entry.getValue().entry().hash();
-        }
+        ADDED_ENTRIES.values().forEach(x -> hasher.accept(x.entry()));
 
-        return hash;
-    }
-
-    public static int hashStartup() {
-        TreeMap<Identifier, EntryData> entries = new TreeMap<>(STARTUP_ENTRIES);
-        int hash = 0;
-
-        for (var entry : entries.entrySet()) {
-            hash = 31 * hash + entry.getKey().hashCode();
-            hash = 31 * hash + entry.getValue().entry().hash();
-        }
-
-        return hash;
+        return hasher.hash();
     }
 
     public static Map<Identifier, EntryData> entries() {

@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DynRegClient implements ClientModInitializer {
-    private static int CURRENT_RESOURCE_HASH = 0;
+    private static long CURRENT_RESOURCE_HASH = 0;
 
     @Override
     public void onInitializeClient() {
@@ -34,7 +34,9 @@ public class DynRegClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             var round = new DynamicRound(client);
             PostLeaveRoundCallback.EVENT.invoker().onClientDisconnect(round);
-            round.run();
+
+            if (round.needsRunning())
+                round.run();
         });
     }
 

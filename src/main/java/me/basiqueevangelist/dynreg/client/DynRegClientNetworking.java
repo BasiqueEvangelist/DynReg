@@ -24,8 +24,8 @@ public class DynRegClientNetworking {
                 LOGGER.error("Failed to unmap registries", e);
             }
 
-            int serverHash = buf.readInt();
-            int clientHash = LoadedEntryHolder.hash();
+            long serverHash = buf.readLong();
+            long clientHash = LoadedEntryHolder.hash();
 
             if (serverHash == clientHash) {
                 LOGGER.info("Hashes match, not applying dynamic round");
@@ -39,18 +39,8 @@ public class DynRegClientNetworking {
             if (!buf.readBoolean())
                 round.noResourcePackReload();
 
-            var removedEntriesCount = buf.readVarInt();
-
-            if (removedEntriesCount == -1) {
-                for (var entryId : LoadedEntryHolder.entries().keySet()) {
-                    round.removeEntry(entryId);
-                }
-            } else {
-                for (int i = 0; i < removedEntriesCount; i++) {
-                    Identifier entryId = buf.readIdentifier();
-
-                    round.removeEntry(entryId);
-                }
+            for (var entryId : LoadedEntryHolder.entries().keySet()) {
+                round.removeEntry(entryId);
             }
 
             var addedEntriesCount = buf.readVarInt();
@@ -67,7 +57,7 @@ public class DynRegClientNetworking {
                 }
             }
 
-            if (round.hash() != LoadedEntryHolder.hash())
+            if (round.needsRunning())
                 round.run();
         });
     }

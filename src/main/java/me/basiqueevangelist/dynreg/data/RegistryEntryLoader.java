@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
-import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
@@ -55,7 +54,7 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
             }
         }
 
-        LOGGER.info("Loaded {} registry entries", descriptions.entrySet());
+        LOGGER.info("Loaded {} registry entries", descriptions.size());
 
         return descriptions;
     }
@@ -78,7 +77,7 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
             ADDED_ENTRIES.add(entry.getKey());
         }
 
-        if (round.hash() != LoadedEntryHolder.hash())
+        if (round.needsRunning())
             round.run();
 
         return CompletableFuture.completedFuture(null);

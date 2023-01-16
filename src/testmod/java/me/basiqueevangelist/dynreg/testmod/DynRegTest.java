@@ -5,6 +5,7 @@ import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockDescription;
+import me.basiqueevangelist.dynreg.testmod.desc.PolymerBlockDescription;
 import me.basiqueevangelist.dynreg.testmod.desc.StairsBlockDescription;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -29,5 +30,8 @@ public class DynRegTest implements ModInitializer {
 
         RegistrationEntries.registerEntryType(StairsBlockDescription.ID, StairsBlockDescription::new);
         EntryDescriptionReaders.register(StairsBlockDescription.ID, StairsBlockDescription::new);
+
+        RegistrationEntries.registerEntryType(PolymerBlockDescription.ID, PolymerBlockDescription::new);
+        EntryDescriptionReaders.register(PolymerBlockDescription.ID, PolymerBlockDescription::new);
     }
 }

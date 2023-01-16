@@ -1,11 +1,24 @@
 package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
+import me.basiqueevangelist.dynreg.client.DynRegClient;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.event.ResyncCallback;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.holder.EntryHasher;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
+import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
+import net.minecraft.network.Packet;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class GlobalFixer<T> {
     private final Registry<T> registry;
@@ -18,11 +31,43 @@ public final class GlobalFixer<T> {
         for (Registry<?> registry : Registry.REGISTRIES) {
             new GlobalFixer<>(registry).register();
         }
+
+        ResyncCallback.EVENT.register(ResyncCallback.SYNC_ENTRIES, GlobalFixer::syncEntries);
+        ResyncCallback.EVENT.register(ResyncCallback.REGISTRY_SYNC, GlobalFixer::registrySync);
     }
 
     private void register() {
         RegistryEntryAddedCallback.event(registry).register(this::onEntryAdded);
         RegistryEntryDeletedCallback.event(registry).register(this::onEntryDeleted);
+    }
+
+    private static void syncEntries(MinecraftServer server, ServerPlayerEntity player, boolean reloadResourcePacks) {
+        if (server.isHost(player.getGameProfile())) {
+            if (reloadResourcePacks)
+                DynRegClient.reloadClientResources();
+
+            return;
+        }
+
+        List<RegistrationEntry> syncedEntries = new ArrayList<>();
+        EntryHasher hasher = new EntryHasher();
+
+        for (var entry : LoadedEntryHolder.entries().values()) {
+            var synced = entry.entry().toSynced(player);
+
+            if (synced != null) {
+                syncedEntries.add(synced);
+                hasher.accept(synced);
+            }
+        }
+
+        Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hasher.hash(), reloadResourcePacks, syncedEntries);
+        player.networkHandler.sendPacket(packet);
+    }
+
+    private static void registrySync(MinecraftServer server, ServerPlayerEntity player, boolean reloadResourcePacks) {
+        //noinspection UnstableApiUsage
+        RegistrySyncManager.sendPacket(server, player);
     }
 
     private void onEntryDeleted(int rawId, RegistryEntry.Reference<?> entry) {
