@@ -6,7 +6,15 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
+        maven { url "https://maven.architectury.dev/" }
+        maven {
+            name = 'Quilt'
+            url = 'https://maven.quiltmc.org/repository/release'
+        }
+        maven { url "https://files.minecraftforge.net/maven/" }
     }
 }
 
 rootProject.name = "dynreg"
+include "quilt"

@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.compat.qsl;
+package me.basiqueevangelist.dynreg.compat.quilt;
 
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
 import net.minecraft.util.registry.Registry;

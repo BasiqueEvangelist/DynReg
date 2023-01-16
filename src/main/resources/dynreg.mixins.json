@@ -24,8 +24,7 @@
         "palette.BiomePaletteProviderMixin",
         "palette.IdListPaletteMixin",
         "palette.LithiumHashPaletteMixin",
-        "palette.SingularPaletteMixin",
-        "quilt.ResourceLoaderImplMixin"
+        "palette.SingularPaletteMixin"
     ],
     "client": [
         "client.MinecraftClientMixin",

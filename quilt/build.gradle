@@ -1,0 +1,30 @@
+plugins {
+    id 'maven-publish'
+}
+
+archivesBaseName = rootProject.archives_base_name + "-quilt"
+
+// All dependency versions are declared in the gradle.properties file
+dependencies {
+    modImplementation "org.quiltmc:quilt-loader:${project.quilt_loader_version}"
+
+    // QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
+    // Quilted Fabric API will automatically pull in the correct QSL version.
+    modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${quilted_fabric_api_version}-${minecraft_version}"
+    // If you want to use QSL by itself over Quilted Fabric API, uncomment the line below (and comment out the line above):
+    // 	modImplementation "org.quiltmc:qsl:${qsl_version}+${minecraft_version}"
+
+    implementation rootProject.sourceSets.main.output
+    runtimeOnly rootProject.sourceSets.testmod.output
+}
+
+project.configurations.configureEach {
+    it.exclude group: "net.fabricmc", module: "fabric-loader"
+    it.exclude group: "net.fabricmc.fabric-api"
+}
+
+loom {
+    runConfigs.forEach {
+        it.runDir "../run"
+    }
+}
