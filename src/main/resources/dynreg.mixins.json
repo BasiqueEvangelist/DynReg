@@ -28,7 +28,8 @@
         "quilt.ResourceLoaderImplMixin"
     ],
     "client": [
-        "client.MinecraftClientMixin"
+        "client.MinecraftClientMixin",
+        "client.ReloadableResourceManagerImplMixin"
     ],
     "injectors": {
         "defaultRequire": 1

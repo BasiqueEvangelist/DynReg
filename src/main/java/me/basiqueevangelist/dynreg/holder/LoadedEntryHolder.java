@@ -29,7 +29,7 @@ public final class LoadedEntryHolder {
             boolean isHost = server.isHost(handler.player.getGameProfile());
 
             if (isHost) {
-                if (doResourceReload && LoadedEntryHolder.hash() != LoadedEntryHolder.hashStartup())
+                if (doResourceReload)
                     DynRegClient.reloadClientResources();
 
                 return;

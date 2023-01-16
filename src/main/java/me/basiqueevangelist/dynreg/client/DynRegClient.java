@@ -15,6 +15,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DynRegClient implements ClientModInitializer {
+    private static int CURRENT_RESOURCE_HASH = 0;
+
     @Override
     public void onInitializeClient() {
         ClientBlockFixer.init();
@@ -36,6 +38,10 @@ public class DynRegClient implements ClientModInitializer {
         });
     }
 
+    public static void markReload() {
+        CURRENT_RESOURCE_HASH = LoadedEntryHolder.hash();
+    }
+
     public static InfallibleCloseable freezeClientThread() {
         try {
             return ExecutorFreezer.freeze(MinecraftClient.getInstance()).get();
@@ -45,6 +51,9 @@ public class DynRegClient implements ClientModInitializer {
     }
 
     public static CompletableFuture<Void> reloadClientResources() {
+        if (CURRENT_RESOURCE_HASH == LoadedEntryHolder.hash())
+            return CompletableFuture.completedFuture(null);
+
         return MinecraftClient.getInstance().reloadResources();
     }
 }
