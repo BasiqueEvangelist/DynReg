@@ -17,7 +17,9 @@ public class LithiumHashPaletteMixin<T> implements CleanablePalette<T> {
 
     @Shadow private T[] entries;
 
-    @Shadow @Final private Reference2IntMap<T> table;
+    @Shadow
+    @Final
+    private Reference2IntMap<T> table;
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> fixer) {

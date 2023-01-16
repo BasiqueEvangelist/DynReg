@@ -8,7 +8,6 @@ import net.minecraft.util.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public final class EntryDescriptionReaders {
     private static final Map<Identifier, BiFunction<Identifier, JsonObject, RegistrationEntry>> READERS = new HashMap<>();

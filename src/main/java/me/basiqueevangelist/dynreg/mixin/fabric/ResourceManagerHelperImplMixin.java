@@ -14,9 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(value = ResourceManagerHelperImpl.class, remap = false)
 public class ResourceManagerHelperImplMixin {
-    @Shadow @Final private static Map<ResourceType, ResourceManagerHelperImpl> registryMap;
+    @Shadow
+    @Final
+    private static Map<ResourceType, ResourceManagerHelperImpl> registryMap;
 
     @Inject(method = "sort(Ljava/util/List;)V", at = @At("RETURN"))
     private void addRegistryEntryListener(List<ResourceReloader> listeners, CallbackInfo ci) {

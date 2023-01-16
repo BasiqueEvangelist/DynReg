@@ -208,7 +208,7 @@ public class SimpleSerializers {
 
     public static void writeStatusEffectInstance(PacketByteBuf buf, StatusEffectInstance effect) {
         buf.writeVarInt(StatusEffect.getRawId(effect.getEffectType()));
-        buf.writeByte((byte)(effect.getAmplifier() & 0xff));
+        buf.writeByte((byte) (effect.getAmplifier() & 0xff));
         buf.writeVarInt(Math.min(effect.getDuration(), 32767));
 
         byte flags = 0;

@@ -26,13 +26,17 @@ import java.util.function.Predicate;
 
 @Mixin(ChunkSection.class)
 public abstract class ChunkSectionMixin {
-    @Shadow public abstract boolean hasAny(Predicate<BlockState> predicate);
+    @Shadow
+    public abstract boolean hasAny(Predicate<BlockState> predicate);
 
-    @Shadow public abstract BlockState getBlockState(int x, int y, int z);
+    @Shadow
+    public abstract BlockState getBlockState(int x, int y, int z);
 
-    @Shadow public abstract BlockState setBlockState(int x, int y, int z, BlockState state);
+    @Shadow
+    public abstract BlockState setBlockState(int x, int y, int z, BlockState state);
 
-    @Shadow public abstract PalettedContainer<BlockState> getBlockStateContainer();
+    @Shadow
+    public abstract PalettedContainer<BlockState> getBlockStateContainer();
 
     private int dynreg$blocksVersion = BlockFixer.BLOCKS_VERSION.getVersion();
 

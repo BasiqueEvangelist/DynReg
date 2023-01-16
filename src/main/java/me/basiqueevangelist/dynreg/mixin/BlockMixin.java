@@ -17,7 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
 public class BlockMixin {
-    @Shadow @Final private static ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP;
+    @Shadow
+    @Final
+    private static ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP;
     private static final VersionTracker.ThreadLocalChecker dynreg$checker = BlockFixer.BLOCKS_VERSION.threadLocalChecker();
 
     @Inject(method = "shouldDrawSide", at = @At(value = "FIELD", target = "Lnet/minecraft/block/Block;FACE_CULL_MAP:Ljava/lang/ThreadLocal;"))

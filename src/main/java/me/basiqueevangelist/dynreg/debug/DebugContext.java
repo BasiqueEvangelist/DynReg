@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 public final class DebugContext {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DebugContext");
     private static final Map<String, Supplier<Object>> KEYS = new HashMap<>();
+
     private DebugContext() {
 
     }

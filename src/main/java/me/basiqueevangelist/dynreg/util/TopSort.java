@@ -2,7 +2,9 @@ package me.basiqueevangelist.dynreg.util;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 public final class TopSort {

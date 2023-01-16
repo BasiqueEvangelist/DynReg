@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.function.Function;
 
 @Mixin(SingularPalette.class)
-public class SingularPaletteMixin<T> implements CleanablePalette<T>
-{
-    @Shadow private @Nullable T entry;
+public class SingularPaletteMixin<T> implements CleanablePalette<T> {
+    @Shadow
+    private @Nullable T entry;
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> fixer) {

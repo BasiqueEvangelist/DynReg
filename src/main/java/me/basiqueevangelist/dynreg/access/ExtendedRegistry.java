@@ -7,6 +7,7 @@ import net.minecraft.util.registry.RegistryKey;
 
 public interface ExtendedRegistry<T> {
     Event<RegistryEntryDeletedCallback<T>> dynreg$getEntryDeletedEvent();
+
     Event<RegistryFrozenCallback<T>> dynreg$getRegistryFrozenEvent();
 
     void dynreg$remove(RegistryKey<T> key);

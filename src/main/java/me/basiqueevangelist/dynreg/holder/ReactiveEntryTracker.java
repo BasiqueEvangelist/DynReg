@@ -24,7 +24,7 @@ public final class ReactiveEntryTracker {
     @SuppressWarnings("unchecked")
     public static void init() {
         for (Registry<?> registry : Registry.REGISTRIES) {
-            Event<RegistryEntryAddedCallback<?>> event = (Event<RegistryEntryAddedCallback<?>>)(Object) RegistryEntryAddedCallback.event(registry);
+            Event<RegistryEntryAddedCallback<?>> event = (Event<RegistryEntryAddedCallback<?>>) (Object) RegistryEntryAddedCallback.event(registry);
 
             event.addPhaseOrdering(START_PHASE, Event.DEFAULT_PHASE);
             event.addPhaseOrdering(Event.DEFAULT_PHASE, END_PHASE);

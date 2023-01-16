@@ -1,9 +1,9 @@
 package me.basiqueevangelist.dynreg.client;
 
-import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
-import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
+import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;

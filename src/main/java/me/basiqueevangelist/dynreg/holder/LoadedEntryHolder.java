@@ -9,7 +9,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.Packet;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class LoadedEntryHolder {
     private static final Map<Identifier, EntryData> ADDED_ENTRIES = new LinkedHashMap<>();

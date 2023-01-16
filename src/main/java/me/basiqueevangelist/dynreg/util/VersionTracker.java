@@ -20,7 +20,8 @@ public class VersionTracker {
     public class ThreadLocalChecker {
         private final ThreadLocal<Integer> threadLocal = ThreadLocal.withInitial(version::get);
 
-        private ThreadLocalChecker() { }
+        private ThreadLocalChecker() {
+        }
 
         public final boolean isUpdateNeeded() {
             int currentVersion = version.get();

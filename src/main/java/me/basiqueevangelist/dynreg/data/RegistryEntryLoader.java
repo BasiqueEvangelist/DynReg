@@ -58,6 +58,7 @@ public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Ide
 
         return descriptions;
     }
+
     @Override
     public CompletableFuture<Map<Identifier, RegistrationEntry>> load(ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.supplyAsync(() -> loadAll(manager), executor);

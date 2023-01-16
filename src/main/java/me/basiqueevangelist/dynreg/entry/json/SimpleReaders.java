@@ -179,7 +179,8 @@ public final class SimpleReaders {
         String name = JsonHelper.getString(obj, key);
         ItemGroup group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(name)).findAny().orElse(null);
 
-        if (group == null) throw new JsonSyntaxException("Expected " + key + " to be valid item group, got unknown item group name " + name);
+        if (group == null)
+            throw new JsonSyntaxException("Expected " + key + " to be valid item group, got unknown item group name " + name);
 
         return group;
     }

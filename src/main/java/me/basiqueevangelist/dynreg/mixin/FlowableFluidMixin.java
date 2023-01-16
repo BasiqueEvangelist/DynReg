@@ -18,7 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FlowableFluid.class)
 public class FlowableFluidMixin {
-    @Shadow @Final private static ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901;
+    @Shadow
+    @Final
+    private static ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901;
     private static final VersionTracker.ThreadLocalChecker dynreg$checker = BlockFixer.BLOCKS_VERSION.threadLocalChecker();
 
     @Inject(method = "receivesFlow", at = @At(value = "FIELD", target = "Lnet/minecraft/fluid/FlowableFluid;field_15901:Ljava/lang/ThreadLocal;"))

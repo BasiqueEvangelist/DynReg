@@ -32,31 +32,53 @@ import java.util.function.Function;
 @Mixin(value = SimpleRegistry.class, priority = 1100)
 public abstract class SimpleRegistryMixin<T> extends Registry<T> implements ExtendedRegistry<T> {
     @Shadow private boolean frozen;
-    @Shadow @Final @Nullable private Function<T, RegistryEntry.Reference<T>> valueToEntryFunction;
-    @Shadow @Nullable private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
+    @Shadow
+    @Final
+    @Nullable
+    private Function<T, RegistryEntry.Reference<T>> valueToEntryFunction;
+    @Shadow
+    @Nullable
+    private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
 
     protected SimpleRegistryMixin(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
         super(key, lifecycle);
     }
 
-    @Shadow public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key);
+    @Shadow
+    public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key);
 
-    @Shadow @Final private Object2IntMap<T> entryToRawId;
-    @Shadow @Final private ObjectList<RegistryEntry.Reference<T>> rawIdToEntry;
+    @Shadow
+    @Final
+    private Object2IntMap<T> entryToRawId;
+    @Shadow
+    @Final
+    private ObjectList<RegistryEntry.Reference<T>> rawIdToEntry;
     @Mutable
-    @Shadow @Final private Map<Identifier, RegistryEntry.Reference<T>> idToEntry;
-    @Shadow @Final private Map<RegistryKey<T>, RegistryEntry.Reference<T>> keyToEntry;
-    @Shadow @Final private Map<T, RegistryEntry.Reference<T>> valueToEntry;
-    @Shadow @Final private Map<T, Lifecycle> entryToLifecycle;
+    @Shadow
+    @Final
+    private Map<Identifier, RegistryEntry.Reference<T>> idToEntry;
+    @Shadow
+    @Final
+    private Map<RegistryKey<T>, RegistryEntry.Reference<T>> keyToEntry;
+    @Shadow
+    @Final
+    private Map<T, RegistryEntry.Reference<T>> valueToEntry;
+    @Shadow
+    @Final
+    private Map<T, Lifecycle> entryToLifecycle;
     @Shadow private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList;
-    @Shadow @Nullable private List<RegistryEntry.Reference<T>> cachedEntries;
+    @Shadow
+    @Nullable
+    private List<RegistryEntry.Reference<T>> cachedEntries;
     @Shadow private int nextId;
 
     @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
+    @Shadow
+    @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
     private Object2IntMap<Identifier> fabric_prevIndexedEntries;
     @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
+    @Shadow
+    @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
     private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
 
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
@@ -65,7 +87,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         }
 
         if (entry.value() instanceof RegistryEntryDeletedCallback<?> callback)
-            ((RegistryEntryDeletedCallback<T>)callback).onEntryDeleted(rawId, entry);
+            ((RegistryEntryDeletedCallback<T>) callback).onEntryDeleted(rawId, entry);
     });
     private final Event<RegistryFrozenCallback<T>> dynreg$registryFrozenEvent = EventFactory.createArrayBacked(RegistryFrozenCallback.class, callbacks -> () -> {
         for (var callback : callbacks) {

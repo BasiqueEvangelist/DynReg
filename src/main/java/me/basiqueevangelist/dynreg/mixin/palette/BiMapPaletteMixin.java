@@ -12,7 +12,9 @@ import java.util.function.Function;
 
 @Mixin(BiMapPalette.class)
 public class BiMapPaletteMixin<T> implements CleanablePalette<T> {
-    @Shadow @Final private Int2ObjectBiMap<T> map;
+    @Shadow
+    @Final
+    private Int2ObjectBiMap<T> map;
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> fixer) {

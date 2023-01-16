@@ -57,7 +57,7 @@ public class EntryScanner implements EntryScanContext {
 
         if (pendingKeyDeps != null) {
             for (EntryData pendingEntry : pendingKeyDeps) {
-                if (pendingEntry ==  currentEntry) continue;
+                if (pendingEntry == currentEntry) continue;
 
                 currentEntry.dependents().add(pendingEntry);
                 pendingEntry.dependencies().add(currentEntry);

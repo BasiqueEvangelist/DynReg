@@ -12,7 +12,9 @@ import java.util.function.Function;
 @Mixin(ArrayPalette.class)
 public class ArrayPaletteMixin<T> implements CleanablePalette<T> {
 
-    @Shadow @Final private T[] array;
+    @Shadow
+    @Final
+    private T[] array;
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> fixer) {

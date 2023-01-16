@@ -13,13 +13,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-    @Shadow @Mutable @Final private Item item;
+    @Shadow
+    @Mutable
+    @Final
+    private Item item;
 
     private int dynreg$itemsVersion = ItemFixer.ITEMS_VERSION.getVersion();
 
-    @Shadow public abstract void setCount(int count);
+    @Shadow
+    public abstract void setCount(int count);
 
-    @Shadow private @Nullable NbtCompound nbt;
+    @Shadow
+    private @Nullable NbtCompound nbt;
 
     @Inject(method = {"getItem", "getCount", "getName", "getCount", "getNbt", "getOrCreateNbt", "getOrCreateSubNbt", "isEmpty"}, at = @At("HEAD"))
     private void itemHook(CallbackInfoReturnable<Integer> cir) {

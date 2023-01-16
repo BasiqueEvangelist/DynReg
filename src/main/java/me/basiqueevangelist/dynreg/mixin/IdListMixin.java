@@ -11,9 +11,13 @@ import java.util.List;
 
 @Mixin(IdList.class)
 public abstract class IdListMixin<T> implements ExtendedIdList {
-    @Shadow @Final private List<T> list;
+    @Shadow
+    @Final
+    private List<T> list;
 
-    @Shadow @Final private Object2IntMap<T> idMap;
+    @Shadow
+    @Final
+    private Object2IntMap<T> idMap;
 
     @Shadow private int nextId;
 
@@ -28,7 +32,7 @@ public abstract class IdListMixin<T> implements ExtendedIdList {
     @Override
     public IdList<T> dynreg$copy() {
         IdList<T> copy = new IdList<>(0);
-        var ref = (IdListMixin<T>)(Object) copy;
+        var ref = (IdListMixin<T>) (Object) copy;
 
         ref.list.addAll(list);
         ref.idMap.putAll(idMap);

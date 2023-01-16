@@ -1,7 +1,6 @@
 package me.basiqueevangelist.dynreg.compat.qsl;
 
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
-import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import org.quiltmc.qsl.base.api.event.Event;
@@ -15,7 +14,7 @@ public final class QuiltRegistryCompat {
     @SuppressWarnings("unchecked")
     public static void init() {
         for (Registry<?> registry : Registry.REGISTRIES) {
-            Event<RegistryEvents.EntryAdded<?>> event = (Event<RegistryEvents.EntryAdded<?>>)(Object) RegistryEvents.getEntryAddEvent(registry);
+            Event<RegistryEvents.EntryAdded<?>> event = (Event<RegistryEvents.EntryAdded<?>>) (Object) RegistryEvents.getEntryAddEvent(registry);
 
             event.addPhaseOrdering(ReactiveEntryTracker.START_PHASE, Event.DEFAULT_PHASE);
             event.addPhaseOrdering(Event.DEFAULT_PHASE, ReactiveEntryTracker.END_PHASE);
