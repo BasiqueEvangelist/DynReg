@@ -3,7 +3,8 @@ package me.basiqueevangelist.dynreg.mixin.palette;
 import me.basiqueevangelist.dynreg.access.CleanablePalette;
 import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
-import me.basiqueevangelist.dynreg.fixer.RemovedStateIdList;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.collection.IdList;
 import net.minecraft.world.chunk.IdListPalette;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +15,7 @@ import java.util.function.Function;
 
 @Mixin(IdListPalette.class)
 public class IdListPaletteMixin<T> implements CleanablePalette<T>, ExtendedIdListPalette {
-    private RemovedStateIdList dynreg$removedBlockList = new RemovedStateIdList();
+    private IdList<BlockState> dynreg$blockIdList = BlockFixer.CURRENT_STATES_LIST;
 
     @Override
     public void dynreg$cleanDeletedElements(Function<T, T> defaultElement) {
@@ -24,24 +25,22 @@ public class IdListPaletteMixin<T> implements CleanablePalette<T>, ExtendedIdLis
     @SuppressWarnings("unchecked")
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
     private void useOldState(int id, CallbackInfoReturnable<T> cir) {
-        if (dynreg$removedBlockList != null) {
-            var removedStates = dynreg$removedBlockList.getRemovedStateIds();
+        if (dynreg$blockIdList != null) {
+            BlockState state = dynreg$blockIdList.get(id);
 
-            var removedState = removedStates.get(id);
-
-            if (removedState != null)
-                cir.setReturnValue((T) removedState);
+            if (state != null)
+                cir.setReturnValue((T) state);
         }
     }
 
     @Override
     public void dynreg$updateVersion() {
-        dynreg$removedBlockList.getRemovedStateIds().clear();
+        dynreg$blockIdList = BlockFixer.CURRENT_STATES_LIST;
     }
 
     @Override
     public void dynreg$markAsBiome() {
-        dynreg$removedBlockList = null;
+        dynreg$blockIdList = null;
 
         // TODO: biome support.
     }

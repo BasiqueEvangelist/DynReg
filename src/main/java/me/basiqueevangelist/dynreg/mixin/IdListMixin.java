@@ -23,4 +23,17 @@ public abstract class IdListMixin<T> implements ExtendedIdList {
         idMap.clear();
         nextId = 0;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public IdList<T> dynreg$copy() {
+        IdList<T> copy = new IdList<>(0);
+        var ref = (IdListMixin<T>)(Object) copy;
+
+        ref.list.addAll(list);
+        ref.idMap.putAll(idMap);
+        ref.nextId = nextId;
+
+        return copy;
+    }
 }

@@ -21,7 +21,7 @@ public abstract class ItemStackMixin {
 
     @Shadow private @Nullable NbtCompound nbt;
 
-    @Inject(method = {"getItem", "getCount", "getName", "getCount", "getNbt", "getOrCreateNbt", "getOrCreateSubNbt"}, at = @At("HEAD"))
+    @Inject(method = {"getItem", "getCount", "getName", "getCount", "getNbt", "getOrCreateNbt", "getOrCreateSubNbt", "isEmpty"}, at = @At("HEAD"))
     private void itemHook(CallbackInfoReturnable<Integer> cir) {
         checkItem();
     }

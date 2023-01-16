@@ -13,19 +13,17 @@ import me.basiqueevangelist.dynreg.util.VersionTracker;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
+import net.minecraft.util.collection.IdList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 public final class BlockFixer {
     public static VersionTracker BLOCKS_VERSION = new VersionTracker();
 
-    static final Set<RemovedStateIdList> REMOVED_ID_LISTS = Collections.newSetFromMap(new WeakHashMap<>());
+    public static IdList<BlockState> CURRENT_STATES_LIST = new IdList<>();
 
     private static boolean hasRemoved = false;
 
@@ -40,6 +38,7 @@ public final class BlockFixer {
         DebugContext.addSupplied("dynreg:block_version", () -> BLOCKS_VERSION.getVersion());
     }
 
+    @SuppressWarnings("unchecked")
     private static void onRegistryFrozen() {
         if (hasRemoved) {
             hasRemoved = false;
@@ -55,6 +54,8 @@ public final class BlockFixer {
                 b.getStateManager().getStates().forEach(Block.STATE_IDS::add);
             }
         }
+
+        CURRENT_STATES_LIST = (IdList<BlockState>) ((ExtendedIdList) Block.STATE_IDS).dynreg$copy();
     }
 
     private static void onBlockDeleted(int rawId, RegistryEntry.Reference<Block> entry) {
@@ -63,10 +64,6 @@ public final class BlockFixer {
         Block block = entry.value();
 
         for (BlockState state : block.getStateManager().getStates()) {
-            for (RemovedStateIdList list : REMOVED_ID_LISTS) {
-                list.getRemovedStateIds().put(Block.STATE_IDS.getRawId(state), state);
-            }
-
             ClearUtils.clearMapKeys(state,
                 PointOfInterestTypes.POI_STATES_TO_TYPE);
 
