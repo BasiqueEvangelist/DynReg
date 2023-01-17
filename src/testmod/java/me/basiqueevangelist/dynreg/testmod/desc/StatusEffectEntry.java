@@ -2,8 +2,10 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;

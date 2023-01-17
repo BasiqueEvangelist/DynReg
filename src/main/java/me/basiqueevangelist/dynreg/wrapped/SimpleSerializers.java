@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.entry;
+package me.basiqueevangelist.dynreg.wrapped;
 
 import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
@@ -292,14 +292,14 @@ public class SimpleSerializers {
     }
 
     public static void writeAttributeModifiers(PacketByteBuf buf, Map<EntityAttribute, EntityAttributeModifier> map) {
-        buf.writeMap(map, (buf2, key) -> {
-            buf2.writeIdentifier(Registry.ATTRIBUTE.getId(key));
-        }, (buf2, modifier) -> {
-            buf2.writeDouble(modifier.getValue());
-            buf2.writeEnumConstant(modifier.getOperation());
-            buf2.writeString(modifier.getName());
-            buf2.writeUuid(modifier.getId());
-        });
+        buf.writeMap(map,
+            (buf2, key) -> buf2.writeIdentifier(Registry.ATTRIBUTE.getId(key)),
+            (buf2, modifier) -> {
+                buf2.writeDouble(modifier.getValue());
+                buf2.writeEnumConstant(modifier.getOperation());
+                buf2.writeString(modifier.getName());
+                buf2.writeUuid(modifier.getId());
+            });
     }
 
     public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(PacketByteBuf buf) {

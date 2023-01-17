@@ -1,9 +1,9 @@
 package me.basiqueevangelist.dynreg.round;
 
+import me.basiqueevangelist.dynreg.entry.AnnounceableResource;
 import me.basiqueevangelist.dynreg.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.holder.EntryData;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -16,8 +16,8 @@ public class EntryScanner implements EntryScanContext {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/EntryScanner");
 
     private final Map<Identifier, EntryData> entryDatas = new HashMap<>();
-    private final Map<RegistryKey<?>, List<EntryData>> pendingDeps = new HashMap<>();
-    private final Map<RegistryKey<?>, EntryData> keyToEntry = new HashMap<>();
+    private final Map<AnnounceableResource, List<EntryData>> pendingDeps = new HashMap<>();
+    private final Map<AnnounceableResource, EntryData> resToEntry = new HashMap<>();
     private EntryData currentEntry = null;
 
     public EntryScanner(Collection<RegistrationEntry> entries, boolean isStartup) {
@@ -45,15 +45,15 @@ public class EntryScanner implements EntryScanContext {
     }
 
     @Override
-    public ScanBuilder announce(Registry<?> registry, Identifier id) {
-        return announce(RegistryKey.of(registry.getKey(), id));
+    public void announce(Registry<?> registry, Identifier id) {
+        announce(RegistryKey.of(registry.getKey(), id));
     }
 
     @Override
-    public ScanBuilder announce(RegistryKey<?> key) {
-        this.keyToEntry.put(key, currentEntry);
+    public void announce(AnnounceableResource res) {
+        this.resToEntry.put(res, currentEntry);
 
-        var pendingKeyDeps = pendingDeps.remove(key);
+        var pendingKeyDeps = pendingDeps.remove(res);
 
         if (pendingKeyDeps != null) {
             for (EntryData pendingEntry : pendingKeyDeps) {
@@ -63,12 +63,10 @@ public class EntryScanner implements EntryScanContext {
                 pendingEntry.dependencies().add(currentEntry);
             }
         }
-
-        return new Builder();
     }
 
     @Override
-    public void announceDependency(Identifier entryId) {
+    public void dependency(Identifier entryId) {
         var dependency = entryDatas.get(entryId);
 
         if (dependency == null)
@@ -78,29 +76,25 @@ public class EntryScanner implements EntryScanContext {
         currentEntry.dependencies().add(dependency);
     }
 
-    private class Builder implements ScanBuilder {
-        @Override
-        public ScanBuilder dependency(Registry<?> registry, Identifier id) {
-            return dependency(RegistryKey.of(registry.getKey(), id));
-        }
+    @Override
+    public void dependency(Registry<?> registry, Identifier id) {
+        dependency(RegistryKey.of(registry.getKey(), id));
+    }
 
-        @Override
-        public ScanBuilder dependency(RegistryKey<?> key) {
-            if (RegistryUtils.getRegistryOf(key).containsId(key.getValue()))
-                return this;
+    @Override
+    public void dependency(AnnounceableResource resource) {
+        if (resource.dynreg$isAlreadyPresent())
+            return;
 
-            var otherEntry = keyToEntry.get(key);
+        var otherEntry = resToEntry.get(resource);
 
-            if (otherEntry != null) {
-                if (otherEntry.equals(currentEntry)) return this;
+        if (otherEntry != null) {
+            if (otherEntry.equals(currentEntry)) return;
 
-                otherEntry.dependents().add(currentEntry);
-                currentEntry.dependencies().add(otherEntry);
-            } else {
-                pendingDeps.computeIfAbsent(key, unused -> new ArrayList<>()).add(currentEntry);
-            }
-
-            return this;
+            otherEntry.dependents().add(currentEntry);
+            currentEntry.dependencies().add(otherEntry);
+        } else {
+            pendingDeps.computeIfAbsent(resource, unused -> new ArrayList<>()).add(currentEntry);
         }
     }
 }

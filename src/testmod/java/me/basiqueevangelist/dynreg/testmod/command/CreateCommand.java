@@ -2,8 +2,8 @@ package me.basiqueevangelist.dynreg.testmod.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import me.basiqueevangelist.dynreg.entry.block.SimpleBlockEntry;
-import me.basiqueevangelist.dynreg.entry.item.SimpleItemEntry;
+import me.basiqueevangelist.dynreg.entry.SimpleBlockEntry;
+import me.basiqueevangelist.dynreg.entry.SimpleItemEntry;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;

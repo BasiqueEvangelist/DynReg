@@ -1,10 +1,7 @@
-package me.basiqueevangelist.dynreg.entry.json;
+package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.entry.block.SimpleBlockEntry;
-import me.basiqueevangelist.dynreg.entry.item.SimpleItemEntry;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;

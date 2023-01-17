@@ -1,8 +1,9 @@
-package me.basiqueevangelist.dynreg.entry.block;
+package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -42,8 +43,7 @@ public class SimpleBlockEntry implements RegistrationEntry {
     @Override
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registry.BLOCK, id);
-
-        ctx.announce(Registry.ITEM, id).dependency(Registry.BLOCK, id);
+        ctx.announce(Registry.ITEM, id);
     }
 
     @Override

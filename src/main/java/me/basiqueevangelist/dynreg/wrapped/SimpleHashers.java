@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.entry;
+package me.basiqueevangelist.dynreg.wrapped;
 
 import io.netty.buffer.ByteBufUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;

@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.entry.json;
+package me.basiqueevangelist.dynreg.wrapped;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.testmod;
 
 import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
-import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
+import me.basiqueevangelist.dynreg.entry.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import me.basiqueevangelist.dynreg.testmod.desc.*;

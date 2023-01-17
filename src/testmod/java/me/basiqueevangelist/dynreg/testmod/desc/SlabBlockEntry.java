@@ -2,18 +2,16 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class SlabBlockEntry implements RegistrationEntry {
@@ -38,8 +36,7 @@ public class SlabBlockEntry implements RegistrationEntry {
     @Override
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registry.BLOCK, id);
-        ctx.announce(Registry.ITEM, id)
-            .dependency(Registry.BLOCK, id);
+        ctx.announce(Registry.ITEM, id);
     }
 
     @Override

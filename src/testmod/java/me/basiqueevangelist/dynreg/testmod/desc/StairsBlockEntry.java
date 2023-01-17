@@ -2,9 +2,11 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
@@ -39,10 +41,10 @@ public class StairsBlockEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id)
-            .dependency(sourceBlock);
-        ctx.announce(Registry.ITEM, id)
-            .dependency(Registry.BLOCK, id);
+        ctx.announce(Registry.BLOCK, id);
+        ctx.announce(Registry.ITEM, id);
+
+        ctx.dependency(sourceBlock);
     }
 
     @Override

@@ -15,6 +15,7 @@
         "ItemStackMixin",
         "LivingEntityMixin",
         "MainMixin",
+        "RegistryKeyMixin",
         "ServerLoginNetworkHandlerMixin",
         "SimpleRegistryMixin",
         "StatusEffectInstanceMixin",

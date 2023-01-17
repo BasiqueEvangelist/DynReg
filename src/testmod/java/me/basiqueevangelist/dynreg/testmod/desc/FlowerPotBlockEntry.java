@@ -2,9 +2,11 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.FlowerPotBlock;
@@ -34,8 +36,8 @@ public class FlowerPotBlockEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id)
-            .dependency(content);
+        ctx.announce(Registry.BLOCK, id);
+        ctx.dependency(content);
     }
 
     @Override

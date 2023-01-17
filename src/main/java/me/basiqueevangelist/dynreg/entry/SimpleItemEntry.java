@@ -1,8 +1,9 @@
-package me.basiqueevangelist.dynreg.entry.item;
+package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
+import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
