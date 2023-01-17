@@ -4,10 +4,10 @@ import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
-import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockDescription;
-import me.basiqueevangelist.dynreg.testmod.desc.PolymerBlockDescription;
-import me.basiqueevangelist.dynreg.testmod.desc.StairsBlockDescription;
-import me.basiqueevangelist.dynreg.testmod.desc.StatusEffectDescription;
+import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockEntry;
+import me.basiqueevangelist.dynreg.testmod.desc.PolymerBlockEntry;
+import me.basiqueevangelist.dynreg.testmod.desc.StairsBlockEntry;
+import me.basiqueevangelist.dynreg.testmod.desc.StatusEffectEntry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
@@ -26,16 +26,16 @@ public class DynRegTest implements ModInitializer {
             CreateCommand.register(dispatcher);
         });
 
-        RegistrationEntries.registerEntryType(FlowerPotBlockDescription.ID, FlowerPotBlockDescription::new);
-        EntryDescriptionReaders.register(FlowerPotBlockDescription.ID, FlowerPotBlockDescription::new);
+        RegistrationEntries.registerEntryType(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
+        EntryDescriptionReaders.register(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(StairsBlockDescription.ID, StairsBlockDescription::new);
-        EntryDescriptionReaders.register(StairsBlockDescription.ID, StairsBlockDescription::new);
+        RegistrationEntries.registerEntryType(StairsBlockEntry.ID, StairsBlockEntry::new);
+        EntryDescriptionReaders.register(StairsBlockEntry.ID, StairsBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(PolymerBlockDescription.ID, PolymerBlockDescription::new);
-        EntryDescriptionReaders.register(PolymerBlockDescription.ID, PolymerBlockDescription::new);
+        RegistrationEntries.registerEntryType(PolymerBlockEntry.ID, PolymerBlockEntry::new);
+        EntryDescriptionReaders.register(PolymerBlockEntry.ID, PolymerBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(StatusEffectDescription.ID, StatusEffectDescription::new);
-        EntryDescriptionReaders.register(StatusEffectDescription.ID, StatusEffectDescription::new);
+        RegistrationEntries.registerEntryType(StatusEffectEntry.ID, StatusEffectEntry::new);
+        EntryDescriptionReaders.register(StatusEffectEntry.ID, StatusEffectEntry::new);
     }
 }

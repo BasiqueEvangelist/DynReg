@@ -12,14 +12,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-public class StatusEffectDescription implements RegistrationEntry {
+public class StatusEffectEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("status_effect");
 
     private final Identifier id;
     private final StatusEffectCategory category;
     private final int color;
 
-    public StatusEffectDescription(Identifier id, JsonObject obj) {
+    public StatusEffectEntry(Identifier id, JsonObject obj) {
         this.id = id;
         this.category = switch (JsonHelper.getString(obj, "category")) {
             case "beneficial" -> StatusEffectCategory.BENEFICIAL;
@@ -30,7 +30,7 @@ public class StatusEffectDescription implements RegistrationEntry {
         this.color = JsonHelper.getInt(obj, "color");
     }
 
-    public StatusEffectDescription(Identifier id, PacketByteBuf buf) {
+    public StatusEffectEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.category = buf.readEnumConstant(StatusEffectCategory.class);
         this.color = buf.readInt();

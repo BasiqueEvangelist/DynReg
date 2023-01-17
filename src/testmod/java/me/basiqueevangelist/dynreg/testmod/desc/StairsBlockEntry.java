@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-public class StairsBlockDescription implements RegistrationEntry {
+public class StairsBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("stairs");
 
     private final Identifier id;
@@ -23,14 +23,14 @@ public class StairsBlockDescription implements RegistrationEntry {
     private final AbstractBlock.Settings blockSettings;
     private final Item.Settings itemSettings;
 
-    public StairsBlockDescription(Identifier id, JsonObject json) {
+    public StairsBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
         this.sourceBlock = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = SimpleReaders.readItemSettings(json);
     }
 
-    public StairsBlockDescription(Identifier id, PacketByteBuf buf) {
+    public StairsBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.sourceBlock = LazyEntryRef.read(buf, Registry.BLOCK);
         this.blockSettings = SimpleSerializers.readBlockSettings(buf);

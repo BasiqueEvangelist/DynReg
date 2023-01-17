@@ -19,7 +19,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class PolymerBlockDescription implements RegistrationEntry {
+public class PolymerBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("polymer_block");
 
     private final Identifier id;
@@ -27,14 +27,14 @@ public class PolymerBlockDescription implements RegistrationEntry {
     private final AbstractBlock.Settings blockSettings;
     private final Item.Settings itemSettings;
 
-    public PolymerBlockDescription(Identifier id, JsonObject json) {
+    public PolymerBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
         this.sourceBlock = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = SimpleReaders.readItemSettings(json);
     }
 
-    public PolymerBlockDescription(Identifier id, PacketByteBuf buf) {
+    public PolymerBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.sourceBlock = LazyEntryRef.read(buf, Registry.BLOCK);
         this.blockSettings = SimpleSerializers.readBlockSettings(buf);

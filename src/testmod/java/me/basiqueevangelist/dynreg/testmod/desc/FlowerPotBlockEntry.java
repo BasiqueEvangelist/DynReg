@@ -13,20 +13,20 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-public class FlowerPotBlockDescription implements RegistrationEntry {
+public class FlowerPotBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("flower_pot_block");
 
     private final Identifier id;
     private final LazyEntryRef<Block> content;
     private final AbstractBlock.Settings settings;
 
-    public FlowerPotBlockDescription(Identifier id, PacketByteBuf buf) {
+    public FlowerPotBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.content = LazyEntryRef.read(buf, Registry.BLOCK);
         this.settings = SimpleSerializers.readBlockSettings(buf);
     }
 
-    public FlowerPotBlockDescription(Identifier id, JsonObject obj) {
+    public FlowerPotBlockEntry(Identifier id, JsonObject obj) {
         this.id = id;
         this.content = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(obj, "content")));
         this.settings = SimpleReaders.readBlockSettings(obj);
