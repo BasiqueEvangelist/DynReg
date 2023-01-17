@@ -29,6 +29,9 @@ public class DynRegTest implements ModInitializer {
         RegistrationEntries.registerEntryType(StairsBlockEntry.ID, StairsBlockEntry::new);
         EntryDescriptionReaders.register(StairsBlockEntry.ID, StairsBlockEntry::new);
 
+        RegistrationEntries.registerEntryType(SlabBlockEntry.ID, SlabBlockEntry::new);
+        EntryDescriptionReaders.register(SlabBlockEntry.ID, SlabBlockEntry::new);
+
         RegistrationEntries.registerEntryType(PolymerBlockEntry.ID, PolymerBlockEntry::new);
         EntryDescriptionReaders.register(PolymerBlockEntry.ID, PolymerBlockEntry::new);
 
