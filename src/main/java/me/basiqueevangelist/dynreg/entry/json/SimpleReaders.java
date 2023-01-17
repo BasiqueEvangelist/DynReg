@@ -4,14 +4,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import me.basiqueevangelist.dynreg.entry.block.SimpleBlockEntry;
-import me.basiqueevangelist.dynreg.entry.item.SimpleItemEntry;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
@@ -23,20 +23,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 
 public final class SimpleReaders {
     private SimpleReaders() {
 
-    }
-
-    public static SimpleItemEntry readSimpleItem(Identifier id, JsonObject obj) {
-        return new SimpleItemEntry(id, readItemSettings(obj));
-    }
-
-    public static SimpleBlockEntry readSimpleBlock(Identifier id, JsonObject obj) {
-        return new SimpleBlockEntry(id, readBlockSettings(obj), readItemSettings(obj));
     }
 
     public static Item.Settings readItemSettings(JsonObject obj) {
@@ -216,7 +207,7 @@ public final class SimpleReaders {
         return builder.build();
     }
 
-    private static StatusEffectInstance readStatusEffectInstance(JsonObject obj) {
+    public static StatusEffectInstance readStatusEffectInstance(JsonObject obj) {
         StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(JsonHelper.getString(obj, "effect")));
         byte amplifier = JsonHelper.getByte(obj, "amplifier");
         int duration = JsonHelper.getInt(obj, "duration");
@@ -225,5 +216,31 @@ public final class SimpleReaders {
         boolean showIcon = JsonHelper.getBoolean(obj, "show_icon", true);
 
         return new StatusEffectInstance(effect, duration, amplifier, ambient, showParticles, showIcon);
+    }
+
+    public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(JsonObject obj) {
+        Map<EntityAttribute, EntityAttributeModifier> map = new HashMap<>();
+
+        for (var entry : obj.entrySet()) {
+            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(entry.getKey()));
+
+            if (attribute == null) throw new JsonSyntaxException(entry.getKey() + " is an invalid attribute");
+
+            JsonObject modifier = JsonHelper.asObject(entry.getValue(), entry.getKey());
+
+            double value = JsonHelper.getDouble(modifier, "value");
+            EntityAttributeModifier.Operation op = switch (JsonHelper.getString(modifier, "operation")) {
+                case "addition" -> EntityAttributeModifier.Operation.ADDITION;
+                case "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
+                case "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+                default -> throw new IllegalStateException("invalid operation type");
+            };
+            String name = JsonHelper.getString(modifier, "name");
+            UUID uuid = UUID.fromString(JsonHelper.getString(modifier, "uuid"));
+
+            map.put(attribute, new EntityAttributeModifier(uuid, name, value, op));
+        }
+
+        return map;
     }
 }

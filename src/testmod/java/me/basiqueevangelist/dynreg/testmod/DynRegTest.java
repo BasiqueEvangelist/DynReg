@@ -4,10 +4,7 @@ import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
 import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
-import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockEntry;
-import me.basiqueevangelist.dynreg.testmod.desc.PolymerBlockEntry;
-import me.basiqueevangelist.dynreg.testmod.desc.StairsBlockEntry;
-import me.basiqueevangelist.dynreg.testmod.desc.StatusEffectEntry;
+import me.basiqueevangelist.dynreg.testmod.desc.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
@@ -37,5 +34,8 @@ public class DynRegTest implements ModInitializer {
 
         RegistrationEntries.registerEntryType(StatusEffectEntry.ID, StatusEffectEntry::new);
         EntryDescriptionReaders.register(StatusEffectEntry.ID, StatusEffectEntry::new);
+
+        RegistrationEntries.registerEntryType(PotionEntry.ID, PotionEntry::new);
+        EntryDescriptionReaders.register(PotionEntry.ID, PotionEntry::new);
     }
 }

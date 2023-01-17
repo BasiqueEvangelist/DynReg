@@ -7,6 +7,8 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
@@ -20,6 +22,8 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
 
 public class SimpleSerializers {
     public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
@@ -285,5 +289,28 @@ public class SimpleSerializers {
         if (fireproof) settings.fireproof();
 
         return settings;
+    }
+
+    public static void writeAttributeModifiers(PacketByteBuf buf, Map<EntityAttribute, EntityAttributeModifier> map) {
+        buf.writeMap(map, (buf2, key) -> {
+            buf2.writeIdentifier(Registry.ATTRIBUTE.getId(key));
+        }, (buf2, modifier) -> {
+            buf2.writeDouble(modifier.getValue());
+            buf2.writeEnumConstant(modifier.getOperation());
+            buf2.writeString(modifier.getName());
+            buf2.writeUuid(modifier.getId());
+        });
+    }
+
+    public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(PacketByteBuf buf) {
+        return buf.readMap(
+            (buf2) -> Registry.ATTRIBUTE.get(buf2.readIdentifier()),
+            (buf2) -> {
+                double value = buf2.readDouble();
+                EntityAttributeModifier.Operation op = buf2.readEnumConstant(EntityAttributeModifier.Operation.class);
+                String name = buf2.readString();
+                UUID uuid = buf2.readUuid();
+                return new EntityAttributeModifier(uuid, name, value, op);
+            });
     }
 }

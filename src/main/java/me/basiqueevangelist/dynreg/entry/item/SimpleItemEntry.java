@@ -1,6 +1,8 @@
 package me.basiqueevangelist.dynreg.entry.item;
 
+import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
+import me.basiqueevangelist.dynreg.entry.json.SimpleReaders;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -13,6 +15,11 @@ public class SimpleItemEntry implements RegistrationEntry {
     public SimpleItemEntry(Identifier id, Item.Settings settings) {
         this.id = id;
         this.settings = settings;
+    }
+
+    public SimpleItemEntry(Identifier id, JsonObject obj) {
+        this.id = id;
+        this.settings = SimpleReaders.readItemSettings(obj);
     }
 
     public SimpleItemEntry(Identifier id, PacketByteBuf buf) {

@@ -3,6 +3,8 @@ package me.basiqueevangelist.dynreg.entry.json;
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.entry.block.SimpleBlockEntry;
+import me.basiqueevangelist.dynreg.entry.item.SimpleItemEntry;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -25,7 +27,7 @@ public final class EntryDescriptionReaders {
     }
 
     static {
-        register(DynReg.id("simple_block"), SimpleReaders::readSimpleBlock);
-        register(DynReg.id("simple_item"), SimpleReaders::readSimpleItem);
+        register(DynReg.id("simple_block"), SimpleBlockEntry::new);
+        register(DynReg.id("simple_item"), SimpleItemEntry::new);
     }
 }
