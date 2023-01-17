@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.event.ResyncCallback;
+import me.basiqueevangelist.dynreg.event.RoundEvents;
 import me.basiqueevangelist.dynreg.holder.EntryData;
 import me.basiqueevangelist.dynreg.holder.EntryHasher;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
@@ -129,82 +130,85 @@ public class DynamicRound {
 
     public void run() {
         try {
-            InfallibleCloseable clientUnfreezer = () -> {
-            };
-
-            if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && server != null) {
-                clientUnfreezer = DynRegClient.freezeClientThread();
-            }
+            InfallibleCloseable clientUnfreezer =
+                FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && server != null
+                    ? DynRegClient.freezeClientThread()
+                    : () -> {};
 
             LOGGER.info("Starting dynamic round");
             long time = System.nanoTime();
 
-            for (Registry<?> registry : Registry.REGISTRIES) {
-                RegistryUtils.unfreeze(registry);
-            }
-
-            var removedEntries = new ArrayList<EntryData>();
-
-            for (Identifier oldEntryId : removedEntryIds) {
-                var entry = LoadedEntryHolder.entries().get(oldEntryId);
-
-                if (entry == null) {
-                    LOGGER.warn("Removed entry {} was already removed", oldEntryId);
-                    continue;
+            try (clientUnfreezer) {
+                for (Registry<?> registry : Registry.REGISTRIES) {
+                    RegistryUtils.unfreeze(registry);
                 }
 
-                removedEntries.add(entry);
-            }
+                RoundEvents.PRE.invoker().preRound();
 
-            for (int i = 0; i < removedEntries.size(); i++) {
-                for (var dependent : removedEntries.get(i).dependents()) {
-                    if (!removedEntries.contains(dependent))
-                        removedEntries.add(dependent);
+                var removedEntries = new ArrayList<EntryData>();
+
+                for (Identifier oldEntryId : removedEntryIds) {
+                    var entry = LoadedEntryHolder.entries().get(oldEntryId);
+
+                    if (entry == null) {
+                        LOGGER.warn("Removed entry {} was already removed", oldEntryId);
+                        continue;
+                    }
+
+                    removedEntries.add(entry);
                 }
-            }
 
-            for (var removedEntry : removedEntries) {
-                for (var dependency : removedEntry.dependencies())
-                    dependency.dependents().remove(removedEntry);
-
-                removedEntry.entry().onRemoved();
-
-                for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
-                    try {
-                        RegistryUtils.remove(registeredKey);
-                    } catch (NoSuchElementException e) {
-                        LOGGER.error("{} is registered, but has removed {}/{}", removedEntry.entry().id(), registeredKey.getRegistry(), registeredKey.getValue());
+                for (int i = 0; i < removedEntries.size(); i++) {
+                    for (var dependent : removedEntries.get(i).dependents()) {
+                        if (!removedEntries.contains(dependent))
+                            removedEntries.add(dependent);
                     }
                 }
 
-                LoadedEntryHolder.removeEntry(removedEntry.entry().id());
-            }
+                for (var removedEntry : removedEntries) {
+                    for (var dependency : removedEntry.dependencies())
+                        dependency.dependents().remove(removedEntry);
 
-            EntryScanner scanner = new EntryScanner(addedEntries.values(), startupEntries);
+                    removedEntry.entry().onRemoved();
 
-            var entries = scanner.scan();
-            var cycle = new MutableBoolean(false);
-            var order = TopSort.topSort(entries.values(), EntryData::dependents, cycle);
+                    for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
+                        try {
+                            RegistryUtils.remove(registeredKey);
+                        } catch (NoSuchElementException e) {
+                            LOGGER.error("{} is registered, but has removed {}/{}", removedEntry.entry().id(), registeredKey.getRegistry(), registeredKey.getValue());
+                        }
+                    }
 
-            for (var entry : order) {
-                try {
-                    entry.entry().register(entry.createRegistrationContext());
-
-                    LoadedEntryHolder.addEntry(entry);
-                } catch (Exception e) {
-                    LOGGER.error("Encountered error while registering {}", entry.entry().id(), e);
+                    LoadedEntryHolder.removeEntry(removedEntry.entry().id());
                 }
-            }
 
-            for (var task : tasks) {
-                task.run();
-            }
+                EntryScanner scanner = new EntryScanner(addedEntries.values(), startupEntries);
 
-            for (Registry<?> registry : Registry.REGISTRIES) {
-                registry.freeze();
-            }
+                var entries = scanner.scan();
+                var cycle = new MutableBoolean(false);
+                var order = TopSort.topSort(entries.values(), EntryData::dependents, cycle);
 
-            clientUnfreezer.close();
+                for (var entry : order) {
+                    try {
+                        entry.entry().register(entry.createRegistrationContext());
+
+                        LoadedEntryHolder.addEntry(entry);
+                    } catch (Exception e) {
+                        LOGGER.error("Encountered error while registering {}", entry.entry().id(), e);
+                    }
+                }
+
+                for (var task : tasks) {
+                    task.run();
+                }
+
+                for (Registry<?> registry : Registry.REGISTRIES) {
+                    registry.freeze();
+                }
+
+                RoundEvents.POST.invoker().postRound();
+
+            }
 
             CompletableFuture<Void> reloadFuture = null;
 

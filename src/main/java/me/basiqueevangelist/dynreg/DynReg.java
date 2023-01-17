@@ -1,13 +1,12 @@
 package me.basiqueevangelist.dynreg;
 
 import me.basiqueevangelist.dynreg.compat.CompatLoader;
-import me.basiqueevangelist.dynreg.fixer.BlockFixer;
-import me.basiqueevangelist.dynreg.fixer.GlobalFixer;
-import me.basiqueevangelist.dynreg.fixer.ItemFixer;
+import me.basiqueevangelist.dynreg.fixer.*;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,9 @@ public class DynReg implements ModInitializer {
         ItemFixer.init();
         BlockFixer.init();
         GlobalFixer.init();
+        StatusEffectFixer.init();
+        if (!FabricLoader.getInstance().isModLoaded("quilt_base"))
+            FabricGlobalFixer.init();
 
         ReactiveEntryTracker.init();
         LoadedEntryHolder.init();

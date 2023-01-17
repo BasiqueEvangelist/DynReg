@@ -17,17 +17,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = SimpleRegistry.class, priority = 1100)
 public class FabricSimpleRegistryMixin<T> {
     @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow
+    @Shadow(remap = false)
     @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
     private Object2IntMap<Identifier> fabric_prevIndexedEntries;
     @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow
+    @Shadow(remap = false)
     @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
     private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
 
     @SuppressWarnings("ReferenceToMixin")
     @Dynamic(mixin = SimpleRegistryMixin.class)
-    @Inject(method = "dynreg$remove", at = @At("RETURN"))
+    @Inject(method = "dynreg$remove", at = @At("RETURN"), remap = false)
     private void mald(RegistryKey<T> key, CallbackInfo info) {
         if (fabric_prevEntries != null)
             fabric_prevEntries.remove(key.getValue());

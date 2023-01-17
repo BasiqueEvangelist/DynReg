@@ -7,6 +7,7 @@ import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import me.basiqueevangelist.dynreg.testmod.desc.FlowerPotBlockDescription;
 import me.basiqueevangelist.dynreg.testmod.desc.PolymerBlockDescription;
 import me.basiqueevangelist.dynreg.testmod.desc.StairsBlockDescription;
+import me.basiqueevangelist.dynreg.testmod.desc.StatusEffectDescription;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
@@ -33,5 +34,8 @@ public class DynRegTest implements ModInitializer {
 
         RegistrationEntries.registerEntryType(PolymerBlockDescription.ID, PolymerBlockDescription::new);
         EntryDescriptionReaders.register(PolymerBlockDescription.ID, PolymerBlockDescription::new);
+
+        RegistrationEntries.registerEntryType(StatusEffectDescription.ID, StatusEffectDescription::new);
+        EntryDescriptionReaders.register(StatusEffectDescription.ID, StatusEffectDescription::new);
     }
 }

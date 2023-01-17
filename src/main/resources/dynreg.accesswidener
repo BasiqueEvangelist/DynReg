@@ -53,3 +53,4 @@ accessible field net/minecraft/block/AbstractBlock$Settings isAir Z
 accessible field net/minecraft/block/AbstractBlock$Settings dynamicBounds Z
 accessible field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
 mutable field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
+accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/world/level/storage/LevelStorage$Session;

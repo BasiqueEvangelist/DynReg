@@ -1,25 +1,30 @@
 package me.basiqueevangelist.dynreg.util;
 
 import com.mojang.datafixers.util.Pair;
+import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jetbrains.annotations.Nullable;
 
-public final class BlockStateUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/BlockStateUtil");
-
-    private BlockStateUtil() {
+public final class AdaptUtil {
+    private AdaptUtil() {
 
     }
 
-    public static BlockState recreateState(BlockState oldState) {
+    public static @Nullable StatusEffect adaptEffect(StatusEffect effect) {
+        return Registry.STATUS_EFFECT
+            .getOrEmpty(((DeletableObjectInternal) effect).dynreg$getId())
+            .orElse(null);
+    }
+
+    public static BlockState adaptState(BlockState oldState) {
         @SuppressWarnings("deprecation") Identifier id = oldState.getBlock().getRegistryEntry().registryKey().getValue();
 
         Block newBlock = Registry.BLOCK.getOrEmpty(id).orElse(null);

@@ -73,14 +73,18 @@ public final class GlobalFixer<T> {
     private void onEntryDeleted(int rawId, RegistryEntry.Reference<?> entry) {
         ((DeletableObjectInternal) entry).dynreg$setDeleted(true);
 
-        if (entry.value() instanceof DeletableObjectInternal obj)
+        if (entry.value() instanceof DeletableObjectInternal obj) {
             obj.dynreg$setDeleted(true);
+            obj.dynreg$setId(entry.getKey().orElseThrow().getValue());
+        }
     }
 
     private void onEntryAdded(int rawId, Identifier id, Object obj) {
         ((DeletableObjectInternal) registry.getEntry(rawId).orElseThrow()).dynreg$setDeleted(false);
 
-        if (obj instanceof DeletableObjectInternal doi)
+        if (obj instanceof DeletableObjectInternal doi) {
             doi.dynreg$setDeleted(false);
+            doi.dynreg$setId(id);
+        }
     }
 }
