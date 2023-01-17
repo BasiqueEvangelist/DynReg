@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.data;
 
+import me.basiqueevangelist.dynreg.event.StaticDataLoadCallback;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
@@ -10,17 +11,14 @@ public class StaticDataLoader {
     // Run after mod init.
     public static void init() {
         try (var manager = loadPacks()) {
-            var entries = RegistryEntryLoader.loadAll(manager);
             var round = new DynamicRound((MinecraftServer) null);
 
             round.markAsStartup();
 
-            for (var entry : entries.values()) {
-                round.addEntry(entry);
-                RegistryEntryLoader.ADDED_ENTRIES.add(entry.id());
-            }
+            StaticDataLoadCallback.EVENT.invoker().onStaticDataLoad(manager, round);
 
-            round.run();
+            if (round.needsRunning())
+                round.run();
         }
     }
 

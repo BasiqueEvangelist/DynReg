@@ -27,4 +27,9 @@ public record EntryData(RegistrationEntry entry, List<RegistryKey<?>> registered
             return Registry.register(registry, id, item);
         }
     }
+
+    @Override
+    public String toString() {
+        return "EntryData[" + entry + "]";
+    }
 }

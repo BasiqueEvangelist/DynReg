@@ -170,7 +170,11 @@ public class DynamicRound {
                 removedEntry.entry().onRemoved();
 
                 for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
-                    RegistryUtils.remove(registeredKey);
+                    try {
+                        RegistryUtils.remove(registeredKey);
+                    } catch (NoSuchElementException e) {
+                        LOGGER.error("{} is registered, but has removed {}/{}", removedEntry.entry().id(), registeredKey.getRegistry(), registeredKey.getValue());
+                    }
                 }
 
                 LoadedEntryHolder.removeEntry(removedEntry.entry().id());

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.json.EntryDescriptionReaders;
+import me.basiqueevangelist.dynreg.event.StaticDataLoadCallback;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
@@ -27,11 +28,25 @@ import java.util.concurrent.Executor;
 public class RegistryEntryLoader implements SimpleResourceReloadListener<Map<Identifier, RegistrationEntry>> {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/RegistryEntryLoader");
     static final HashSet<Identifier> ADDED_ENTRIES = new HashSet<>();
+    static final HashSet<Identifier> STARTUP_ENTRIES = new HashSet<>();
 
     public static final RegistryEntryLoader INSTANCE = new RegistryEntryLoader();
 
-    static {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> ADDED_ENTRIES.clear());
+    public static void init(){
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            ADDED_ENTRIES.clear();
+            ADDED_ENTRIES.addAll(STARTUP_ENTRIES);
+        });
+
+        StaticDataLoadCallback.EVENT.register((manager, round) -> {
+            var entries = loadAll(manager);
+
+            for (var entry : entries.values()) {
+                round.addEntry(entry);
+                RegistryEntryLoader.ADDED_ENTRIES.add(entry.id());
+                RegistryEntryLoader.STARTUP_ENTRIES.add(entry.id());
+            }
+        });
     }
 
     public static Map<Identifier, RegistrationEntry> loadAll(ResourceManager manager) {

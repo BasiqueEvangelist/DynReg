@@ -1,6 +1,5 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import com.google.common.collect.BiMap;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -29,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Mixin(value = SimpleRegistry.class, priority = 1100)
+@Mixin(value = SimpleRegistry.class)
 public abstract class SimpleRegistryMixin<T> extends Registry<T> implements ExtendedRegistry<T> {
     @Shadow private boolean frozen;
     @Shadow
@@ -66,20 +65,10 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     @Shadow
     @Final
     private Map<T, Lifecycle> entryToLifecycle;
-    @Shadow private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList;
     @Shadow
     @Nullable
     private List<RegistryEntry.Reference<T>> cachedEntries;
     @Shadow private int nextId;
-
-    @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow
-    @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
-    private Object2IntMap<Identifier> fabric_prevIndexedEntries;
-    @SuppressWarnings({"ReferenceToMixin", "UnstableApiUsage"})
-    @Shadow
-    @Dynamic(mixin = net.fabricmc.fabric.mixin.registry.sync.SimpleRegistryMixin.class)
-    private BiMap<Identifier, RegistryEntry.Reference<T>> fabric_prevEntries;
 
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
         for (var callback : callbacks) {
@@ -125,12 +114,6 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         valueToEntry.remove(entry.value());
         entryToLifecycle.remove(entry.value());
         dynreg$freeIds.add(rawId);
-
-        if (fabric_prevEntries != null)
-            fabric_prevEntries.remove(key.getValue());
-
-        if (fabric_prevIndexedEntries != null)
-            fabric_prevIndexedEntries.removeInt(key.getValue());
 
         cachedEntries = null;
     }

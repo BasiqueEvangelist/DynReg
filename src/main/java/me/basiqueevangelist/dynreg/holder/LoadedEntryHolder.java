@@ -3,9 +3,9 @@ package me.basiqueevangelist.dynreg.holder;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.event.PreSyncCallback;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.Packet;
 import net.minecraft.util.Identifier;
 
@@ -24,13 +24,11 @@ public final class LoadedEntryHolder {
     }
 
     public static void init() {
-        ServerPlayConnectionEvents.JOIN.addPhaseOrdering(ROUND_SYNC_PHASE, Event.DEFAULT_PHASE);
-        ServerPlayConnectionEvents.JOIN.register(ROUND_SYNC_PHASE, (handler, sender, server) -> {
-            if (ADDED_ENTRIES.size() == 0) return;
-
+        PreSyncCallback.EVENT.addPhaseOrdering(ROUND_SYNC_PHASE, Event.DEFAULT_PHASE);
+        PreSyncCallback.EVENT.register(ROUND_SYNC_PHASE, (server, player, connection) -> {
             boolean doResourceReload = server.getResourcePackProperties().isEmpty();
 
-            boolean isHost = server.isHost(handler.player.getGameProfile());
+            boolean isHost = server.isHost(player.getGameProfile());
 
             if (isHost) {
                 if (doResourceReload)
@@ -43,7 +41,7 @@ public final class LoadedEntryHolder {
             EntryHasher hasher = new EntryHasher();
 
             for (var entry : LoadedEntryHolder.entries().values()) {
-                var synced = entry.entry().toSynced(handler.player);
+                var synced = entry.entry().toSynced(player);
 
                 if (synced != null) {
                     syncedEntries.add(synced);
@@ -52,7 +50,7 @@ public final class LoadedEntryHolder {
             }
 
             Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hasher.hash(), doResourceReload, syncedEntries);
-            handler.sendPacket(packet);
+            connection.send(packet);
         });
     }
 
