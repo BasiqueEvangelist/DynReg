@@ -4,8 +4,8 @@ import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ClientItemFixer {
     private ClientItemFixer() {
@@ -13,7 +13,7 @@ public class ClientItemFixer {
     }
 
     public static void init() {
-        RegistryEntryAddedCallback.event(Registry.ITEM).register(ClientItemFixer::onItemAdded);
+        RegistryEntryAddedCallback.event(Registries.ITEM).register(ClientItemFixer::onItemAdded);
     }
 
     private static void onItemAdded(int rawId, Identifier id, Item value) {

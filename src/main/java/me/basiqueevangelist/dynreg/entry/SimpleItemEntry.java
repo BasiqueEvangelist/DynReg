@@ -6,8 +6,8 @@ import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SimpleItemEntry implements RegistrationEntry {
     private final Identifier id;
@@ -30,12 +30,12 @@ public class SimpleItemEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.ITEM, id);
+        ctx.announce(Registries.ITEM, id);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
-        ctx.register(Registry.ITEM, id, new Item(settings));
+        ctx.register(Registries.ITEM, id, new Item(settings));
     }
 
     @Override

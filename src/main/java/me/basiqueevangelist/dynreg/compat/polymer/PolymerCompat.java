@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.compat.polymer;
 
-import eu.pb4.polymer.api.utils.PolymerUtils;
+import eu.pb4.polymer.core.api.utils.PolymerUtils;
 import me.basiqueevangelist.dynreg.event.ResyncCallback;
 
 public final class PolymerCompat {

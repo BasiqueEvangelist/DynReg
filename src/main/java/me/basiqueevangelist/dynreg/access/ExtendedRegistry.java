@@ -3,7 +3,7 @@ package me.basiqueevangelist.dynreg.access;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
 import net.fabricmc.fabric.api.event.Event;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.RegistryKey;
 
 public interface ExtendedRegistry<T> {
     Event<RegistryEntryDeletedCallback<T>> dynreg$getEntryDeletedEvent();

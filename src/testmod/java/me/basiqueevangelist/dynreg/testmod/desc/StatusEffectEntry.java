@@ -11,9 +11,9 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class StatusEffectEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.STATUS_EFFECT, id);
+        ctx.announce(Registries.STATUS_EFFECT, id);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class StatusEffectEntry implements RegistrationEntry {
 
         effect.getAttributeModifiers().putAll(modifiers);
 
-        ctx.register(Registry.STATUS_EFFECT, id, effect);
+        ctx.register(Registries.STATUS_EFFECT, id, effect);
     }
 
     @Override

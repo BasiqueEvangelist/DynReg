@@ -4,9 +4,10 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
 import me.basiqueevangelist.dynreg.util.ReflectionUtil;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.base.api.event.Event;
 import org.quiltmc.qsl.registry.api.event.RegistryEvents;
@@ -26,7 +27,7 @@ public final class QuiltRegistryCompat {
 
     @SuppressWarnings("unchecked")
     public static void init() {
-        for (Registry<?> registry : Registry.REGISTRIES) {
+        for (Registry<?> registry : Registries.REGISTRIES) {
             Event<RegistryEvents.EntryAdded<?>> event = (Event<RegistryEvents.EntryAdded<?>>) (Object) RegistryEvents.getEntryAddEvent(registry);
 
             event.addPhaseOrdering(ReactiveEntryTracker.START_PHASE, Event.DEFAULT_PHASE);

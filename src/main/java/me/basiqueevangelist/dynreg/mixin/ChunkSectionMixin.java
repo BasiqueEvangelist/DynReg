@@ -40,7 +40,7 @@ public abstract class ChunkSectionMixin {
 
     private int dynreg$blocksVersion = BlockFixer.BLOCKS_VERSION.getVersion();
 
-    @ModifyArg(method = "<init>(ILnet/minecraft/util/registry/Registry;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/PalettedContainer;<init>(Lnet/minecraft/util/collection/IndexedIterable;Ljava/lang/Object;Lnet/minecraft/world/chunk/PalettedContainer$PaletteProvider;)V", ordinal = 0))
+    @ModifyArg(method = "<init>(ILnet/minecraft/registry/Registry;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/PalettedContainer;<init>(Lnet/minecraft/util/collection/IndexedIterable;Ljava/lang/Object;Lnet/minecraft/world/chunk/PalettedContainer$PaletteProvider;)V", ordinal = 0))
     private IndexedIterable<BlockState> wrapIterable(IndexedIterable<BlockState> idList) {
         return new DefaultedIndexIterable<>(idList, Blocks.AIR.getDefaultState());
     }

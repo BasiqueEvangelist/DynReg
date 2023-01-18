@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.entry.AnnounceableResource;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.RegistryKey;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(RegistryKey.class)

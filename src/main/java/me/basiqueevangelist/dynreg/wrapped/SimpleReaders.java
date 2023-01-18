@@ -16,12 +16,11 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 import java.util.*;
 
@@ -41,9 +40,6 @@ public final class SimpleReaders {
 
         if (obj.has("recipe_remainder"))
             builder.recipeRemainder(JsonHelper.getItem(obj, "recipe_remainder"));
-
-        if (obj.has("item_group"))
-            builder.group(readItemGroup(obj, "item_group"));
 
         if (obj.has("rarity"))
             builder.rarity(NamedEntries.RARITIES.get(JsonHelper.getString(obj, "rarity")));
@@ -163,18 +159,18 @@ public final class SimpleReaders {
     }
 
     private static SoundEvent getSoundEvent(JsonObject obj, String key) {
-        return Registry.SOUND_EVENT.get(new Identifier(JsonHelper.getString(obj, key)));
+        return Registries.SOUND_EVENT.get(new Identifier(JsonHelper.getString(obj, key)));
     }
 
-    private static ItemGroup readItemGroup(JsonObject obj, String key) {
-        String name = JsonHelper.getString(obj, key);
-        ItemGroup group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(name)).findAny().orElse(null);
-
-        if (group == null)
-            throw new JsonSyntaxException("Expected " + key + " to be valid item group, got unknown item group name " + name);
-
-        return group;
-    }
+//    private static ItemGroup readItemGroup(JsonObject obj, String key) {
+//        String name = JsonHelper.getString(obj, key);
+//        ItemGroup group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(name)).findAny().orElse(null);
+//
+//        if (group == null)
+//            throw new JsonSyntaxException("Expected " + key + " to be valid item group, got unknown item group name " + name);
+//
+//        return group;
+//    }
 
     private static FoodComponent readFoodComponent(JsonObject obj) {
         FoodComponent.Builder builder = new FoodComponent.Builder();
@@ -208,7 +204,7 @@ public final class SimpleReaders {
     }
 
     public static StatusEffectInstance readStatusEffectInstance(JsonObject obj) {
-        StatusEffect effect = Registry.STATUS_EFFECT.get(new Identifier(JsonHelper.getString(obj, "effect")));
+        StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(JsonHelper.getString(obj, "effect")));
         byte amplifier = JsonHelper.getByte(obj, "amplifier");
         int duration = JsonHelper.getInt(obj, "duration");
         boolean ambient = JsonHelper.getBoolean(obj, "ambient", false);
@@ -222,7 +218,7 @@ public final class SimpleReaders {
         Map<EntityAttribute, EntityAttributeModifier> map = new HashMap<>();
 
         for (var entry : obj.entrySet()) {
-            EntityAttribute attribute = Registry.ATTRIBUTE.get(new Identifier(entry.getKey()));
+            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(entry.getKey()));
 
             if (attribute == null) throw new JsonSyntaxException(entry.getKey() + " is an invalid attribute");
 

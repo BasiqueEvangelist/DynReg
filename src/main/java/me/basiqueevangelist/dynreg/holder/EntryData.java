@@ -2,9 +2,9 @@ package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 import java.util.ArrayList;
 import java.util.List;

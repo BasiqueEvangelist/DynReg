@@ -4,9 +4,9 @@ import me.basiqueevangelist.dynreg.entry.AnnounceableResource;
 import me.basiqueevangelist.dynreg.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.holder.EntryData;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

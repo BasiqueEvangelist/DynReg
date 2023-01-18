@@ -13,15 +13,13 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.registry.Registry;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -143,11 +141,11 @@ public class SimpleSerializers {
 
         buf.writeFloat(group.volume);
         buf.writeFloat(group.pitch);
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(group.getBreakSound()));
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(group.getStepSound()));
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(group.getPlaceSound()));
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(group.getHitSound()));
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(group.getFallSound()));
+        buf.writeVarInt(Registries.SOUND_EVENT.getRawId(group.getBreakSound()));
+        buf.writeVarInt(Registries.SOUND_EVENT.getRawId(group.getStepSound()));
+        buf.writeVarInt(Registries.SOUND_EVENT.getRawId(group.getPlaceSound()));
+        buf.writeVarInt(Registries.SOUND_EVENT.getRawId(group.getHitSound()));
+        buf.writeVarInt(Registries.SOUND_EVENT.getRawId(group.getFallSound()));
     }
 
     public static BlockSoundGroup readBlockSoundGroup(PacketByteBuf buf) {
@@ -157,11 +155,11 @@ public class SimpleSerializers {
 
         float volume = buf.readFloat();
         float pitch = buf.readFloat();
-        SoundEvent breakSound = Registry.SOUND_EVENT.get(buf.readVarInt());
-        SoundEvent stepSound = Registry.SOUND_EVENT.get(buf.readVarInt());
-        SoundEvent placeSound = Registry.SOUND_EVENT.get(buf.readVarInt());
-        SoundEvent hitSound = Registry.SOUND_EVENT.get(buf.readVarInt());
-        SoundEvent fallSound = Registry.SOUND_EVENT.get(buf.readVarInt());
+        SoundEvent breakSound = Registries.SOUND_EVENT.get(buf.readVarInt());
+        SoundEvent stepSound = Registries.SOUND_EVENT.get(buf.readVarInt());
+        SoundEvent placeSound = Registries.SOUND_EVENT.get(buf.readVarInt());
+        SoundEvent hitSound = Registries.SOUND_EVENT.get(buf.readVarInt());
+        SoundEvent fallSound = Registries.SOUND_EVENT.get(buf.readVarInt());
 
         return new BlockSoundGroup(volume, pitch, breakSound, stepSound, placeSound, hitSound, fallSound);
     }
@@ -246,7 +244,7 @@ public class SimpleSerializers {
             buf.writeIdentifier(settings.recipeRemainder.getRegistryEntry().registryKey().getValue());
         }
 
-        buf.writeString(settings.group == null ? "" : settings.group.getName());
+//        buf.writeString(settings.group == null ? "" : settings.group.getName());
         buf.writeString(NamedEntries.RARITIES.inverse().get(settings.rarity));
 
         buf.writeBoolean(settings.foodComponent != null);
@@ -263,12 +261,12 @@ public class SimpleSerializers {
 
         Item recipeRemainder = null;
         if (buf.readBoolean())
-            recipeRemainder = Registry.ITEM.get(buf.readIdentifier());
+            recipeRemainder = Registries.ITEM.get(buf.readIdentifier());
 
-        ItemGroup group = null;
-        String groupName = buf.readString();
-        if (!groupName.equals(""))
-            group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(groupName)).findAny().orElseThrow();
+//        ItemGroup group = null;
+//        String groupName = buf.readString();
+//        if (!groupName.equals(""))
+//            group = Arrays.stream(ItemGroup.GROUPS).filter(x -> x.getName().equals(groupName)).findAny().orElseThrow();
 
         Rarity rarity = NamedEntries.RARITIES.get(buf.readString());
 
@@ -283,7 +281,7 @@ public class SimpleSerializers {
         settings.maxCount(maxCount);
         if (maxDamage > 0) settings.maxDamage(maxDamage);
         if (recipeRemainder != null) settings.recipeRemainder(recipeRemainder);
-        if (group != null) settings.group(group);
+//        if (group != null) settings.group(group);
         settings.rarity(rarity);
         if (component != null) settings.food(component);
         if (fireproof) settings.fireproof();
@@ -293,7 +291,7 @@ public class SimpleSerializers {
 
     public static void writeAttributeModifiers(PacketByteBuf buf, Map<EntityAttribute, EntityAttributeModifier> map) {
         buf.writeMap(map,
-            (buf2, key) -> buf2.writeIdentifier(Registry.ATTRIBUTE.getId(key)),
+            (buf2, key) -> buf2.writeIdentifier(Registries.ATTRIBUTE.getId(key)),
             (buf2, modifier) -> {
                 buf2.writeDouble(modifier.getValue());
                 buf2.writeEnumConstant(modifier.getOperation());
@@ -304,7 +302,7 @@ public class SimpleSerializers {
 
     public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(PacketByteBuf buf) {
         return buf.readMap(
-            (buf2) -> Registry.ATTRIBUTE.get(buf2.readIdentifier()),
+            (buf2) -> Registries.ATTRIBUTE.get(buf2.readIdentifier()),
             (buf2) -> {
                 double value = buf2.readDouble();
                 EntityAttributeModifier.Operation op = buf2.readEnumConstant(EntityAttributeModifier.Operation.class);

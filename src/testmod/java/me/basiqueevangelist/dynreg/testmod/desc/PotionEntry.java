@@ -10,9 +10,9 @@ import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -50,13 +50,13 @@ public class PotionEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.POTION, id);
+        ctx.announce(Registries.POTION, id);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
         Potion potion = new Potion(baseName, effects.toArray(StatusEffectInstance[]::new));
-        ctx.register(Registry.POTION, id, potion);
+        ctx.register(Registries.POTION, id, potion);
     }
 
     @Override

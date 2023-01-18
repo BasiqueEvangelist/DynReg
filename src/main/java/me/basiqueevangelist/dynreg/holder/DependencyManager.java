@@ -3,9 +3,10 @@ package me.basiqueevangelist.dynreg.holder;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +50,13 @@ public final class DependencyManager {
 
     public static void addDependency(RegistryEntry.Reference<?> dependent, RegistryEntry.Reference<?> dependency) {
         MANAGERS
-            .computeIfAbsent(dependency.registry, DependencyManager::new)
+            .computeIfAbsent(registryOf(dependency), DependencyManager::new)
             .DEPENDENCY_TO_DEPENDENTS
             .computeIfAbsent(dependency.value(), unused -> new HashSet<>())
-            .add(new RegistrationInfo(dependent.registry, dependent.registryKey().getValue()));
+            .add(new RegistrationInfo(registryOf(dependent), dependent.registryKey().getValue()));
 
         MANAGERS
-            .computeIfAbsent(dependent.registry, DependencyManager::new)
+            .computeIfAbsent(registryOf(dependent), DependencyManager::new)
             .DEPENDENT_TO_DEPENDENCIES
             .computeIfAbsent(dependent.value(), unused -> new HashSet<>())
             .add(dependency);
@@ -66,20 +67,20 @@ public final class DependencyManager {
     }
 
     public static void removeDependency(RegistryEntry.Reference<?> dependent, RegistryEntry.Reference<?> dependency) {
-        var depManager = MANAGERS.get(dependency.registry);
+        var depManager = MANAGERS.get(registryOf(dependency));
 
         if (depManager != null) {
             var dependentsList = depManager.DEPENDENCY_TO_DEPENDENTS.get(dependency.value());
 
             if (dependentsList != null) {
-                dependentsList.remove(new RegistrationInfo(dependent.registry, dependent.registryKey().getValue()));
+                dependentsList.remove(new RegistrationInfo(registryOf(dependent), dependent.registryKey().getValue()));
 
                 if (dependentsList.size() == 0)
                     depManager.DEPENDENCY_TO_DEPENDENTS.remove(dependency.value());
             }
         }
 
-        var dependentManager = MANAGERS.get(dependent.registry);
+        var dependentManager = MANAGERS.get(registryOf(dependent));
 
         if (dependentManager != null) {
             var depsList = dependentManager.DEPENDENT_TO_DEPENDENCIES.get(dependent.value());
@@ -91,6 +92,11 @@ public final class DependencyManager {
                     dependentManager.DEPENDENT_TO_DEPENDENCIES.remove(dependent.value());
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Registry<T> registryOf(RegistryEntry.Reference<T> key) {
+        return (Registry<T>) Registries.REGISTRIES.get(key.registryKey().getRegistry());
     }
 
     private record RegistrationInfo(Registry<?> registry, Identifier id) { }

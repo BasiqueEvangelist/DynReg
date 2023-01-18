@@ -11,8 +11,8 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SlabBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("slab");
@@ -35,16 +35,16 @@ public class SlabBlockEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id);
-        ctx.announce(Registry.ITEM, id);
+        ctx.announce(Registries.BLOCK, id);
+        ctx.announce(Registries.ITEM, id);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
         SlabBlock stairs = new SlabBlock(blockSettings);
-        ctx.register(Registry.BLOCK, id, stairs);
+        ctx.register(Registries.BLOCK, id, stairs);
         BlockItem item = new BlockItem(stairs, itemSettings);
-        ctx.register(Registry.ITEM, id, item);
+        ctx.register(Registries.ITEM, id, item);
     }
 
     @Override

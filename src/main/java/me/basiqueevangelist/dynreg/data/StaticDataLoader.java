@@ -24,9 +24,8 @@ public class StaticDataLoader {
 
     public static LifecycledResourceManager loadPacks() {
         ResourcePackManager packs = new ResourcePackManager(
-            ResourceType.SERVER_DATA,
             new VanillaDataPackProvider(),
-            new FakeFileResourcePackProvider(ResourcePackSource.PACK_SOURCE_WORLD)
+            new FakeFileResourcePackProvider(ResourceType.SERVER_DATA, ResourcePackSource.WORLD)
         );
 
         packs.scanPacks();
@@ -39,12 +38,12 @@ public class StaticDataLoader {
     }
 
     private static class FakeFileResourcePackProvider extends FileResourcePackProvider {
-        public FakeFileResourcePackProvider(ResourcePackSource source) {
-            super(null, source);
+        public FakeFileResourcePackProvider(ResourceType type, ResourcePackSource source) {
+            super(null, type, source);
         }
 
         @Override
-        public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
+        public void register(Consumer<ResourcePackProfile> profileAdder) {
 
         }
     }

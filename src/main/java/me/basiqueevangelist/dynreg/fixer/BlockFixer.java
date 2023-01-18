@@ -13,9 +13,9 @@ import me.basiqueevangelist.dynreg.util.VersionTracker;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.collection.IdList;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 import java.util.HashMap;
@@ -32,8 +32,8 @@ public final class BlockFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.BLOCK).register(BlockFixer::onBlockDeleted);
-        RegistryFrozenCallback.event(Registry.BLOCK).register(BlockFixer::onRegistryFrozen);
+        RegistryEntryDeletedCallback.event(Registries.BLOCK).register(BlockFixer::onBlockDeleted);
+        RegistryFrozenCallback.event(Registries.BLOCK).register(BlockFixer::onRegistryFrozen);
 
         DebugContext.addSupplied("dynreg:block_version", () -> BLOCKS_VERSION.getVersion());
     }
@@ -47,8 +47,8 @@ public final class BlockFixer {
 
             Int2ObjectMap<Block> sortedBlocks = new Int2ObjectRBTreeMap<>();
 
-            Registry.BLOCK.forEach((t)
-                -> sortedBlocks.put(Registry.BLOCK.getRawId(t), t));
+            Registries.BLOCK.forEach((t)
+                -> sortedBlocks.put(Registries.BLOCK.getRawId(t), t));
 
             for (Block b : sortedBlocks.values()) {
                 b.getStateManager().getStates().forEach(Block.STATE_IDS::add);
@@ -75,7 +75,7 @@ public final class BlockFixer {
                 InfestedBlock.INFESTED_TO_REGULAR_STATE);
         }
 
-        for (BlockEntityType<?> beType : Registry.BLOCK_ENTITY_TYPE) {
+        for (BlockEntityType<?> beType : Registries.BLOCK_ENTITY_TYPE) {
             beType.blocks = ClearUtils.mutableifyAndRemove(beType.blocks, block);
         }
 

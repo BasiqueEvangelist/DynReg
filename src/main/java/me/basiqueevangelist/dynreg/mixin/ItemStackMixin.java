@@ -4,7 +4,7 @@ import me.basiqueevangelist.dynreg.fixer.ItemFixer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,7 +39,7 @@ public abstract class ItemStackMixin {
             dynreg$itemsVersion = currentVersion;
 
             if (item != null && item.wasDeleted()) {
-                @SuppressWarnings("deprecation") Item newItem = Registry.ITEM.getOrEmpty(item.getRegistryEntry().registryKey()).orElse(null);
+                @SuppressWarnings("deprecation") Item newItem = Registries.ITEM.getOrEmpty(item.getRegistryEntry().registryKey()).orElse(null);
 
                 item = newItem;
 

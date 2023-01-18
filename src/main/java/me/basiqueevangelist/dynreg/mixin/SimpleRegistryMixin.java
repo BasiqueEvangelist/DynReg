@@ -12,39 +12,33 @@ import me.basiqueevangelist.dynreg.util.StackTracingMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.*;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Mixin(value = SimpleRegistry.class)
-public abstract class SimpleRegistryMixin<T> extends Registry<T> implements ExtendedRegistry<T> {
+public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Registry<T> {
     @Shadow private boolean frozen;
     @Shadow
-    @Final
     @Nullable
-    private Function<T, RegistryEntry.Reference<T>> valueToEntryFunction;
-    @Shadow
-    @Nullable
-    private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
-
-    protected SimpleRegistryMixin(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
-        super(key, lifecycle);
-    }
+    private Map<T, RegistryEntry.Reference<T>> intrusiveValueToEntry;
 
     @Shadow
-    public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key);
+    public abstract Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key);
 
     @Shadow
     @Final
@@ -84,6 +78,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         }
     });
     private final IntList dynreg$freeIds = new IntArrayList();
+    private boolean dynreg$intrusive;
 
     @Override
     public Event<RegistryEntryDeletedCallback<T>> dynreg$getEntryDeletedEvent() {
@@ -95,13 +90,18 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         return dynreg$registryFrozenEvent;
     }
 
+    @Inject(method = "<init>(Lnet/minecraft/registry/RegistryKey;Lcom/mojang/serialization/Lifecycle;Z)V", at = @At("TAIL"))
+    private void saveIntrusiveness(RegistryKey<?> key, Lifecycle lifecycle, boolean intrusive, CallbackInfo ci) {
+        dynreg$intrusive = intrusive;
+    }
+
     @Override
     public void dynreg$remove(RegistryKey<T> key) {
         if (frozen) {
             throw new IllegalStateException("Registry is frozen (trying to remove key " + key + ")");
         }
 
-        RegistryEntry.Reference<T> entry = (RegistryEntry.Reference<T>) getEntry(key).orElseThrow();
+        RegistryEntry.Reference<T> entry = getEntry(key).orElseThrow();
 
         int rawId = entryToRawId.getInt(entry.value());
         dynreg$entryDeletedEvent.invoker().onEntryDeleted(rawId, entry);
@@ -118,7 +118,7 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
         cachedEntries = null;
     }
 
-    @Redirect(method = "add", at = @At(value = "FIELD", target = "Lnet/minecraft/util/registry/SimpleRegistry;nextId:I"))
+    @Redirect(method = "add", at = @At(value = "FIELD", target = "Lnet/minecraft/registry/SimpleRegistry;nextId:I"))
     private int getNextId(SimpleRegistry<T> instance) {
         if (!dynreg$freeIds.isEmpty())
             return dynreg$freeIds.removeInt(0);
@@ -130,8 +130,8 @@ public abstract class SimpleRegistryMixin<T> extends Registry<T> implements Exte
     public void dynreg$unfreeze() {
         frozen = false;
 
-        if (valueToEntryFunction != null)
-            this.unfrozenValueToEntry = new IdentityHashMap<>();
+        if (dynreg$intrusive)
+            this.intrusiveValueToEntry = new IdentityHashMap<>();
 
         cachedEntries = null;
     }

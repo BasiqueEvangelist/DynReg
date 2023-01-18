@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SimpleBlockEntry implements RegistrationEntry {
     private final Identifier id;
@@ -42,15 +42,15 @@ public class SimpleBlockEntry implements RegistrationEntry {
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id);
-        ctx.announce(Registry.ITEM, id);
+        ctx.announce(Registries.BLOCK, id);
+        ctx.announce(Registries.ITEM, id);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
-        var block = ctx.register(Registry.BLOCK, id, new Block(blockSettings));
+        var block = ctx.register(Registries.BLOCK, id, new Block(blockSettings));
 
-        ctx.register(Registry.ITEM, id, new BlockItem(block, itemSettings));
+        ctx.register(Registries.ITEM, id, new BlockItem(block, itemSettings));
     }
 
     @Override

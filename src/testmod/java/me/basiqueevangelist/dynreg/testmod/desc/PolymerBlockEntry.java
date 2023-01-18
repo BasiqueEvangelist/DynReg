@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
-import eu.pb4.polymer.api.block.PolymerBlock;
-import eu.pb4.polymer.api.item.PolymerBlockItem;
+import eu.pb4.polymer.core.api.block.PolymerBlock;
+import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import me.basiqueevangelist.dynreg.entry.*;
 import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
 import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
@@ -16,9 +16,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PolymerBlockEntry implements RegistrationEntry {
@@ -31,31 +31,31 @@ public class PolymerBlockEntry implements RegistrationEntry {
 
     public PolymerBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
-        this.sourceBlock = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
+        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = SimpleReaders.readItemSettings(json);
     }
 
     public PolymerBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
-        this.sourceBlock = LazyEntryRef.read(buf, Registry.BLOCK);
+        this.sourceBlock = LazyEntryRef.read(buf, Registries.BLOCK);
         this.blockSettings = SimpleSerializers.readBlockSettings(buf);
         this.itemSettings = SimpleSerializers.readItemSettings(buf);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id);
+        ctx.announce(Registries.BLOCK, id);
         ctx.dependency(sourceBlock);
-        ctx.announce(Registry.ITEM, id);
+        ctx.announce(Registries.ITEM, id);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
         var block = new CreatedBlock(sourceBlock.get(), blockSettings);
-        ctx.register(Registry.BLOCK, id, block);
+        ctx.register(Registries.BLOCK, id, block);
         BlockItem item = new PolymerBlockItem(block, itemSettings, sourceBlock.get().asItem());
-        ctx.register(Registry.ITEM, id, item);
+        ctx.register(Registries.ITEM, id, item);
     }
 
     @Override

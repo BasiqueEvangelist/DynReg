@@ -1,9 +1,10 @@
 package me.basiqueevangelist.dynreg.util;
 
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public final class RegistryUtils {
     private RegistryUtils() {
@@ -26,11 +27,11 @@ public final class RegistryUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> Registry<T> getRegistryOf(RegistryKey<T> key) {
-        return (Registry<T>) Registry.REGISTRIES.getOrEmpty(key.getRegistry()).orElseThrow();
+        return (Registry<T>) Registries.REGISTRIES.getOrEmpty(key.getRegistry()).orElseThrow();
     }
 
     @SuppressWarnings("unchecked")
     public static int getRawIdOfRegistryOf(RegistryKey<?> key) {
-        return ((Registry<Registry<?>>) Registry.REGISTRIES).getRawId(getRegistryOf(key));
+        return ((Registry<Registry<?>>) Registries.REGISTRIES).getRawId(getRegistryOf(key));
     }
 }

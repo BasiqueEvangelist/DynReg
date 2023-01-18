@@ -4,8 +4,8 @@ import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.VersionTracker;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class StatusEffectFixer {
     public static VersionTracker EFFECTS_VERSION = new VersionTracker();
@@ -15,7 +15,7 @@ public class StatusEffectFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.STATUS_EFFECT).register(StatusEffectFixer::onEffectDeleted);
+        RegistryEntryDeletedCallback.event(Registries.STATUS_EFFECT).register(StatusEffectFixer::onEffectDeleted);
 
         DebugContext.addSupplied("dynreg:effects_version", () -> EFFECTS_VERSION.getVersion());
     }

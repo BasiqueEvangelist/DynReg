@@ -11,9 +11,9 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class FlowerPotBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("flower_pot_block");
@@ -24,25 +24,25 @@ public class FlowerPotBlockEntry implements RegistrationEntry {
 
     public FlowerPotBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
-        this.content = LazyEntryRef.read(buf, Registry.BLOCK);
+        this.content = LazyEntryRef.read(buf, Registries.BLOCK);
         this.settings = SimpleSerializers.readBlockSettings(buf);
     }
 
     public FlowerPotBlockEntry(Identifier id, JsonObject obj) {
         this.id = id;
-        this.content = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(obj, "content")));
+        this.content = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(obj, "content")));
         this.settings = SimpleReaders.readBlockSettings(obj);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id);
+        ctx.announce(Registries.BLOCK, id);
         ctx.dependency(content);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
-        ctx.register(Registry.BLOCK, id, new FlowerPotBlock(content.get(), settings));
+        ctx.register(Registries.BLOCK, id, new FlowerPotBlock(content.get(), settings));
     }
 
     @Override

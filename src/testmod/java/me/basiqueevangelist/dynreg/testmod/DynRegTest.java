@@ -2,11 +2,8 @@ package me.basiqueevangelist.dynreg.testmod;
 
 import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.entry.EntryDescriptionReaders;
-import me.basiqueevangelist.dynreg.testmod.command.CreateCommand;
-import me.basiqueevangelist.dynreg.testmod.command.DeleteCommand;
 import me.basiqueevangelist.dynreg.testmod.desc.*;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.util.Identifier;
 
 public class DynRegTest implements ModInitializer {
@@ -18,11 +15,6 @@ public class DynRegTest implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, dedicated) -> {
-            DeleteCommand.register(dispatcher);
-            CreateCommand.register(dispatcher);
-        });
-
         RegistrationEntries.registerEntryType(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
         EntryDescriptionReaders.register(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
 

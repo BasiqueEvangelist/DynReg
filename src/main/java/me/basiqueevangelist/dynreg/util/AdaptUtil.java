@@ -8,9 +8,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public final class AdaptUtil {
@@ -19,7 +19,7 @@ public final class AdaptUtil {
     }
 
     public static @Nullable StatusEffect adaptEffect(StatusEffect effect) {
-        return Registry.STATUS_EFFECT
+        return Registries.STATUS_EFFECT
             .getOrEmpty(((DeletableObjectInternal) effect).dynreg$getId())
             .orElse(null);
     }
@@ -27,7 +27,7 @@ public final class AdaptUtil {
     public static BlockState adaptState(BlockState oldState) {
         @SuppressWarnings("deprecation") Identifier id = oldState.getBlock().getRegistryEntry().registryKey().getValue();
 
-        Block newBlock = Registry.BLOCK.getOrEmpty(id).orElse(null);
+        Block newBlock = Registries.BLOCK.getOrEmpty(id).orElse(null);
 
         if (newBlock == null) {
             return Blocks.AIR.getDefaultState();

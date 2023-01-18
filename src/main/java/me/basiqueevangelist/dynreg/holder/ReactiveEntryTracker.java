@@ -3,9 +3,10 @@ package me.basiqueevangelist.dynreg.holder;
 import me.basiqueevangelist.dynreg.DynReg;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public final class ReactiveEntryTracker {
 
     @SuppressWarnings("unchecked")
     public static void init() {
-        for (Registry<?> registry : Registry.REGISTRIES) {
+        for (Registry<?> registry : Registries.REGISTRIES) {
             Event<RegistryEntryAddedCallback<?>> event = (Event<RegistryEntryAddedCallback<?>>) (Object) RegistryEntryAddedCallback.event(registry);
 
             event.addPhaseOrdering(START_PHASE, Event.DEFAULT_PHASE);

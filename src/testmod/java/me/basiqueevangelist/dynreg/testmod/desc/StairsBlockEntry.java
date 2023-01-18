@@ -13,9 +13,9 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class StairsBlockEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("stairs");
@@ -27,22 +27,22 @@ public class StairsBlockEntry implements RegistrationEntry {
 
     public StairsBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
-        this.sourceBlock = new LazyEntryRef<>(Registry.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
+        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = SimpleReaders.readItemSettings(json);
     }
 
     public StairsBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
-        this.sourceBlock = LazyEntryRef.read(buf, Registry.BLOCK);
+        this.sourceBlock = LazyEntryRef.read(buf, Registries.BLOCK);
         this.blockSettings = SimpleSerializers.readBlockSettings(buf);
         this.itemSettings = SimpleSerializers.readItemSettings(buf);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
-        ctx.announce(Registry.BLOCK, id);
-        ctx.announce(Registry.ITEM, id);
+        ctx.announce(Registries.BLOCK, id);
+        ctx.announce(Registries.ITEM, id);
 
         ctx.dependency(sourceBlock);
     }
@@ -50,9 +50,9 @@ public class StairsBlockEntry implements RegistrationEntry {
     @Override
     public void register(EntryRegisterContext ctx) {
         StairsBlock stairs = new StairsBlock(sourceBlock.get().getDefaultState(), blockSettings);
-        ctx.register(Registry.BLOCK, id, stairs);
+        ctx.register(Registries.BLOCK, id, stairs);
         BlockItem item = new BlockItem(stairs, itemSettings);
-        ctx.register(Registry.ITEM, id, item);
+        ctx.register(Registries.ITEM, id, item);
     }
 
     @Override

@@ -12,8 +12,8 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.recipe.FireworkStarRecipe;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public final class ItemFixer {
     public static VersionTracker ITEMS_VERSION = new VersionTracker();
@@ -23,7 +23,7 @@ public final class ItemFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.ITEM).register(ItemFixer::onItemDeleted);
+        RegistryEntryDeletedCallback.event(Registries.ITEM).register(ItemFixer::onItemDeleted);
 
         DebugContext.addSupplied("dynreg:item_version", () -> ITEMS_VERSION.getVersion());
     }

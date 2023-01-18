@@ -11,11 +11,12 @@ import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.minecraft.network.Packet;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public final class GlobalFixer<T> {
     }
 
     public static void init() {
-        for (Registry<?> registry : Registry.REGISTRIES) {
+        for (Registry<?> registry : Registries.REGISTRIES) {
             new GlobalFixer<>(registry).register();
         }
 

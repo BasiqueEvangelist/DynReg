@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg.event;
 
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
 import net.fabricmc.fabric.api.event.Event;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public interface RegistryFrozenCallback<T> {
     void onRegistryFrozen();

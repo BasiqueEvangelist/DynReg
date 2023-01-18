@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.util;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class LazyEntryRef<T> {
     private final Registry<T> registry;

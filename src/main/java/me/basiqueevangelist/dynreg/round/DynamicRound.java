@@ -15,12 +15,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
@@ -139,7 +140,7 @@ public class DynamicRound {
             long time = System.nanoTime();
 
             try (clientUnfreezer) {
-                for (Registry<?> registry : Registry.REGISTRIES) {
+                for (Registry<?> registry : Registries.REGISTRIES) {
                     RegistryUtils.unfreeze(registry);
                 }
 
@@ -202,7 +203,7 @@ public class DynamicRound {
                     task.run();
                 }
 
-                for (Registry<?> registry : Registry.REGISTRIES) {
+                for (Registry<?> registry : Registries.REGISTRIES) {
                     registry.freeze();
                 }
 
@@ -223,7 +224,7 @@ public class DynamicRound {
                     Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
                     resourcePackManager.scanPacks();
                     Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
-                    Collection<String> disabledDataPacks = saveProperties.getDataPackSettings().getDisabled();
+                    Collection<String> disabledDataPacks = saveProperties.getDataConfiguration().dataPacks().getDisabled();
 
                     for (String string : resourcePackManager.getNames()) {
                         if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {

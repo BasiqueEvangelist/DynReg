@@ -3,8 +3,8 @@ package me.basiqueevangelist.dynreg.client.fixer;
 import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public final class ClientBlockFixer {
     private ClientBlockFixer() {
@@ -12,7 +12,7 @@ public final class ClientBlockFixer {
     }
 
     public static void init() {
-        RegistryEntryDeletedCallback.event(Registry.BLOCK).register(ClientBlockFixer::onBlockDeleted);
+        RegistryEntryDeletedCallback.event(Registries.BLOCK).register(ClientBlockFixer::onBlockDeleted);
     }
 
     private static void onBlockDeleted(int rawId, RegistryEntry.Reference<Block> entry) {
