@@ -12,45 +12,20 @@ import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 public final class SimpleReaders {
     private SimpleReaders() {
 
-    }
-
-    public static Item.Settings readItemSettings(JsonObject obj) {
-        Item.Settings builder = new Item.Settings();
-
-        if (obj.has("max_count"))
-            builder.maxCount(JsonHelper.getInt(obj, "max_count"));
-
-        if (obj.has("max_damage"))
-            builder.maxDamage(JsonHelper.getInt(obj, "max_damage"));
-
-        if (obj.has("recipe_remainder"))
-            builder.recipeRemainder(JsonHelper.getItem(obj, "recipe_remainder"));
-
-        if (obj.has("rarity"))
-            builder.rarity(NamedEntries.RARITIES.get(JsonHelper.getString(obj, "rarity")));
-
-        if (obj.has("food_component"))
-            builder.food(readFoodComponent(JsonHelper.getObject(obj, "food_component")));
-
-        if (JsonHelper.getBoolean(obj, "fireproof", false))
-            builder.fireproof();
-
-        return builder;
     }
 
     public static AbstractBlock.Settings readBlockSettings(JsonObject obj) {
@@ -171,48 +146,6 @@ public final class SimpleReaders {
 //
 //        return group;
 //    }
-
-    private static FoodComponent readFoodComponent(JsonObject obj) {
-        FoodComponent.Builder builder = new FoodComponent.Builder();
-
-        builder.hunger(JsonHelper.getInt(obj, "hunger"));
-        builder.saturationModifier(JsonHelper.getInt(obj, "saturation_modifier"));
-
-        if (JsonHelper.getBoolean(obj, "meat", false))
-            builder.meat();
-
-        if (JsonHelper.getBoolean(obj, "always_edible", false))
-            builder.alwaysEdible();
-
-        if (JsonHelper.getBoolean(obj, "snack", false))
-            builder.snack();
-
-        if (obj.has("effects")) {
-            var effects = JsonHelper.getArray(obj, "effects");
-
-            for (JsonElement el : effects) {
-                JsonObject effectObj = JsonHelper.asObject(el, "<effect item>");
-
-                float chance = JsonHelper.getFloat(effectObj, "chance");
-                StatusEffectInstance effect = readStatusEffectInstance(effectObj);
-
-                builder.statusEffect(effect, chance);
-            }
-        }
-
-        return builder.build();
-    }
-
-    public static StatusEffectInstance readStatusEffectInstance(JsonObject obj) {
-        StatusEffect effect = Registries.STATUS_EFFECT.get(new Identifier(JsonHelper.getString(obj, "effect")));
-        byte amplifier = JsonHelper.getByte(obj, "amplifier");
-        int duration = JsonHelper.getInt(obj, "duration");
-        boolean ambient = JsonHelper.getBoolean(obj, "ambient", false);
-        boolean showParticles = JsonHelper.getBoolean(obj, "show_particles", true);
-        boolean showIcon = JsonHelper.getBoolean(obj, "show_icon", true);
-
-        return new StatusEffectInstance(effect, duration, amplifier, ambient, showParticles, showIcon);
-    }
 
     public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(JsonObject obj) {
         Map<EntityAttribute, EntityAttributeModifier> map = new HashMap<>();

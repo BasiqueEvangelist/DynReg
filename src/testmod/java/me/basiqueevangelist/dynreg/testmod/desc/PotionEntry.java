@@ -3,10 +3,8 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
-import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
-import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
+import me.basiqueevangelist.dynreg.wrapped.LazyStatusEffectInstance;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
-import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.potion.Potion;
@@ -24,7 +22,7 @@ public class PotionEntry implements RegistrationEntry {
 
     private final Identifier id;
     private final @Nullable String baseName;
-    private final List<StatusEffectInstance> effects;
+    private final List<LazyStatusEffectInstance> effects;
 
     public PotionEntry(Identifier id, JsonObject object) {
         this.id = id;
@@ -36,33 +34,37 @@ public class PotionEntry implements RegistrationEntry {
         for (JsonElement el : arr) {
             JsonObject effectObj = JsonHelper.asObject(el, "<effect item>");
 
-            StatusEffectInstance effect = SimpleReaders.readStatusEffectInstance(effectObj);
-
-            effects.add(effect);
+            effects.add(new LazyStatusEffectInstance(effectObj));
         }
     }
 
     public PotionEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.baseName = buf.readNullable(PacketByteBuf::readString);
-        this.effects = buf.readList(SimpleSerializers::readStatusEffectInstance);
+        this.effects = buf.readList(LazyStatusEffectInstance::new);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registries.POTION, id);
+
+        effects.forEach(x -> x.scan(ctx));
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
-        Potion potion = new Potion(baseName, effects.toArray(StatusEffectInstance[]::new));
+        Potion potion = new Potion(baseName, effects
+            .stream()
+            .map(LazyStatusEffectInstance::build)
+            .toArray(StatusEffectInstance[]::new));
+
         ctx.register(Registries.POTION, id, potion);
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeNullable(baseName, PacketByteBuf::writeString);
-        buf.writeCollection(effects, SimpleSerializers::writeStatusEffectInstance);
+        buf.writeCollection(effects, (buf1, inst) -> inst.write(buf1));
     }
 
     @Override
@@ -74,10 +76,7 @@ public class PotionEntry implements RegistrationEntry {
     public int hash() {
         int hash = id.hashCode();
         hash = 31 * hash + Objects.hashCode(baseName);
-
-        for (var effect : effects) {
-            hash = 31 * hash + SimpleHashers.hash(effect);
-        }
+        hash = 31 * hash + effects.hashCode();
 
         return hash;
     }

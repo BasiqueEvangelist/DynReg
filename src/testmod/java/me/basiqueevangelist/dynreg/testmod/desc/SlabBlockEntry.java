@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.entry.*;
+import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
 import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
 import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
@@ -9,7 +10,6 @@ import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -19,38 +19,40 @@ public class SlabBlockEntry implements RegistrationEntry {
 
     private final Identifier id;
     private final AbstractBlock.Settings blockSettings;
-    private final Item.Settings itemSettings;
+    private final LazyItemSettings itemSettings;
 
     public SlabBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
         this.blockSettings = SimpleReaders.readBlockSettings(json);
-        this.itemSettings = SimpleReaders.readItemSettings(json);
+        this.itemSettings = new LazyItemSettings(json);
     }
 
     public SlabBlockEntry(Identifier id, PacketByteBuf buf) {
         this.id = id;
         this.blockSettings = SimpleSerializers.readBlockSettings(buf);
-        this.itemSettings = SimpleSerializers.readItemSettings(buf);
+        this.itemSettings = new LazyItemSettings(buf);
     }
 
     @Override
     public void scan(EntryScanContext ctx) {
         ctx.announce(Registries.BLOCK, id);
         ctx.announce(Registries.ITEM, id);
+
+        itemSettings.scan(ctx);
     }
 
     @Override
     public void register(EntryRegisterContext ctx) {
         SlabBlock stairs = new SlabBlock(blockSettings);
         ctx.register(Registries.BLOCK, id, stairs);
-        BlockItem item = new BlockItem(stairs, itemSettings);
+        BlockItem item = new BlockItem(stairs, itemSettings.build());
         ctx.register(Registries.ITEM, id, item);
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         SimpleSerializers.writeBlockSettings(buf, blockSettings);
-        SimpleSerializers.writeItemSettings(buf, itemSettings);
+        itemSettings.write(buf);
     }
 
     @Override
@@ -62,7 +64,7 @@ public class SlabBlockEntry implements RegistrationEntry {
     public int hash() {
         int hash = id.hashCode();
         hash = 31 * hash + SimpleHashers.hash(blockSettings);
-        hash = 31 * hash + SimpleHashers.hash(itemSettings);
+        hash = 31 * hash + itemSettings.hashCode();
         return hash;
     }
 }
