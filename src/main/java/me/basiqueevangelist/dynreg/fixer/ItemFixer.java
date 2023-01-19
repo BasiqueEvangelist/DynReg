@@ -16,7 +16,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public final class ItemFixer {
-    public static VersionTracker ITEMS_VERSION = new VersionTracker();
+    public static final VersionTracker ITEMS_VERSION = new VersionTracker();
 
     private ItemFixer() {
 
@@ -25,7 +25,7 @@ public final class ItemFixer {
     public static void init() {
         RegistryEntryDeletedCallback.event(Registries.ITEM).register(ItemFixer::onItemDeleted);
 
-        DebugContext.addSupplied("dynreg:item_version", () -> ITEMS_VERSION.getVersion());
+        DebugContext.addSupplied("dynreg:item_version", ITEMS_VERSION::getVersion);
     }
 
     private static void onItemDeleted(int rawId, RegistryEntry.Reference<Item> entry) {

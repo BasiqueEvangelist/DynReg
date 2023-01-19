@@ -5,6 +5,7 @@ import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -16,6 +17,12 @@ import org.jetbrains.annotations.Nullable;
 public final class AdaptUtil {
     private AdaptUtil() {
 
+    }
+
+    public static @Nullable EntityType<?> adaptEntityType(EntityType<?> type) {
+        return Registries.ENTITY_TYPE
+            .getOrEmpty(((DeletableObjectInternal) type).dynreg$getId())
+            .orElse(null);
     }
 
     public static @Nullable StatusEffect adaptEffect(StatusEffect effect) {

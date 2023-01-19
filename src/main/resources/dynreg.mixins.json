@@ -10,6 +10,7 @@
         "ChunkSectionMixin",
         "ChunkSerializerMixin",
         "DeletableObjectsMixin",
+        "EntityMixin",
         "FlowableFluidMixin",
         "IdListMixin",
         "ItemStackMixin",
@@ -17,6 +18,7 @@
         "MainMixin",
         "RegistryKeyMixin",
         "ServerLoginNetworkHandlerMixin",
+        "ServerWorldMixin",
         "SimpleRegistryMixin",
         "StatusEffectInstanceMixin",
         "fabric.FabricSimpleRegistryMixin",
@@ -32,6 +34,7 @@
         "palette.SingularPaletteMixin"
     ],
     "client": [
+        "client.ClientWorldMixin",
         "client.MinecraftClientMixin",
         "client.ReloadableResourceManagerImplMixin"
     ],

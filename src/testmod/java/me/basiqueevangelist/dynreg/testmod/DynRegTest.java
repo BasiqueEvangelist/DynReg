@@ -32,5 +32,8 @@ public class DynRegTest implements ModInitializer {
 
         RegistrationEntries.registerEntryType(PotionEntry.ID, PotionEntry::new);
         EntryDescriptionReaders.register(PotionEntry.ID, PotionEntry::new);
+
+        RegistrationEntries.registerEntryType(SimpleEntityEntry.ID, SimpleEntityEntry::new);
+        EntryDescriptionReaders.register(SimpleEntityEntry.ID, SimpleEntityEntry::new);
     }
 }

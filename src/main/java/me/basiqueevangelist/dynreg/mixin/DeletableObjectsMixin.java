@@ -3,13 +3,14 @@ package me.basiqueevangelist.dynreg.mixin;
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin({RegistryEntry.Reference.class, Block.class, Item.class, BlockEntityType.class, StatusEffect.class})
+@Mixin({RegistryEntry.Reference.class, Block.class, Item.class, BlockEntityType.class, StatusEffect.class, EntityType.class})
 public class DeletableObjectsMixin implements DeletableObjectInternal {
     private boolean dynreg$deleted = false;
     private Identifier dynreg$id = null;

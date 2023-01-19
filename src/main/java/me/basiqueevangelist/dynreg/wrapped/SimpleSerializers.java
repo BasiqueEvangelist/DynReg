@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
@@ -180,5 +181,15 @@ public class SimpleSerializers {
                 UUID uuid = buf2.readUuid();
                 return new EntityAttributeModifier(uuid, name, value, op);
             });
+    }
+
+    public static void writeEntityDimensions(PacketByteBuf buf, EntityDimensions dimensions) {
+        buf.writeFloat(dimensions.width);
+        buf.writeFloat(dimensions.height);
+        buf.writeBoolean(dimensions.fixed);
+    }
+
+    public static EntityDimensions readEntityDimensions(PacketByteBuf buf) {
+        return new EntityDimensions(buf.readFloat(), buf.readFloat(), buf.readBoolean());
     }
 }

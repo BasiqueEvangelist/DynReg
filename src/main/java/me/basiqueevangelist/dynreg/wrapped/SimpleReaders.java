@@ -1,15 +1,13 @@
 package me.basiqueevangelist.dynreg.wrapped;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
@@ -171,5 +169,19 @@ public final class SimpleReaders {
         }
 
         return map;
+    }
+
+    public static EntityDimensions readEntityDimensions(JsonElement value) {
+        if (value instanceof JsonArray array) {
+            return EntityDimensions.fixed(array.get(0).getAsFloat(), array.get(1).getAsFloat());
+        } else {
+            var obj = JsonHelper.asObject(value, "dimensions");
+
+            return new EntityDimensions(
+                JsonHelper.getFloat(obj, "width"),
+                JsonHelper.getFloat(obj, "height"),
+                JsonHelper.getBoolean(obj, "fixed", true)
+            );
+        }
     }
 }

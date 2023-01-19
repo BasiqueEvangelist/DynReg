@@ -193,6 +193,9 @@ public class DynamicRound {
                     try {
                         entry.entry().register(entry.createRegistrationContext());
 
+                        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)
+                            entry.entry().registerClient();
+
                         LoadedEntryHolder.addEntry(entry);
                     } catch (Exception e) {
                         LOGGER.error("Encountered error while registering {}", entry.entry().id(), e);

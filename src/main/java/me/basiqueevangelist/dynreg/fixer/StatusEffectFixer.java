@@ -8,7 +8,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public class StatusEffectFixer {
-    public static VersionTracker EFFECTS_VERSION = new VersionTracker();
+    public static final VersionTracker EFFECTS_VERSION = new VersionTracker();
 
     private StatusEffectFixer() {
 
@@ -17,7 +17,7 @@ public class StatusEffectFixer {
     public static void init() {
         RegistryEntryDeletedCallback.event(Registries.STATUS_EFFECT).register(StatusEffectFixer::onEffectDeleted);
 
-        DebugContext.addSupplied("dynreg:effects_version", () -> EFFECTS_VERSION.getVersion());
+        DebugContext.addSupplied("dynreg:effects_version", EFFECTS_VERSION::getVersion);
     }
 
     private static void onEffectDeleted(int rawId, RegistryEntry.Reference<StatusEffect> entry) {

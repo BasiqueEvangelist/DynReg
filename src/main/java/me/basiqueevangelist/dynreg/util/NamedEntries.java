@@ -6,6 +6,7 @@ import me.basiqueevangelist.dynreg.ap.NamesFor;
 import me.basiqueevangelist.dynreg.generated.NamedEntriesSetters;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Rarity;
 
@@ -22,11 +23,17 @@ public final class NamedEntries {
     @NamesFor(MapColor.class)
     public static final BiMap<String, MapColor> MAP_COLORS = HashBiMap.create();
 
+    public static final BiMap<String, SpawnGroup> SPAWN_GROUPS = HashBiMap.create();
+
     private NamedEntries() {
 
     }
 
     static {
         NamedEntriesSetters.init();
+
+        for (SpawnGroup group : SpawnGroup.values()) {
+            SPAWN_GROUPS.put(group.getName(), group);
+        }
     }
 }

@@ -44,6 +44,9 @@
       "net/minecraft/class_6880\u0024class_6883": [
         "me/basiqueevangelist/dynreg/access/DeletableObject"
       ],
+      "net/minecraft/class_1299": [
+        "me/basiqueevangelist/dynreg/access/DeletableObject"
+      ],
       "net/minecraft/class_5321": [
         "me/basiqueevangelist/dynreg/entry/AnnounceableResource"
       ]

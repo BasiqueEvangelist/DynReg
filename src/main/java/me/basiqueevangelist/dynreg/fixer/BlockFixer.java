@@ -21,7 +21,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import java.util.HashMap;
 
 public final class BlockFixer {
-    public static VersionTracker BLOCKS_VERSION = new VersionTracker();
+    public static final VersionTracker BLOCKS_VERSION = new VersionTracker();
 
     public static IdList<BlockState> CURRENT_STATES_LIST = new IdList<>();
 
@@ -35,7 +35,7 @@ public final class BlockFixer {
         RegistryEntryDeletedCallback.event(Registries.BLOCK).register(BlockFixer::onBlockDeleted);
         RegistryFrozenCallback.event(Registries.BLOCK).register(BlockFixer::onRegistryFrozen);
 
-        DebugContext.addSupplied("dynreg:block_version", () -> BLOCKS_VERSION.getVersion());
+        DebugContext.addSupplied("dynreg:block_version", BLOCKS_VERSION::getVersion);
     }
 
     @SuppressWarnings("unchecked")

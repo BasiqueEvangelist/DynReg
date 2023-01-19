@@ -1,5 +1,7 @@
 package me.basiqueevangelist.dynreg.entry;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -13,6 +15,11 @@ public interface RegistrationEntry {
     void scan(EntryScanContext ctx);
 
     void register(EntryRegisterContext ctx);
+
+    @Environment(EnvType.CLIENT)
+    default void registerClient() {
+
+    }
 
     default void onRemoved() {
 
