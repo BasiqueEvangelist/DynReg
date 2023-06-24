@@ -6,7 +6,7 @@ import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.event.PreSyncCallback;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;

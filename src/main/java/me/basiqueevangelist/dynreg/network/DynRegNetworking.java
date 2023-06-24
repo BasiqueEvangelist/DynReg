@@ -3,8 +3,8 @@ package me.basiqueevangelist.dynreg.network;
 import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;

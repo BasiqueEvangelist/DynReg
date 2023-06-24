@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerLoginNetworkHandlerMixin {
     @Shadow @Final MinecraftServer server;
 
-    @Shadow @Final public ClientConnection connection;
+    @Shadow @Final ClientConnection connection;
 
     @Inject(method = "addToServer", at = @At("HEAD"))
     private void beforeQuilt(ServerPlayerEntity player, CallbackInfo ci) {

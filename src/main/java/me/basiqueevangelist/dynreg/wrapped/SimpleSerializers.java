@@ -5,7 +5,7 @@ import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
+import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -21,7 +21,6 @@ import java.util.UUID;
 
 public class SimpleSerializers {
     public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
-        SimpleSerializers.writeMaterial(buf, settings.material);
         buf.writeVarInt(((ExtendedBlockSettings) settings).dynreg$getMapColor().id);
         buf.writeBoolean(settings.collidable);
         SimpleSerializers.writeBlockSoundGroup(buf, settings.soundGroup);
@@ -41,10 +40,16 @@ public class SimpleSerializers {
         buf.writeBoolean(settings.opaque);
         buf.writeBoolean(settings.isAir);
         buf.writeBoolean(settings.dynamicBounds);
+        buf.writeBoolean(settings.burnable);
+        buf.writeBoolean(settings.forceSolid);
+        buf.writeBoolean(settings.forceNotSolid);
+        buf.writeBoolean(settings.liquid);
+        buf.writeBoolean(settings.blockBreakParticles);
+        buf.writeEnumConstant(settings.instrument);
+        buf.writeBoolean(settings.replaceable);
     }
 
     public static AbstractBlock.Settings readBlockSettings(PacketByteBuf buf) {
-        Material material = SimpleSerializers.readMaterial(buf);
         MapColor color = MapColor.get(buf.readVarInt());
         boolean collidable = buf.readBoolean();
         BlockSoundGroup soundGroup = SimpleSerializers.readBlockSoundGroup(buf);
@@ -65,8 +70,16 @@ public class SimpleSerializers {
         boolean opaque = buf.readBoolean();
         boolean isAir = buf.readBoolean();
         boolean dynamicBounds = buf.readBoolean();
+        boolean burnable = buf.readBoolean();
+        boolean forceSolid = buf.readBoolean();
+        boolean forceNotSolid = buf.readBoolean();
+        boolean liquid = buf.readBoolean();
+        boolean blockBreakParticles = buf.readBoolean();
+        Instrument instrument = buf.readEnumConstant(Instrument.class);
+        boolean replaceable = buf.readBoolean();
 
-        FabricBlockSettings settings = FabricBlockSettings.of(material, color);
+        FabricBlockSettings settings = FabricBlockSettings.create();
+        settings.mapColor(color);
         settings.collidable(collidable);
         settings.sounds(soundGroup);
         settings.resistance(resistance);
@@ -80,52 +93,15 @@ public class SimpleSerializers {
         if (!opaque) settings.nonOpaque();
         if (isAir) settings.air();
         if (dynamicBounds) settings.dynamicBounds();
+        if (burnable) settings.burnable();
+        if (forceSolid) settings.solid();
+        if (forceNotSolid) settings.notSolid();
+        if (liquid) settings.liquid();
+        if (!blockBreakParticles) settings.noBlockBreakParticles();
+        settings.instrument(instrument);
+        if (replaceable) settings.replaceable();
 
         return settings;
-    }
-
-    public static void writeMaterial(PacketByteBuf buf, Material material) {
-        String name = NamedEntries.MATERIALS.inverse().getOrDefault(material, "");
-
-        buf.writeString(name);
-
-        if (!name.equals("")) return;
-
-        buf.writeBoolean(material.isLiquid());
-        buf.writeBoolean(material.isSolid());
-        buf.writeBoolean(material.blocksMovement());
-        buf.writeBoolean(material.isBurnable());
-        buf.writeBoolean(material.isReplaceable());
-        buf.writeBoolean(material.blocksLight());
-        buf.writeEnumConstant(material.getPistonBehavior());
-        buf.writeVarInt(material.getColor().id);
-    }
-
-    public static Material readMaterial(PacketByteBuf buf) {
-        String name = buf.readString();
-
-        if (!name.equals("")) return NamedEntries.MATERIALS.get(name);
-
-        boolean isLiquid = buf.readBoolean();
-        boolean isSolid = buf.readBoolean();
-        boolean blocksMovement = buf.readBoolean();
-        boolean isBurnable = buf.readBoolean();
-        boolean isReplacable = buf.readBoolean();
-        boolean blocksLight = buf.readBoolean();
-        PistonBehavior pistonBehaviour = buf.readEnumConstant(PistonBehavior.class);
-        MapColor color = MapColor.get(buf.readVarInt());
-
-        var builder = new Material.Builder(color);
-
-        if (isLiquid) builder.liquid();
-        if (!isSolid) builder.notSolid();
-        if (!blocksMovement) builder.allowsMovement();
-        if (isBurnable) builder.burnable();
-        if (isReplacable) builder.replaceable();
-        if (blocksLight) builder.lightPassesThrough();
-        builder.pistonBehavior = pistonBehaviour;
-
-        return builder.build();
     }
 
     public static void writeBlockSoundGroup(PacketByteBuf buf, BlockSoundGroup group) {

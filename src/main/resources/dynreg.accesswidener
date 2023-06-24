@@ -17,9 +17,6 @@ accessible field net/minecraft/client/render/RenderLayers BLOCKS Ljava/util/Map;
 accessible field net/minecraft/client/render/RenderLayers FLUIDS Ljava/util/Map;
 accessible field net/minecraft/item/HoeItem TILLING_ACTIONS Ljava/util/Map;
 accessible field net/minecraft/item/ShovelItem PATH_STATES Ljava/util/Map;
-accessible method net/minecraft/block/Material$Builder burnable ()Lnet/minecraft/block/Material$Builder;
-accessible method net/minecraft/block/Material$Builder lightPassesThrough ()Lnet/minecraft/block/Material$Builder;
-accessible field net/minecraft/block/Material$Builder pistonBehavior Lnet/minecraft/block/piston/PistonBehavior;
 accessible field net/minecraft/util/collection/Int2ObjectBiMap values [Ljava/lang/Object;
 accessible field net/minecraft/util/collection/Int2ObjectBiMap idToValues [Ljava/lang/Object;
 accessible field net/minecraft/world/chunk/PalettedContainer data Lnet/minecraft/world/chunk/PalettedContainer$Data;
@@ -32,7 +29,6 @@ accessible field net/minecraft/item/Item$Settings recipeRemainder Lnet/minecraft
 accessible field net/minecraft/item/Item$Settings rarity Lnet/minecraft/util/Rarity;
 accessible field net/minecraft/item/Item$Settings foodComponent Lnet/minecraft/item/FoodComponent;
 accessible field net/minecraft/item/Item$Settings fireproof Z
-accessible field net/minecraft/block/AbstractBlock$Settings material Lnet/minecraft/block/Material;
 accessible field net/minecraft/block/AbstractBlock$Settings collidable Z
 accessible field net/minecraft/block/AbstractBlock$Settings soundGroup Lnet/minecraft/sound/BlockSoundGroup;
 accessible field net/minecraft/block/AbstractBlock$Settings resistance F
@@ -46,6 +42,13 @@ accessible field net/minecraft/block/AbstractBlock$Settings lootTableId Lnet/min
 accessible field net/minecraft/block/AbstractBlock$Settings opaque Z
 accessible field net/minecraft/block/AbstractBlock$Settings isAir Z
 accessible field net/minecraft/block/AbstractBlock$Settings dynamicBounds Z
+accessible field net/minecraft/block/AbstractBlock$Settings burnable Z
+accessible field net/minecraft/block/AbstractBlock$Settings forceSolid Z
+accessible field net/minecraft/block/AbstractBlock$Settings forceNotSolid Z
+accessible field net/minecraft/block/AbstractBlock$Settings liquid Z
+accessible field net/minecraft/block/AbstractBlock$Settings blockBreakParticles Z
+accessible field net/minecraft/block/AbstractBlock$Settings instrument Lnet/minecraft/block/enums/Instrument;
+accessible field net/minecraft/block/AbstractBlock$Settings replaceable Z
 accessible field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
 mutable field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
 accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/world/level/storage/LevelStorage$Session;

@@ -4,9 +4,6 @@ import com.google.gson.*;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -27,20 +24,10 @@ public final class SimpleReaders {
     }
 
     public static AbstractBlock.Settings readBlockSettings(JsonObject obj) {
-        Material material;
-
-        if (obj.has("material")) {
-            material = readMaterial(obj.get("material"));
-        } else {
-            throw new JsonSyntaxException("Missing material, expected to be object or string");
-        }
-
-        MapColor color = material.getColor();
+        FabricBlockSettings settings = FabricBlockSettings.create();
 
         if (obj.has("color"))
-            color = NamedEntries.MAP_COLORS.get(JsonHelper.getString(obj, "color").toUpperCase(Locale.ROOT));
-
-        FabricBlockSettings settings = FabricBlockSettings.of(material, color);
+            settings.mapColor(NamedEntries.MAP_COLORS.get(JsonHelper.getString(obj, "color").toUpperCase(Locale.ROOT)));
 
         if (obj.has("collidable"))
             settings.collidable(JsonHelper.getBoolean(obj, "collidable"));
@@ -81,36 +68,31 @@ public final class SimpleReaders {
         if (JsonHelper.getBoolean(obj, "dynamic_bounds", false))
             settings.dynamicBounds();
 
-        return settings;
-    }
+        if (JsonHelper.getBoolean(obj, "burnable", false))
+            settings.burnable();
 
-    public static Material readMaterial(JsonElement el) {
-        if (el instanceof JsonPrimitive prim && prim.isString()) {
-            return NamedEntries.MATERIALS.get(prim.getAsString().toUpperCase(Locale.ROOT));
-        } else if (el instanceof JsonObject obj) {
-            boolean isLiquid = JsonHelper.getBoolean(obj, "liquid", false);
-            boolean isSolid = JsonHelper.getBoolean(obj, "solid", true);
-            boolean blocksMovement = JsonHelper.getBoolean(obj, "blocks_movement", true);
-            boolean isBurnable = JsonHelper.getBoolean(obj, "burnable", true);
-            boolean isReplaceable = JsonHelper.getBoolean(obj, "replaceable", false);
-            boolean blocksLight = JsonHelper.getBoolean(obj, "blocks_light", true);
-            PistonBehavior pistonBehaviour = PistonBehavior.valueOf(JsonHelper.getString(obj, "piston_behavior", "normal").toUpperCase(Locale.ROOT));
-            MapColor color = NamedEntries.MAP_COLORS.get(JsonHelper.getString(obj, "color").toUpperCase(Locale.ROOT));
-
-            var builder = new Material.Builder(color);
-
-            if (isLiquid) builder.liquid();
-            if (!isSolid) builder.notSolid();
-            if (!blocksMovement) builder.allowsMovement();
-            if (isBurnable) builder.burnable();
-            if (isReplaceable) builder.replaceable();
-            if (blocksLight) builder.lightPassesThrough();
-            builder.pistonBehavior = pistonBehaviour;
-
-            return builder.build();
-        } else {
-            throw new JsonSyntaxException("Expected material to be object or string");
+        if (obj.has("solid")) {
+            if (JsonHelper.getBoolean(obj, "solid"))
+                settings.solid();
+            else
+                settings.notSolid();
         }
+
+        if (JsonHelper.getBoolean(obj, "liquid", false))
+            settings.liquid();
+
+        // OFFSETTER
+
+        if (JsonHelper.getBoolean(obj, "no_break_particles", false))
+            settings.noBlockBreakParticles();
+
+        if (obj.has("instrument"))
+            settings.instrument(NamedEntries.INSTRUMENTS.get(JsonHelper.getString(obj, "instrument")));
+
+        if (JsonHelper.getBoolean(obj, "replaceable", false))
+            settings.replaceable();
+
+        return settings;
     }
 
     public static BlockSoundGroup readBlockSoundGroup(JsonElement el) {

@@ -10,7 +10,7 @@ import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
