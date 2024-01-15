@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.holder;
 
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 
 import java.util.function.Consumer;
 

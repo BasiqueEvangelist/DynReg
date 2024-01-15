@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;

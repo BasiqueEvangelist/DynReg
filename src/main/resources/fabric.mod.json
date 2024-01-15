@@ -30,25 +30,25 @@
     },
     "loom:injected_interfaces":{
       "net/minecraft/class_2248": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_1792": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_2591": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_1291": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_6880\u0024class_6883": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_1299": [
-        "me/basiqueevangelist/dynreg/access/DeletableObject"
+        "me/basiqueevangelist/dynreg/api/DeletableObject"
       ],
       "net/minecraft/class_5321": [
-        "me/basiqueevangelist/dynreg/entry/AnnounceableResource"
+        "me/basiqueevangelist/dynreg/api/entry/AnnounceableResource"
       ]
     }
   },

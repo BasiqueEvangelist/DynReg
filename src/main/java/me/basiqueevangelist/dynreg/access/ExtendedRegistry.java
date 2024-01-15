@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.access;
 
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
-import me.basiqueevangelist.dynreg.event.RegistryFrozenCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryFrozenCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.registry.RegistryKey;
 

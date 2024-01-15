@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
@@ -131,7 +131,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
+    public long hash() {
         int result = id.hashCode();
         result = 31 * result + spawnGroup.hashCode();
         result = 31 * result + canSpawnInside.hashCode();

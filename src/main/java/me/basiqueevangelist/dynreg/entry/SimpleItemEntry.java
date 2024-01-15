@@ -1,6 +1,9 @@
 package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
@@ -49,7 +52,7 @@ public class SimpleItemEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
+    public long hash() {
         int hash = id.hashCode();
         hash = 31 * hash + settings.hashCode();
         return hash;

@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.round;
 
-import me.basiqueevangelist.dynreg.entry.AnnounceableResource;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.AnnounceableResource;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.holder.EntryData;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -83,7 +83,7 @@ public class EntryScanner implements EntryScanContext {
 
     @Override
     public void dependency(AnnounceableResource resource) {
-        if (resource.dynreg$isAlreadyPresent())
+        if (resource.isAlreadyPresent())
             return;
 
         var otherEntry = resToEntry.get(resource);

@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.event.RoundEvents;
+import me.basiqueevangelist.dynreg.api.event.RoundEvents;
 import me.basiqueevangelist.dynreg.util.ReflectionUtil;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;

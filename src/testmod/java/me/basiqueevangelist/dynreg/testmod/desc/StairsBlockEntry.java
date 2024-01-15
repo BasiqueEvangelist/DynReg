@@ -1,9 +1,9 @@
 package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
@@ -71,7 +71,7 @@ public class StairsBlockEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
+    public long hash() {
         int hash = id.hashCode();
         hash = 31 * hash + sourceBlock.hashCode();
         hash = 31 * hash + SimpleHashers.hash(blockSettings);

@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.event;
+package me.basiqueevangelist.dynreg.api.event;
 
 import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
 import net.fabricmc.fabric.api.event.Event;

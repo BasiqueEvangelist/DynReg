@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin.palette;
 
 import me.basiqueevangelist.dynreg.access.CleanablePalette;
-import me.basiqueevangelist.dynreg.access.DeletableObject;
+import me.basiqueevangelist.dynreg.api.DeletableObject;
 import net.minecraft.world.chunk.ArrayPalette;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

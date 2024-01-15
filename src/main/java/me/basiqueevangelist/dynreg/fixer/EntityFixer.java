@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.fixer;
 
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.util.ClearUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnRestriction;

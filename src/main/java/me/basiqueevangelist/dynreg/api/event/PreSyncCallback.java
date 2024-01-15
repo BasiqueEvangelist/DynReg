@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.event;
+package me.basiqueevangelist.dynreg.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -7,7 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * Invoked before both Quilt and Fabric registry sync
+ * Invoked before Quilt and Fabric registry sync
  */
 public interface PreSyncCallback {
 

@@ -1,5 +1,6 @@
 package me.basiqueevangelist.dynreg.access;
 
+import me.basiqueevangelist.dynreg.api.DeletableObject;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 

@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.compat.quilt;
 
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.holder.ReactiveEntryTracker;
 import me.basiqueevangelist.dynreg.util.ReflectionUtil;
 import net.minecraft.registry.Registries;

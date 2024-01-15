@@ -1,6 +1,9 @@
 package me.basiqueevangelist.dynreg.entry;
 
 import com.google.gson.JsonObject;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
 import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
 import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
@@ -73,7 +76,7 @@ public class SimpleBlockEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
+    public long hash() {
         int hash = id.hashCode();
         hash = 31 * hash + SimpleHashers.hash(blockSettings);
         hash = 31 * hash + (itemSettings != null ? itemSettings.hashCode() : 0);

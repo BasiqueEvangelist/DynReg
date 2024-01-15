@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.client;
 
 import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import me.basiqueevangelist.dynreg.round.DynamicRound;

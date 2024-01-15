@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.client;
 
-import me.basiqueevangelist.dynreg.client.event.PostLeaveRoundCallback;
+import me.basiqueevangelist.dynreg.api.event.client.PostLeaveRoundCallback;
 import me.basiqueevangelist.dynreg.client.fixer.ClientBlockFixer;
 import me.basiqueevangelist.dynreg.client.fixer.ClientEntityFixer;
 import me.basiqueevangelist.dynreg.client.fixer.ClientItemFixer;

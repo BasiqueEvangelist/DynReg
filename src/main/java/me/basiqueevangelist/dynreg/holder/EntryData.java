@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.holder;
 
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;

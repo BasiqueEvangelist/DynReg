@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.client.fixer;
 
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import net.minecraft.client.render.entity.EntityRenderers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;

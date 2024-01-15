@@ -1,7 +1,9 @@
 package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.*;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
 import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
@@ -73,7 +75,7 @@ public class StatusEffectEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
+    public long hash() {
         int hash = id.hashCode();
         hash = 31 * hash + category.hashCode();
         hash = 31 * hash + color;

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;

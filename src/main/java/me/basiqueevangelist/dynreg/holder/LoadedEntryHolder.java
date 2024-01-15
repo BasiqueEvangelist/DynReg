@@ -2,8 +2,8 @@ package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.event.PreSyncCallback;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.event.PreSyncCallback;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
 import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.network.packet.Packet;

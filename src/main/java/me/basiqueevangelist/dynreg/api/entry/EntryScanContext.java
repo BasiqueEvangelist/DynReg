@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.entry;
+package me.basiqueevangelist.dynreg.api.entry;
 
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import net.minecraft.registry.Registry;

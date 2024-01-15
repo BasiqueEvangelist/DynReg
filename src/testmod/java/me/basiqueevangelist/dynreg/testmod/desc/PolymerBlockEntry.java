@@ -3,9 +3,9 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 import com.google.gson.JsonObject;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
-import me.basiqueevangelist.dynreg.entry.EntryRegisterContext;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +76,8 @@ public class PolymerBlockEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
-        int hash = id.hashCode();
+    public long hash() {
+        long hash = id.hashCode();
         hash = 31 * hash + sourceBlock.hashCode();
         hash = 31 * hash + SimpleHashers.hash(blockSettings);
         hash = 31 * hash + itemSettings.hashCode();
@@ -84,7 +85,7 @@ public class PolymerBlockEntry implements RegistrationEntry {
     }
 
     @Override
-    public @Nullable RegistrationEntry toSynced(PlayerEntity player) {
+    public @Nullable RegistrationEntry toSynced(ServerPlayerEntity player) {
         return null;
     }
 

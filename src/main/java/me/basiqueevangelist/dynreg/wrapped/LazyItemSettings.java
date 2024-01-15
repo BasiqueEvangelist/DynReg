@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.wrapped;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.minecraft.item.Item;

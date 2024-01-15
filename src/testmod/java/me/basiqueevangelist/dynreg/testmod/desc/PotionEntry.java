@@ -2,7 +2,9 @@ package me.basiqueevangelist.dynreg.testmod.desc;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.*;
+import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
+import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.wrapped.LazyStatusEffectInstance;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -73,8 +75,8 @@ public class PotionEntry implements RegistrationEntry {
     }
 
     @Override
-    public int hash() {
-        int hash = id.hashCode();
+    public long hash() {
+        long hash = id.hashCode();
         hash = 31 * hash + Objects.hashCode(baseName);
         hash = 31 * hash + effects.hashCode();
 

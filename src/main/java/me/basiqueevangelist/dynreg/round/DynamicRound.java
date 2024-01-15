@@ -1,15 +1,15 @@
 package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
+import me.basiqueevangelist.dynreg.api.RegistryModification;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.event.ResyncCallback;
-import me.basiqueevangelist.dynreg.event.RoundEvents;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.event.ResyncCallback;
+import me.basiqueevangelist.dynreg.api.event.RoundEvents;
 import me.basiqueevangelist.dynreg.holder.EntryData;
 import me.basiqueevangelist.dynreg.holder.EntryHasher;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.util.InfallibleCloseable;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import me.basiqueevangelist.dynreg.util.TopSort;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -141,7 +141,7 @@ public class DynamicRound {
 
             try (clientUnfreezer) {
                 for (Registry<?> registry : Registries.REGISTRIES) {
-                    RegistryUtils.unfreeze(registry);
+                    RegistryModification.unfreeze(registry);
                 }
 
                 RoundEvents.PRE.invoker().preRound();
@@ -170,11 +170,11 @@ public class DynamicRound {
                     for (var dependency : removedEntry.dependencies())
                         dependency.dependents().remove(removedEntry);
 
-                    removedEntry.entry().onRemoved();
+                    removedEntry.entry().removed();
 
                     for (RegistryKey<?> registeredKey : removedEntry.registeredKeys()) {
                         try {
-                            RegistryUtils.remove(registeredKey);
+                            RegistryModification.remove(registeredKey);
                         } catch (NoSuchElementException e) {
                             LOGGER.error("{} is registered, but has removed {}/{}", removedEntry.entry().id(), registeredKey.getRegistry(), registeredKey.getValue());
                         }

@@ -1,6 +1,7 @@
 package me.basiqueevangelist.dynreg.entry;
 
 import me.basiqueevangelist.dynreg.DynReg;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
@@ -20,7 +21,7 @@ public final class RegistrationEntries {
         return ENTRY_DESERIALIZERS.get(id);
     }
 
-    static Identifier getEntryId(RegistrationEntry desc) {
+    public static Identifier getEntryId(RegistrationEntry desc) {
         return ENTRY_TYPES.get(desc.getClass());
     }
 

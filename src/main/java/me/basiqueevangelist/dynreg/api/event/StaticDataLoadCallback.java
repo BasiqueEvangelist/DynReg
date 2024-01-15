@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.event;
+package me.basiqueevangelist.dynreg.api.event;
 
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.Event;

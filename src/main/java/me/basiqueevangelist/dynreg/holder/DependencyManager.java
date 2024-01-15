@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.holder;
 
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import me.basiqueevangelist.dynreg.api.RegistryModification;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -34,7 +34,7 @@ public final class DependencyManager {
                         LOGGER.info("Removing {}, as it is a dependent of {}", info.id, entry.registryKey().getValue());
                     }
 
-                    RegistryUtils.remove(info.registry(), info.id());
+                    RegistryModification.remove(info.registry(), info.id());
                 }
             }
 

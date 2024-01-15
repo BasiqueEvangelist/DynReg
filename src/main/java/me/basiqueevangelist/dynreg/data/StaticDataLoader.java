@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.data;
 
-import me.basiqueevangelist.dynreg.event.StaticDataLoadCallback;
+import me.basiqueevangelist.dynreg.api.event.StaticDataLoadCallback;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;

@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.debug.DebugContext;
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.mixin.fabriccommon.ItemApiLookupImplAccessor;
 import me.basiqueevangelist.dynreg.util.ApiLookupUtil;
 import me.basiqueevangelist.dynreg.util.ClearUtils;

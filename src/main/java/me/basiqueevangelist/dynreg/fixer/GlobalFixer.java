@@ -2,9 +2,9 @@ package me.basiqueevangelist.dynreg.fixer;
 
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.event.RegistryEntryDeletedCallback;
-import me.basiqueevangelist.dynreg.event.ResyncCallback;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
+import me.basiqueevangelist.dynreg.api.event.ResyncCallback;
 import me.basiqueevangelist.dynreg.holder.EntryHasher;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;

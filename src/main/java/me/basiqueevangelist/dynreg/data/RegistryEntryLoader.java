@@ -2,9 +2,9 @@ package me.basiqueevangelist.dynreg.data;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.entry.EntryDescriptionReaders;
-import me.basiqueevangelist.dynreg.event.StaticDataLoadCallback;
+import me.basiqueevangelist.dynreg.api.event.StaticDataLoadCallback;
 import me.basiqueevangelist.dynreg.round.DynamicRound;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiFunction;
 
 public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/RegistryEntryLoader");
