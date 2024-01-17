@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.wrapped.LazyStatusEffectInstance;
+import me.basiqueevangelist.dynreg.api.ser.LazyStatusEffectInstance;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
@@ -63,7 +63,6 @@ public class PotionEntry implements RegistrationEntry {
         ctx.register(Registries.POTION, id, potion);
     }
 
-    @Override
     public void write(PacketByteBuf buf) {
         buf.writeNullable(baseName, PacketByteBuf::writeString);
         buf.writeCollection(effects, (buf1, inst) -> inst.write(buf1));

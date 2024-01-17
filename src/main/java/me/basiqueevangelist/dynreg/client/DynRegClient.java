@@ -5,7 +5,7 @@ import me.basiqueevangelist.dynreg.client.fixer.ClientBlockFixer;
 import me.basiqueevangelist.dynreg.client.fixer.ClientEntityFixer;
 import me.basiqueevangelist.dynreg.client.fixer.ClientItemFixer;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
-import me.basiqueevangelist.dynreg.round.DynamicRound;
+import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
 import me.basiqueevangelist.dynreg.util.ExecutorFreezer;
 import me.basiqueevangelist.dynreg.util.InfallibleCloseable;
 import net.fabricmc.api.ClientModInitializer;
@@ -30,15 +30,13 @@ public class DynRegClient implements ClientModInitializer {
                 round.removeEntry(entryId);
 
             for (var entry : LoadedEntryHolder.startupEntries().values())
-                round.addEntry(entry.entry());
+                round.entry(entry.entry());
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            var round = new DynamicRound(client);
+            var round = new ModificationRoundImpl(client);
             PostLeaveRoundCallback.EVENT.invoker().onClientDisconnect(round);
-
-            if (round.needsRunning())
-                round.run();
+            round.run();
         });
     }
 

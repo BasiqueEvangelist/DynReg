@@ -3,9 +3,9 @@ package me.basiqueevangelist.dynreg.data;
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.DynReg;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.entry.EntryDescriptionReaders;
 import me.basiqueevangelist.dynreg.api.event.StaticDataLoadCallback;
-import me.basiqueevangelist.dynreg.round.DynamicRound;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntriesImpl;
+import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.Resource;
@@ -41,7 +41,7 @@ public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
             var entries = loadAll(manager);
 
             for (var entry : entries.values()) {
-                round.addEntry(entry);
+                round.entry(entry);
                 RegistryEntryLoader.ADDED_ENTRIES.add(entry.id());
                 RegistryEntryLoader.STARTUP_ENTRIES.add(entry.id());
             }
@@ -60,7 +60,7 @@ public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
             try (var br = new BufferedReader(new InputStreamReader(entry.getValue().getInputStream()))) {
                 JsonObject obj = JsonHelper.deserialize(br, true);
                 Identifier type = new Identifier(JsonHelper.getString(obj, "type"));
-                var reader = EntryDescriptionReaders.getReader(type);
+                var reader = RegistrationEntriesImpl.getReader(type);
 
                 if (reader == null) {
                     throw new IllegalStateException(type + " is an unknown entry reader type.");
@@ -83,7 +83,7 @@ public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         var data = loadAll(manager);
 
-        DynamicRound round = new DynamicRound(DynReg.SERVER);
+        ModificationRoundImpl round = new ModificationRoundImpl(DynReg.SERVER);
 
         for (var key : ADDED_ENTRIES) {
             round.removeEntry(key);
@@ -91,12 +91,11 @@ public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
         ADDED_ENTRIES.clear();
 
         for (var entry : data.entrySet()) {
-            round.addEntry(entry.getValue());
+            round.entry(entry.getValue());
             ADDED_ENTRIES.add(entry.getKey());
         }
 
-        if (round.needsRunning())
-            round.run();
+        round.run();
 
         return synchronizer.whenPrepared(null);
     }

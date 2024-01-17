@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.fixer.StatusEffectFixer;
-import me.basiqueevangelist.dynreg.util.AdaptUtil;
+import me.basiqueevangelist.dynreg.api.UpgradeUtil;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -32,7 +32,7 @@ public class StatusEffectInstanceMixin {
             dynreg$effectsVersion = currentVersion;
 
             if (type != null && type.wasDeleted()) {
-                type = AdaptUtil.adaptEffect(type);
+                type = UpgradeUtil.upgradeEffect(type);
 
                 if (type == null) {
                     duration = 0;

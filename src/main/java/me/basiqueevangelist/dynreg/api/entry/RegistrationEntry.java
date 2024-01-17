@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.entry;
 
-import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntriesImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The registration entry is the indivisible building block of dynamically-registered content.
+ * The registration entry is the indivisible building block of dynamically registered content.
  * Implementations can register content and declare dependencies on other content.
  */
 public interface RegistrationEntry {
@@ -46,12 +46,6 @@ public interface RegistrationEntry {
 
     }
 
-    /**
-     * Writes the entry into a buffer.
-     * @param buf the output buffer
-     */
-    void write(PacketByteBuf buf);
-
     Identifier id();
 
     /**
@@ -66,7 +60,7 @@ public interface RegistrationEntry {
     }
 
     default Identifier typeId() {
-        return RegistrationEntries.getEntryId(this);
+        return RegistrationEntriesImpl.getEntryId(this);
     }
 
     /**

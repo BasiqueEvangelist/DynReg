@@ -3,7 +3,7 @@ package me.basiqueevangelist.dynreg.mixin;
 import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
 import me.basiqueevangelist.dynreg.debug.DebugContext;
 import me.basiqueevangelist.dynreg.fixer.BlockFixer;
-import me.basiqueevangelist.dynreg.util.AdaptUtil;
+import me.basiqueevangelist.dynreg.api.UpgradeUtil;
 import me.basiqueevangelist.dynreg.util.DefaultedIndexIterable;
 import me.basiqueevangelist.dynreg.util.PaletteUtils;
 import net.minecraft.block.BlockState;
@@ -83,7 +83,7 @@ public abstract class ChunkSectionMixin {
             var palette = getBlockStateContainer().data.palette();
 
             if (!(palette instanceof IdListPalette<BlockState>)) {
-                PaletteUtils.tryClean(palette, AdaptUtil::adaptState);
+                PaletteUtils.tryClean(palette, UpgradeUtil::upgradeBlockState);
             }
 
             for (int x = 0; x < 16; x++) {
@@ -94,7 +94,7 @@ public abstract class ChunkSectionMixin {
                         if (oldState.getBlock().wasDeleted()) {
                             // TODO: FlashFreeze compat.
 
-                            setBlockState(x, y, z, AdaptUtil.adaptState(oldState));
+                            setBlockState(x, y, z, UpgradeUtil.upgradeBlockState(oldState));
                         }
                     }
                 }

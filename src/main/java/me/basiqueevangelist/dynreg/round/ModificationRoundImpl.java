@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.round;
 
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.api.RegistryModification;
+import me.basiqueevangelist.dynreg.api.round.ModificationRound;
 import me.basiqueevangelist.dynreg.client.DynRegClient;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.api.event.ResyncCallback;
@@ -30,13 +31,11 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class DynamicRound {
+public class ModificationRoundImpl implements ModificationRound {
     private static final Logger LOGGER = LoggerFactory.getLogger("DynReg/DynamicRound");
 
     private final List<Identifier> removedEntryIds = new ArrayList<>();
     private final Map<Identifier, RegistrationEntry> addedEntries = new HashMap<>();
-    private final CompletableFuture<Void> roundEnd = new CompletableFuture<>();
-    private final List<Runnable> tasks = new ArrayList<>();
     private final MinecraftServer server;
     private final /* MinecraftClient */ Object client;
 
@@ -44,47 +43,45 @@ public class DynamicRound {
     private boolean reloadResourcePacks = true;
     private boolean startupEntries = false;
 
-    public DynamicRound(MinecraftServer server) {
+    public ModificationRoundImpl(MinecraftServer server) {
         this.server = server;
         this.client = null;
     }
 
     @Environment(EnvType.CLIENT)
-    public DynamicRound(MinecraftClient client) {
+    public ModificationRoundImpl(MinecraftClient client) {
         this.server = null;
         this.client = client;
         this.reloadDataPacks = false;
     }
 
-    public void removeEntry(Identifier id) {
+    @Override
+    public ModificationRoundImpl removeEntry(Identifier id) {
         removedEntryIds.add(id);
+        return this;
     }
 
-    public void addEntry(RegistrationEntry entry) {
+    @Override
+    public ModificationRoundImpl entry(RegistrationEntry entry) {
         addedEntries.put(entry.id(), entry);
+        return this;
     }
 
-    public void addTask(Runnable task) {
-        tasks.add(task);
-    }
-
-    public void dataPackReload() {
+    public ModificationRoundImpl reloadDataPacks() {
         if (server == null)
             throw new IllegalStateException("cannot force datapack on client");
 
         reloadDataPacks = true;
+        return this;
     }
 
-    public void noResourcePackReload() {
+    public ModificationRoundImpl reloadResourcePacks() {
         reloadResourcePacks = false;
+        return this;
     }
 
     public void markAsStartup() {
         startupEntries = true;
-    }
-
-    public CompletableFuture<Void> getRoundEndFuture() {
-        return roundEnd;
     }
 
     public long hash() {
@@ -125,11 +122,16 @@ public class DynamicRound {
         return hasher.hash();
     }
 
+    @Override
     public boolean needsRunning() {
-        return tasks.size() > 0 || hash() != LoadedEntryHolder.hash();
+        return hash() != LoadedEntryHolder.hash();
     }
 
-    public void run() {
+    public CompletableFuture<Void> run() {
+        if (!needsRunning()) return CompletableFuture.completedFuture(null);
+
+        CompletableFuture<Void> roundEnd = new CompletableFuture<>();
+
         try {
             InfallibleCloseable clientUnfreezer =
                 FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT && server != null
@@ -202,10 +204,6 @@ public class DynamicRound {
                     }
                 }
 
-                for (var task : tasks) {
-                    task.run();
-                }
-
                 for (Registry<?> registry : Registries.REGISTRIES) {
                     registry.freeze();
                 }
@@ -263,5 +261,7 @@ public class DynamicRound {
             roundEnd.completeExceptionally(e);
             throw e;
         }
+
+        return roundEnd;
     }
 }

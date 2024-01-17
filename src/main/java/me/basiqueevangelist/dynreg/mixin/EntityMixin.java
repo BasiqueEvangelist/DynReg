@@ -2,9 +2,9 @@ package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import me.basiqueevangelist.dynreg.access.ExtendedEntity;
-import me.basiqueevangelist.dynreg.util.AdaptUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +31,9 @@ public abstract class EntityMixin implements ExtendedEntity {
     @Override
     public void dynreg$tryReplace() {
         if (type.wasDeleted()) {
-            var newType = AdaptUtil.adaptEntityType(type);
+            var newType = Registries.ENTITY_TYPE
+                .getOrEmpty(((DeletableObjectInternal) type).dynreg$getId())
+                .orElse(null);
 
             discard();
 

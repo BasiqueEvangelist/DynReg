@@ -5,11 +5,11 @@ import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
-import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
-import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
-import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
-import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
+import me.basiqueevangelist.dynreg.api.ser.LazyEntryRef;
+import me.basiqueevangelist.dynreg.api.ser.LazyItemSettings;
+import me.basiqueevangelist.dynreg.api.ser.SimpleHashers;
+import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
+import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.StairsBlock;
@@ -58,7 +58,6 @@ public class StairsBlockEntry implements RegistrationEntry {
         ctx.register(Registries.ITEM, id, item);
     }
 
-    @Override
     public void write(PacketByteBuf buf) {
         sourceBlock.write(buf);
         SimpleSerializers.writeBlockSettings(buf, blockSettings);

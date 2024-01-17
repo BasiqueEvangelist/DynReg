@@ -1,8 +1,7 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
@@ -14,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * A wrapper of {@link Item.Settings} that uses lazy registry entry resolution
+ */
 public class LazyItemSettings {
     private int maxCount = 64;
     private int maxDamage = 0;

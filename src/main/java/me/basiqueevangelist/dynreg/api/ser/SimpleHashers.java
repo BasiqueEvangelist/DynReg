@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import io.netty.buffer.ByteBufUtil;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -10,6 +10,10 @@ import net.minecraft.network.PacketByteBuf;
 import java.util.Map;
 
 // TODO: make this not use PacketByteBufs.
+
+/**
+ * Utilities for hashing some common types.
+ */
 public class SimpleHashers {
     public static int hash(AbstractBlock.Settings settings) {
         PacketByteBuf buf = PacketByteBufs.create();

@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.event;
 
-import me.basiqueevangelist.dynreg.round.DynamicRound;
+import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.resource.ResourceManager;
@@ -12,5 +12,5 @@ public interface StaticDataLoadCallback {
        }
     });
 
-    void onStaticDataLoad(ResourceManager manager, DynamicRound round);
+    void onStaticDataLoad(ResourceManager manager, ModificationRoundImpl round);
 }

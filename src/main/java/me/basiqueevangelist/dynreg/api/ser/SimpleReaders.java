@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import com.google.gson.*;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
@@ -18,6 +18,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Utilities for reading common types from JSON.
+ */
 public final class SimpleReaders {
     private SimpleReaders() {
 

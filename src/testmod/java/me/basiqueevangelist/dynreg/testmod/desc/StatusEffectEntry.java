@@ -4,10 +4,10 @@ import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.wrapped.SimpleHashers;
-import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
+import me.basiqueevangelist.dynreg.api.ser.SimpleHashers;
+import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
-import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
+import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -62,7 +62,6 @@ public class StatusEffectEntry implements RegistrationEntry {
         ctx.register(Registries.STATUS_EFFECT, id, effect);
     }
 
-    @Override
     public void write(PacketByteBuf buf) {
         buf.writeEnumConstant(category);
         buf.writeInt(color);

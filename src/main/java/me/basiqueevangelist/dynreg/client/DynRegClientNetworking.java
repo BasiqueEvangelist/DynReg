@@ -1,10 +1,10 @@
 package me.basiqueevangelist.dynreg.client;
 
-import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
+import me.basiqueevangelist.dynreg.entry.RegistrationEntriesImpl;
 import me.basiqueevangelist.dynreg.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.network.DynRegNetworking;
-import me.basiqueevangelist.dynreg.round.DynamicRound;
+import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.fabricmc.fabric.impl.registry.sync.RemapException;
@@ -34,10 +34,10 @@ public class DynRegClientNetworking {
 
             LOGGER.info("Applying dynamic round on client");
 
-            var round = new DynamicRound(client);
+            var round = new ModificationRoundImpl(client);
 
-            if (!buf.readBoolean())
-                round.noResourcePackReload();
+            if (buf.readBoolean())
+                round.reloadResourcePacks();
 
             for (var entryId : LoadedEntryHolder.entries().keySet()) {
                 round.removeEntry(entryId);
@@ -49,16 +49,15 @@ public class DynRegClientNetworking {
                 Identifier typeId = buf.readIdentifier();
                 Identifier entryId = buf.readIdentifier();
                 try {
-                    RegistrationEntry entry = RegistrationEntries.getEntryDeserializer(typeId).apply(entryId, buf);
+                    RegistrationEntry entry = RegistrationEntriesImpl.getNetworkData(typeId).deserializer().apply(entryId, buf);
 
-                    round.addEntry(entry);
+                    round.entry(entry);
                 } catch (Exception e) {
                     LOGGER.error("Encountered error while loading {}", entryId, e);
                 }
             }
 
-            if (round.needsRunning())
-                round.run();
+            round.run();
         });
     }
 }

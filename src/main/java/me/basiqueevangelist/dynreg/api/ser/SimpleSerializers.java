@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.enums.Instrument;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -19,6 +18,9 @@ import net.minecraft.util.Identifier;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Utilities for reading and writing some common types to {@link PacketByteBuf}s.
+ */
 public class SimpleSerializers {
     public static void writeBlockSettings(PacketByteBuf buf, AbstractBlock.Settings settings) {
         buf.writeVarInt(((ExtendedBlockSettings) settings).dynreg$getMapColor().id);

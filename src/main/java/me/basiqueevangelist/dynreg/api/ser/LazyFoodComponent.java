@@ -1,4 +1,4 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -12,6 +12,9 @@ import net.minecraft.util.JsonHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A wrapper of {@link FoodComponent} that uses lazy registry entry resolution
+ */
 public class LazyFoodComponent {
     private boolean isMeat;
     private boolean isAlwaysEdible;

@@ -1,8 +1,7 @@
-package me.basiqueevangelist.dynreg.wrapped;
+package me.basiqueevangelist.dynreg.api.ser;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.PacketByteBuf;
@@ -10,6 +9,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+/**
+ * A wrapper of {@link StatusEffectInstance} that uses lazy registry entry resolution.
+ */
 public class LazyStatusEffectInstance {
     private final LazyEntryRef<StatusEffect> type;
     private final int duration;

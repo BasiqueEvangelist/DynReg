@@ -1,7 +1,6 @@
 package me.basiqueevangelist.dynreg.testmod;
 
-import me.basiqueevangelist.dynreg.entry.RegistrationEntries;
-import me.basiqueevangelist.dynreg.entry.EntryDescriptionReaders;
+import me.basiqueevangelist.dynreg.api.entry.RegistrationEntries;
 import me.basiqueevangelist.dynreg.testmod.desc.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
@@ -15,25 +14,32 @@ public class DynRegTest implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        RegistrationEntries.registerEntryType(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
-        EntryDescriptionReaders.register(FlowerPotBlockEntry.ID, FlowerPotBlockEntry::new);
+        RegistrationEntries.register(FlowerPotBlockEntry.ID, FlowerPotBlockEntry.class)
+            .network(FlowerPotBlockEntry::write, FlowerPotBlockEntry::new)
+            .json(FlowerPotBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(StairsBlockEntry.ID, StairsBlockEntry::new);
-        EntryDescriptionReaders.register(StairsBlockEntry.ID, StairsBlockEntry::new);
+        RegistrationEntries.register(StairsBlockEntry.ID, StairsBlockEntry.class)
+            .network(StairsBlockEntry::write, StairsBlockEntry::new)
+            .json(StairsBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(SlabBlockEntry.ID, SlabBlockEntry::new);
-        EntryDescriptionReaders.register(SlabBlockEntry.ID, SlabBlockEntry::new);
+        RegistrationEntries.register(SlabBlockEntry.ID, SlabBlockEntry.class)
+            .network(SlabBlockEntry::write, SlabBlockEntry::new)
+            .json(SlabBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(PolymerBlockEntry.ID, PolymerBlockEntry::new);
-        EntryDescriptionReaders.register(PolymerBlockEntry.ID, PolymerBlockEntry::new);
+        RegistrationEntries.register(PolymerBlockEntry.ID, PolymerBlockEntry.class)
+            .network(PolymerBlockEntry::write, PolymerBlockEntry::new)
+            .json(PolymerBlockEntry::new);
 
-        RegistrationEntries.registerEntryType(StatusEffectEntry.ID, StatusEffectEntry::new);
-        EntryDescriptionReaders.register(StatusEffectEntry.ID, StatusEffectEntry::new);
+        RegistrationEntries.register(StatusEffectEntry.ID, StatusEffectEntry.class)
+            .network(StatusEffectEntry::write, StatusEffectEntry::new)
+            .json(StatusEffectEntry::new);
 
-        RegistrationEntries.registerEntryType(PotionEntry.ID, PotionEntry::new);
-        EntryDescriptionReaders.register(PotionEntry.ID, PotionEntry::new);
+        RegistrationEntries.register(PotionEntry.ID, PotionEntry.class)
+            .network(PotionEntry::write, PotionEntry::new)
+            .json(PotionEntry::new);
 
-        RegistrationEntries.registerEntryType(SimpleEntityEntry.ID, SimpleEntityEntry::new);
-        EntryDescriptionReaders.register(SimpleEntityEntry.ID, SimpleEntityEntry::new);
+        RegistrationEntries.register(SimpleEntityEntry.ID, SimpleEntityEntry.class)
+            .network(SimpleEntityEntry::write, SimpleEntityEntry::new)
+            .json(SimpleEntityEntry::new);
     }
 }

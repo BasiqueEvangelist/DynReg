@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.fixer.StatusEffectFixer;
-import me.basiqueevangelist.dynreg.util.AdaptUtil;
+import me.basiqueevangelist.dynreg.api.UpgradeUtil;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -39,7 +39,7 @@ public class LivingEntityMixin {
 
             activeStatusEffects.entrySet().removeIf(x -> {
                 if (x.getKey().wasDeleted()) {
-                    StatusEffect adapted = AdaptUtil.adaptEffect(x.getKey());
+                    StatusEffect adapted = UpgradeUtil.upgradeEffect(x.getKey());
 
                     if (adapted != null)
                         newEffects.put(adapted, x.getValue());

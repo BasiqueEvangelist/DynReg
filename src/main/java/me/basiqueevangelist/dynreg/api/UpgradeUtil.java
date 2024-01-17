@@ -1,11 +1,10 @@
-package me.basiqueevangelist.dynreg.util;
+package me.basiqueevangelist.dynreg.api;
 
 import com.mojang.datafixers.util.Pair;
 import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -14,24 +13,31 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public final class AdaptUtil {
-    private AdaptUtil() {
+/**
+ * Utilities for upgrading removed entries to their newer versions.
+ */
+public final class UpgradeUtil {
+    private UpgradeUtil() {
 
     }
 
-    public static @Nullable EntityType<?> adaptEntityType(EntityType<?> type) {
-        return Registries.ENTITY_TYPE
-            .getOrEmpty(((DeletableObjectInternal) type).dynreg$getId())
-            .orElse(null);
-    }
-
-    public static @Nullable StatusEffect adaptEffect(StatusEffect effect) {
+    /**
+     * Tries to upgrade {@code effect}.
+     *
+     * @return the new version of the effect or {@code null} if there is none
+     */
+    public static @Nullable StatusEffect upgradeEffect(StatusEffect effect) {
         return Registries.STATUS_EFFECT
             .getOrEmpty(((DeletableObjectInternal) effect).dynreg$getId())
             .orElse(null);
     }
 
-    public static BlockState adaptState(BlockState oldState) {
+    /**
+     * Tries to upgrade {@code oldState}.
+     *
+     * @return the new version of the state or {@link Blocks#AIR}'s default state if there is none
+     */
+    public static BlockState upgradeBlockState(BlockState oldState) {
         @SuppressWarnings("deprecation") Identifier id = oldState.getBlock().getRegistryEntry().registryKey().getValue();
 
         Block newBlock = Registries.BLOCK.getOrEmpty(id).orElse(null);

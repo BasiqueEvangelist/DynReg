@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.entry;
 
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
+import me.basiqueevangelist.dynreg.api.ser.LazyEntryRef;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 

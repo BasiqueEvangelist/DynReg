@@ -8,10 +8,10 @@ import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
-import me.basiqueevangelist.dynreg.util.LazyEntryRef;
+import me.basiqueevangelist.dynreg.api.ser.LazyEntryRef;
 import me.basiqueevangelist.dynreg.util.NamedEntries;
-import me.basiqueevangelist.dynreg.wrapped.SimpleReaders;
-import me.basiqueevangelist.dynreg.wrapped.SimpleSerializers;
+import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
+import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -112,7 +112,6 @@ public class SimpleEntityEntry implements RegistrationEntry {
         EntityRendererRegistry.register(entityType, EmptyEntityRenderer::new);
     }
 
-    @Override
     public void write(PacketByteBuf buf) {
         buf.writeString(NamedEntries.SPAWN_GROUPS.inverse().get(spawnGroup));
         buf.writeCollection(canSpawnInside, (buf1, ref) -> ref.write(buf1));

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryRegisterContext;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.wrapped.LazyItemSettings;
+import me.basiqueevangelist.dynreg.api.ser.LazyItemSettings;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
@@ -41,7 +41,6 @@ public class SimpleItemEntry implements RegistrationEntry {
         ctx.register(Registries.ITEM, id, new Item(settings.build()));
     }
 
-    @Override
     public void write(PacketByteBuf buf) {
         settings.write(buf);
     }
