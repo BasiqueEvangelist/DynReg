@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.util.DefaultedIndexIterable;
+import me.basiqueevangelist.dynreg.impl.util.DefaultedIndexIterable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.collection.IndexedIterable;

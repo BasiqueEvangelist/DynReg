@@ -63,7 +63,7 @@ public class SlabBlockEntry implements RegistrationEntry {
 
     @Override
     public long hash() {
-        int hash = id.hashCode();
+        long hash = id.hashCode();
         hash = 31 * hash + SimpleHashers.hash(blockSettings);
         hash = 31 * hash + itemSettings.hashCode();
         return hash;

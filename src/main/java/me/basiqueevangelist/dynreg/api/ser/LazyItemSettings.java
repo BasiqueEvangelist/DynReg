@@ -2,7 +2,7 @@ package me.basiqueevangelist.dynreg.api.ser;
 
 import com.google.gson.JsonObject;
 import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
-import me.basiqueevangelist.dynreg.util.NamedEntries;
+import me.basiqueevangelist.dynreg.impl.util.NamedEntries;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;

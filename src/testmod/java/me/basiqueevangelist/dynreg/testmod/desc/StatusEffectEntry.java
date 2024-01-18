@@ -75,7 +75,7 @@ public class StatusEffectEntry implements RegistrationEntry {
 
     @Override
     public long hash() {
-        int hash = id.hashCode();
+        long hash = id.hashCode();
         hash = 31 * hash + category.hashCode();
         hash = 31 * hash + color;
         hash = 31 * hash + SimpleHashers.hash(modifiers);

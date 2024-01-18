@@ -9,7 +9,7 @@ import me.basiqueevangelist.dynreg.api.entry.EntryScanContext;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.api.ser.LazyEntryRef;
-import me.basiqueevangelist.dynreg.util.NamedEntries;
+import me.basiqueevangelist.dynreg.impl.util.NamedEntries;
 import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
 import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
 import net.fabricmc.api.EnvType;
@@ -131,7 +131,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
 
     @Override
     public long hash() {
-        int result = id.hashCode();
+        long result = id.hashCode();
         result = 31 * result + spawnGroup.hashCode();
         result = 31 * result + canSpawnInside.hashCode();
         result = 31 * result + (saveable ? 1 : 0);

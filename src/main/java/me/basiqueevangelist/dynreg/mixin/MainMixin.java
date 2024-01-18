@@ -2,7 +2,7 @@
 
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.data.StaticDataLoader;
+import me.basiqueevangelist.dynreg.impl.data.StaticDataLoader;
 import net.minecraft.server.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

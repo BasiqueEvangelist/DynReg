@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.fixer.StatusEffectFixer;
 import me.basiqueevangelist.dynreg.api.UpgradeUtil;
+import me.basiqueevangelist.dynreg.impl.fixer.StatusEffectFixer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;

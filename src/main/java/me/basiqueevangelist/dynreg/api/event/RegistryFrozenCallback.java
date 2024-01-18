@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.event;
 
-import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedRegistry;
 import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.registry.Registry;
 

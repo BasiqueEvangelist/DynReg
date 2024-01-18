@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin.fabric;
 
-import me.basiqueevangelist.dynreg.data.RegistryEntryLoader;
+import me.basiqueevangelist.dynreg.impl.data.RegistryEntryLoader;
 import net.fabricmc.fabric.impl.resource.loader.ResourceManagerHelperImpl;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;

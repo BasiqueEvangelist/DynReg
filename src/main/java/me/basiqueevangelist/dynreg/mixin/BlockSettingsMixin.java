@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.util.DyeColor;

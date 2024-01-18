@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import me.basiqueevangelist.dynreg.access.ExtendedIdList;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedIdList;
 import net.minecraft.util.collection.IdList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

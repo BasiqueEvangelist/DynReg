@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
-import me.basiqueevangelist.dynreg.fixer.BlockFixer;
-import me.basiqueevangelist.dynreg.util.VersionTracker;
+import me.basiqueevangelist.dynreg.impl.fixer.BlockFixer;
+import me.basiqueevangelist.dynreg.impl.util.VersionTracker;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;

@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.api.entry;
 
 import com.google.gson.JsonObject;
-import me.basiqueevangelist.dynreg.entry.RegistrationEntriesImpl;
+import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 

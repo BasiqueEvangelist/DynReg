@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.event;
 
-import me.basiqueevangelist.dynreg.DynReg;
+import me.basiqueevangelist.dynreg.impl.DynReg;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.MinecraftServer;

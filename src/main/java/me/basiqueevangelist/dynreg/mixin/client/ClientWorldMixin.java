@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin.client;
 
-import me.basiqueevangelist.dynreg.access.ExtendedEntity;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

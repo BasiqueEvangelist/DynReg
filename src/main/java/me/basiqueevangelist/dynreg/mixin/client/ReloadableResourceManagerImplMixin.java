@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin.client;
 
-import me.basiqueevangelist.dynreg.client.DynRegClient;
+import me.basiqueevangelist.dynreg.impl.client.DynRegClient;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceReload;

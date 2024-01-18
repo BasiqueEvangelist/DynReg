@@ -1,11 +1,11 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
-import me.basiqueevangelist.dynreg.debug.DebugContext;
-import me.basiqueevangelist.dynreg.fixer.BlockFixer;
 import me.basiqueevangelist.dynreg.api.UpgradeUtil;
-import me.basiqueevangelist.dynreg.util.DefaultedIndexIterable;
-import me.basiqueevangelist.dynreg.util.PaletteUtils;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedIdListPalette;
+import me.basiqueevangelist.dynreg.impl.fixer.BlockFixer;
+import me.basiqueevangelist.dynreg.impl.util.DebugContext;
+import me.basiqueevangelist.dynreg.impl.util.DefaultedIndexIterable;
+import me.basiqueevangelist.dynreg.impl.util.PaletteUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.network.PacketByteBuf;

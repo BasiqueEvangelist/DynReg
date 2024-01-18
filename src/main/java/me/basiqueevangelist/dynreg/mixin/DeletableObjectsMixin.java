@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
+import me.basiqueevangelist.dynreg.impl.access.DeletableObjectInternal;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;

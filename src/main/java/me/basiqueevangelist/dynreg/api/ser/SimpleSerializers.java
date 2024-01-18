@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.api.ser;
 
-import me.basiqueevangelist.dynreg.access.ExtendedBlockSettings;
-import me.basiqueevangelist.dynreg.util.NamedEntries;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedBlockSettings;
+import me.basiqueevangelist.dynreg.impl.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;

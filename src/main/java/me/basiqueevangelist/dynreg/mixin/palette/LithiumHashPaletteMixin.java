@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.mixin.palette;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import me.basiqueevangelist.dynreg.access.CleanablePalette;
 import me.basiqueevangelist.dynreg.api.DeletableObject;
+import me.basiqueevangelist.dynreg.impl.access.CleanablePalette;
 import me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

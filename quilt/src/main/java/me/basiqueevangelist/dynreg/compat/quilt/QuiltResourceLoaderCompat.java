@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.compat.quilt;
 
-import me.basiqueevangelist.dynreg.DynReg;
-import me.basiqueevangelist.dynreg.data.RegistryEntryLoader;
+import me.basiqueevangelist.dynreg.impl.DynReg;
+import me.basiqueevangelist.dynreg.impl.data.RegistryEntryLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;

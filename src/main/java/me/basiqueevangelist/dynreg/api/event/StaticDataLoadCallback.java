@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.api.event;
 
-import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
+import me.basiqueevangelist.dynreg.impl.round.ModificationRoundImpl;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.resource.ResourceManager;

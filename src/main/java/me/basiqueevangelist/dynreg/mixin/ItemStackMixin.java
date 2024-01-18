@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.fixer.ItemFixer;
+import me.basiqueevangelist.dynreg.impl.fixer.ItemFixer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

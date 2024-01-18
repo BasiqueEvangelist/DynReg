@@ -14,10 +14,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.basiqueevangelist.dynreg.DynReg"
+      "me.basiqueevangelist.dynreg.impl.DynReg"
     ],
     "client": [
-      "me.basiqueevangelist.dynreg.client.DynRegClient"
+      "me.basiqueevangelist.dynreg.impl.client.DynRegClient"
     ]
   },
   "accessWidener": "dynreg.accesswidener",

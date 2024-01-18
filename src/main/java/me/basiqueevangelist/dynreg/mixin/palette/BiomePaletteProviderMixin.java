@@ -1,6 +1,6 @@
 package me.basiqueevangelist.dynreg.mixin.palette;
 
-import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedIdListPalette;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;

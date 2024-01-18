@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.api.round;
 
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.round.ModificationRoundImpl;
+import me.basiqueevangelist.dynreg.impl.round.ModificationRoundImpl;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 

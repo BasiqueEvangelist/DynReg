@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
-import me.basiqueevangelist.dynreg.access.DeletableObjectInternal;
-import me.basiqueevangelist.dynreg.access.ExtendedEntity;
+import me.basiqueevangelist.dynreg.impl.access.DeletableObjectInternal;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.Registries;

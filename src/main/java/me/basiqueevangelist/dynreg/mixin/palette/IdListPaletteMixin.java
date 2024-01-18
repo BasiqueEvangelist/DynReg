@@ -1,8 +1,8 @@
 package me.basiqueevangelist.dynreg.mixin.palette;
 
-import me.basiqueevangelist.dynreg.access.CleanablePalette;
-import me.basiqueevangelist.dynreg.access.ExtendedIdListPalette;
-import me.basiqueevangelist.dynreg.fixer.BlockFixer;
+import me.basiqueevangelist.dynreg.impl.access.CleanablePalette;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedIdListPalette;
+import me.basiqueevangelist.dynreg.impl.fixer.BlockFixer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.world.chunk.IdListPalette;

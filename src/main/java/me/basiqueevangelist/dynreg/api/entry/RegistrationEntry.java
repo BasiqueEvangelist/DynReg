@@ -1,9 +1,8 @@
 package me.basiqueevangelist.dynreg.api.entry;
 
-import me.basiqueevangelist.dynreg.entry.RegistrationEntriesImpl;
+import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;

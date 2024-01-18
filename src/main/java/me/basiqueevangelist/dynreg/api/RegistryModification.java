@@ -1,7 +1,7 @@
 package me.basiqueevangelist.dynreg.api;
 
-import me.basiqueevangelist.dynreg.access.ExtendedRegistry;
-import me.basiqueevangelist.dynreg.util.RegistryUtils;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedRegistry;
+import me.basiqueevangelist.dynreg.impl.util.RegistryUtils;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
