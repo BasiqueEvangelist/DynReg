@@ -144,7 +144,7 @@ public class SimpleSerializers {
             (buf2, modifier) -> {
                 buf2.writeDouble(modifier.getValue());
                 buf2.writeEnumConstant(modifier.getOperation());
-                buf2.writeString(modifier.getName());
+                buf2.writeString(modifier.name);
                 buf2.writeUuid(modifier.getId());
             });
     }

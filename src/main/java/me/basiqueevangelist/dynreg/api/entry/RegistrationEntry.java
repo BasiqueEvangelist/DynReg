@@ -3,6 +3,7 @@ package me.basiqueevangelist.dynreg.api.entry;
 import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.server.network.ServerCommonNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -51,10 +52,10 @@ public interface RegistrationEntry {
      * Returns the entry sent to the player on sync.
      * If nothing is to be synced, return {@code null}.
      *
-     * @param player the player to sync with
+     * @param handler the player to sync with
      * @return the entry that will be sent to the player
      */
-    default @Nullable RegistrationEntry toSynced(ServerPlayerEntity player) {
+    default @Nullable RegistrationEntry toSynced(ServerCommonNetworkHandler handler) {
         return this;
     }
 

@@ -1,6 +1,7 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import me.basiqueevangelist.dynreg.impl.access.ExtendedIdList;
 import net.minecraft.util.collection.IdList;
 import org.spongepowered.asm.mixin.Final;
@@ -17,7 +18,7 @@ public abstract class IdListMixin<T> implements ExtendedIdList {
 
     @Shadow
     @Final
-    private Object2IntMap<T> idMap;
+    private Reference2IntMap<T> idMap;
 
     @Shadow private int nextId;
 

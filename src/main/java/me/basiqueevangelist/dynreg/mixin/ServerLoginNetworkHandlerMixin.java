@@ -18,8 +18,8 @@ public class ServerLoginNetworkHandlerMixin {
 
     @Shadow @Final ClientConnection connection;
 
-    @Inject(method = "addToServer", at = @At("HEAD"))
-    private void beforeQuilt(ServerPlayerEntity player, CallbackInfo ci) {
-        PreSyncCallback.EVENT.invoker().onPreSync(server, player, connection);
-    }
+//    @Inject(method = "addToServer", at = @At("HEAD"))
+//    private void beforeQuilt(ServerPlayerEntity player, CallbackInfo ci) {
+//        PreSyncCallback.EVENT.invoker().onPreSync(server, player, connection);
+//    }
 }

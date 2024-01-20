@@ -5,7 +5,9 @@ import me.basiqueevangelist.dynreg.impl.DynRegNetworking;
 import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import me.basiqueevangelist.dynreg.impl.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.impl.round.ModificationRoundImpl;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.impl.registry.sync.RegistrySyncManager;
 import net.fabricmc.fabric.impl.registry.sync.RemapException;
 import net.minecraft.util.Identifier;
@@ -17,7 +19,7 @@ public class DynRegClientNetworking {
 
     @SuppressWarnings("UnstableApiUsage")
     public static void init() {
-        ClientPlayNetworking.registerGlobalReceiver(DynRegNetworking.ROUND_FINISHED, (client, handler, buf, responseSender) -> {
+        ClientConfigurationNetworking.registerGlobalReceiver(DynRegNetworking.ROUND_FINISHED, (client, handler, buf, responseSender) -> {
             try {
                 RegistrySyncManager.unmap();
             } catch (RemapException e) {
@@ -58,6 +60,8 @@ public class DynRegClientNetworking {
             }
 
             round.run();
+
+            responseSender.sendPacket(DynRegNetworking.ROUND_SYNC_COMPLETE, PacketByteBufs.empty());
         });
     }
 }

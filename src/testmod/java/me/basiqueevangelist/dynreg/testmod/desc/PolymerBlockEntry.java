@@ -18,6 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerCommonNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -83,7 +84,7 @@ public class PolymerBlockEntry implements RegistrationEntry {
     }
 
     @Override
-    public @Nullable RegistrationEntry toSynced(ServerPlayerEntity player) {
+    public @Nullable RegistrationEntry toSynced(ServerCommonNetworkHandler handler) {
         return null;
     }
 

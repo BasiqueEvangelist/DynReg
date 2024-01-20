@@ -55,3 +55,4 @@ accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/wor
 accessible field net/minecraft/client/render/entity/EntityRenderers RENDERER_FACTORIES Ljava/util/Map;
 accessible field net/minecraft/entity/SpawnRestriction RESTRICTIONS Ljava/util/Map;
 accessible field net/minecraft/entity/attribute/DefaultAttributeRegistry DEFAULT_ATTRIBUTE_REGISTRY Ljava/util/Map;
+accessible field net/minecraft/entity/attribute/EntityAttributeModifier name Ljava/lang/String;

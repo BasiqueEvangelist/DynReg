@@ -3,7 +3,6 @@ package me.basiqueevangelist.dynreg.impl.round;
 import com.google.common.collect.Lists;
 import me.basiqueevangelist.dynreg.api.RegistryModification;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
-import me.basiqueevangelist.dynreg.api.event.ResyncCallback;
 import me.basiqueevangelist.dynreg.api.event.RoundEvents;
 import me.basiqueevangelist.dynreg.api.round.ModificationRound;
 import me.basiqueevangelist.dynreg.impl.client.DynRegClient;
@@ -215,8 +214,8 @@ public class ModificationRoundImpl implements ModificationRound {
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
-                for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-                    ResyncCallback.EVENT.invoker().onResync(server, player, reloadResourcePacks);
+                for (ServerPlayerEntity player : new ArrayList<>(server.getOverworld().getPlayers())) {
+                    player.networkHandler.reconfigure();
                 }
 
                 if (reloadDataPacks) {

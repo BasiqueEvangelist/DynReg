@@ -41,7 +41,7 @@ public final class LoadedEntryHolder {
             EntryHasher hasher = new EntryHasher();
 
             for (var entry : LoadedEntryHolder.entries().values()) {
-                var synced = entry.entry().toSynced(player);
+                var synced = entry.entry().toSynced(player.networkHandler);
 
                 if (synced != null) {
                     syncedEntries.add(synced);

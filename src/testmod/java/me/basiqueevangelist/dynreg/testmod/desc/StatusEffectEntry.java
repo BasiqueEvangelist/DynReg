@@ -8,6 +8,7 @@ import me.basiqueevangelist.dynreg.api.ser.SimpleHashers;
 import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
+import net.minecraft.entity.attribute.AttributeModifierCreator;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -18,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class StatusEffectEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("status_effect");
@@ -57,7 +59,24 @@ public class StatusEffectEntry implements RegistrationEntry {
     public void register(EntryRegisterContext ctx) {
         StatusEffect effect = new StatusEffect(category, color) {};
 
-        effect.getAttributeModifiers().putAll(modifiers);
+        for (var entry : modifiers.entrySet()) {
+            effect.getAttributeModifiers().put(entry.getKey(), new AttributeModifierCreator() {
+                @Override
+                public UUID getUuid() {
+                    return entry.getValue().getId();
+                }
+
+                @Override
+                public EntityAttributeModifier createAttributeModifier(int amplifier) {
+                    return new EntityAttributeModifier(
+                        entry.getValue().getId(),
+                        effect.getTranslationKey() + " " + amplifier,
+                        entry.getValue().getValue() * (double)(amplifier + 1),
+                        entry.getValue().getOperation()
+                    );
+                }
+            });
+        }
 
         ctx.register(Registries.STATUS_EFFECT, id, effect);
     }

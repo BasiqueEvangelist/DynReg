@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.api.event.RegistryFrozenCallback;
 import me.basiqueevangelist.dynreg.impl.access.ExtendedRegistry;
@@ -45,7 +46,7 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
 
     @Shadow
     @Final
-    private Object2IntMap<T> entryToRawId;
+    private Reference2IntMap<T> entryToRawId;
     @Shadow
     @Final
     private ObjectList<RegistryEntry.Reference<T>> rawIdToEntry;

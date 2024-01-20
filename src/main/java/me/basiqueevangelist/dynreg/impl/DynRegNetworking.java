@@ -16,6 +16,7 @@ public final class DynRegNetworking {
     }
 
     public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
+    public static Identifier ROUND_SYNC_COMPLETE = new Identifier("dynreg", "round_sync_complete");
 
     public static Packet<?> makeRoundFinishedPacket(long hash, boolean reloadResources,
                                                     Collection<RegistrationEntry> addedEntries) {
