@@ -6,6 +6,7 @@ import me.basiqueevangelist.dynreg.impl.DynReg;
 import me.basiqueevangelist.dynreg.impl.DynRegNetworking;
 import me.basiqueevangelist.dynreg.impl.client.DynRegClient;
 import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.util.Identifier;
 
@@ -24,11 +25,11 @@ public final class LoadedEntryHolder {
     }
 
     public static void init() {
-        PreSyncCallback.EVENT.addPhaseOrdering(ROUND_SYNC_PHASE, Event.DEFAULT_PHASE);
-        PreSyncCallback.EVENT.register(ROUND_SYNC_PHASE, (server, player, connection) -> {
+        ServerConfigurationConnectionEvents.BEFORE_CONFIGURE.addPhaseOrdering(ROUND_SYNC_PHASE, Event.DEFAULT_PHASE);
+        ServerConfigurationConnectionEvents.BEFORE_CONFIGURE.register(ROUND_SYNC_PHASE, (handler, server) -> {
             boolean doResourceReload = server.getResourcePackProperties().isEmpty();
 
-            boolean isHost = server.isHost(player.getGameProfile());
+            boolean isHost = server.isHost(handler.getDebugProfile());
 
             if (isHost) {
                 if (doResourceReload)
@@ -41,7 +42,7 @@ public final class LoadedEntryHolder {
             EntryHasher hasher = new EntryHasher();
 
             for (var entry : LoadedEntryHolder.entries().values()) {
-                var synced = entry.entry().toSynced(player);
+                var synced = entry.entry().toSynced(handler);
 
                 if (synced != null) {
                     syncedEntries.add(synced);
@@ -50,7 +51,7 @@ public final class LoadedEntryHolder {
             }
 
             Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hasher.hash(), doResourceReload, syncedEntries);
-            connection.send(packet);
+            handler.sendPacket(packet);
         });
     }
 

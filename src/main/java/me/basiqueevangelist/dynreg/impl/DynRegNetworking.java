@@ -3,6 +3,7 @@ package me.basiqueevangelist.dynreg.impl;
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.Packet;
@@ -31,6 +32,6 @@ public final class DynRegNetworking {
 
             RegistrationEntriesImpl.getNetworkData(entry).serializer().accept(entry, buf);
         }
-        return ServerPlayNetworking.createS2CPacket(ROUND_FINISHED, buf);
+        return ServerConfigurationNetworking.createS2CPacket(ROUND_FINISHED, buf);
     }
 }

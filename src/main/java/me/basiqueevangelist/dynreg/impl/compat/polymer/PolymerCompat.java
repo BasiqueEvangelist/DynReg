@@ -11,7 +11,8 @@ public final class PolymerCompat {
     }
 
     public static void init() {
-        ResyncCallback.EVENT.register(
-            (server, player, reloadResourcePacks) -> PolymerUtils.reloadWorld(player));
+        // TODO.
+//        ResyncCallback.EVENT.register(
+//            (server, player, reloadResourcePacks) -> PolymerUtils.reloadWorld(player));
     }
 }

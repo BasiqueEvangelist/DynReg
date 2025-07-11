@@ -60,6 +60,11 @@ public abstract class ChunkSectionMixin {
         checkIfRefreshNeeded();
     }
 
+    @Inject(method = "getPacketSize", at = @At("HEAD"))
+    private void packetSizeHook(CallbackInfoReturnable<Integer> cir) {
+        checkIfRefreshNeeded();
+    }
+
     @Inject(method = "toPacket", at = @At("HEAD"))
     private void sendHook(PacketByteBuf buf, CallbackInfo ci) {
         checkIfRefreshNeeded();

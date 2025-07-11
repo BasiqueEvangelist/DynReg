@@ -4,6 +4,7 @@ import me.basiqueevangelist.dynreg.impl.DynReg;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -21,8 +22,8 @@ public interface ResyncCallback {
     /**
      * Invoked whenever registry changes are to be synced to the player.
      * @param server the server
-     * @param player the player to sync to
+     * @param handler the handler to sync to
      * @param reloadResourcePacks whether resource packs should be reloaded on the client
      */
-    void onResync(MinecraftServer server, ServerPlayerEntity player, boolean reloadResourcePacks);
+    void onResync(MinecraftServer server, ServerConfigurationNetworkHandler handler, boolean reloadResourcePacks);
 }

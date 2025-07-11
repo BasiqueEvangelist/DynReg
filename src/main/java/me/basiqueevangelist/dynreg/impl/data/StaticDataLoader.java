@@ -2,8 +2,11 @@ package me.basiqueevangelist.dynreg.impl.data;
 
 import me.basiqueevangelist.dynreg.api.event.StaticDataLoadCallback;
 import me.basiqueevangelist.dynreg.impl.round.ModificationRoundImpl;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.path.SymlinkFinder;
+import net.minecraft.world.level.storage.LevelStorage;
 
 import java.util.function.Consumer;
 
@@ -22,9 +25,11 @@ public class StaticDataLoader {
     }
 
     public static LifecycledResourceManager loadPacks() {
+        var symlinkFinder = LevelStorage.createSymlinkFinder(FabricLoader.getInstance().getGameDir().resolve("allowed_symlinks.txt"));
+
         ResourcePackManager packs = new ResourcePackManager(
-            new VanillaDataPackProvider(),
-            new FakeFileResourcePackProvider(ResourceType.SERVER_DATA, ResourcePackSource.WORLD)
+            new VanillaDataPackProvider(symlinkFinder),
+            new FakeFileResourcePackProvider(ResourceType.SERVER_DATA, ResourcePackSource.WORLD, symlinkFinder)
         );
 
         packs.scanPacks();
@@ -37,8 +42,8 @@ public class StaticDataLoader {
     }
 
     private static class FakeFileResourcePackProvider extends FileResourcePackProvider {
-        public FakeFileResourcePackProvider(ResourceType type, ResourcePackSource source) {
-            super(null, type, source);
+        public FakeFileResourcePackProvider(ResourceType type, ResourcePackSource source, SymlinkFinder symlinkFinder) {
+            super(null, type, source, symlinkFinder);
         }
 
         @Override

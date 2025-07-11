@@ -6,21 +6,28 @@ import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.api.event.ResyncCallback;
 import me.basiqueevangelist.dynreg.api.event.RoundEvents;
 import me.basiqueevangelist.dynreg.api.round.ModificationRound;
+import me.basiqueevangelist.dynreg.impl.access.ExtendedClientConnection;
 import me.basiqueevangelist.dynreg.impl.client.DynRegClient;
 import me.basiqueevangelist.dynreg.impl.holder.EntryData;
 import me.basiqueevangelist.dynreg.impl.holder.EntryHasher;
 import me.basiqueevangelist.dynreg.impl.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.impl.util.InfallibleCloseable;
 import me.basiqueevangelist.dynreg.impl.util.TopSort;
+import me.basiqueevangelist.dynreg.mixin.ServerCommonNetworkHandlerAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.listener.PacketListener;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerTask;
+import net.minecraft.server.network.ServerCommonNetworkHandler;
+import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.SaveProperties;
@@ -215,9 +222,21 @@ public class ModificationRoundImpl implements ModificationRound {
             CompletableFuture<Void> reloadFuture = null;
 
             if (server != null) {
-                for (ServerPlayerEntity player : server.getOverworld().getPlayers()) {
-                    ResyncCallback.EVENT.invoker().onResync(server, player, reloadResourcePacks);
+                server.getPlayerManager().saveAllPlayerData();
+
+                for (ServerPlayerEntity player : new ArrayList<>(server.getPlayerManager().getPlayerList())) {
+                    player.networkHandler.reconfigure();
+                    ((ExtendedClientConnection) ((ServerCommonNetworkHandlerAccessor) player.networkHandler).getConnection()).dynreg$markAsResync();
                 }
+
+                server.send(new ServerTask(0, () -> {
+                    for(ClientConnection clientConnection : server.getNetworkIo().getConnections()) {
+                        PacketListener var5 = clientConnection.getPacketListener();
+                        if (var5 instanceof ServerConfigurationNetworkHandler serverConfigurationNetworkHandler) {
+                            serverConfigurationNetworkHandler.sendConfigurations();
+                        }
+                    }
+                }));
 
                 if (reloadDataPacks) {
                     ResourcePackManager resourcePackManager = server.getDataPackManager();

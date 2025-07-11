@@ -15,6 +15,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerConfigurationNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -42,8 +43,8 @@ public final class GlobalFixer<T> {
         RegistryEntryDeletedCallback.event(registry).register(this::onEntryDeleted);
     }
 
-    private static void syncEntries(MinecraftServer server, ServerPlayerEntity player, boolean reloadResourcePacks) {
-        if (server.isHost(player.getGameProfile())) {
+    private static void syncEntries(MinecraftServer server, ServerConfigurationNetworkHandler handler, boolean reloadResourcePacks) {
+        if (server.isHost(handler.getDebugProfile())) {
             if (reloadResourcePacks)
                 DynRegClient.reloadClientResources();
 
@@ -54,7 +55,7 @@ public final class GlobalFixer<T> {
         EntryHasher hasher = new EntryHasher();
 
         for (var entry : LoadedEntryHolder.entries().values()) {
-            var synced = entry.entry().toSynced(player);
+            var synced = entry.entry().toSynced(handler);
 
             if (synced != null) {
                 syncedEntries.add(synced);
@@ -63,12 +64,12 @@ public final class GlobalFixer<T> {
         }
 
         Packet<?> packet = DynRegNetworking.makeRoundFinishedPacket(hasher.hash(), reloadResourcePacks, syncedEntries);
-        player.networkHandler.sendPacket(packet);
+        handler.sendPacket(packet);
     }
 
-    private static void registrySync(MinecraftServer server, ServerPlayerEntity player, boolean reloadResourcePacks) {
+    private static void registrySync(MinecraftServer server, ServerConfigurationNetworkHandler handler, boolean reloadResourcePacks) {
         //noinspection UnstableApiUsage
-        RegistrySyncManager.sendPacket(server, player);
+        RegistrySyncManager.configureClient(handler, server);
     }
 
     private void onEntryDeleted(int rawId, RegistryEntry.Reference<?> entry) {
