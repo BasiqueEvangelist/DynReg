@@ -9,7 +9,7 @@ public class DynRegTest implements ModInitializer {
     public static final String MODID = "dynreg-testmod";
 
     public static Identifier id(String path) {
-        return new Identifier(MODID, path);
+        return Identifier.of(MODID, path);
     }
 
     @Override

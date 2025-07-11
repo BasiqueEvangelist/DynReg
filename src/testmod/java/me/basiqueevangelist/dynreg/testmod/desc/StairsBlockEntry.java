@@ -29,7 +29,7 @@ public class StairsBlockEntry implements RegistrationEntry {
 
     public StairsBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
-        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
+        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, Identifier.of(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = new LazyItemSettings(json);
     }

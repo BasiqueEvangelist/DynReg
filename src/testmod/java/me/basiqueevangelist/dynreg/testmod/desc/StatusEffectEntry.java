@@ -8,18 +8,17 @@ import me.basiqueevangelist.dynreg.api.ser.SimpleHashers;
 import me.basiqueevangelist.dynreg.api.ser.SimpleReaders;
 import me.basiqueevangelist.dynreg.testmod.DynRegTest;
 import me.basiqueevangelist.dynreg.api.ser.SimpleSerializers;
-import net.minecraft.entity.attribute.AttributeModifierCreator;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 import java.util.Map;
-import java.util.UUID;
 
 public class StatusEffectEntry implements RegistrationEntry {
     public static final Identifier ID = DynRegTest.id("status_effect");
@@ -27,7 +26,7 @@ public class StatusEffectEntry implements RegistrationEntry {
     private final Identifier id;
     private final StatusEffectCategory category;
     private final int color;
-    private final Map<EntityAttribute, EntityAttributeModifier> modifiers;
+    private final Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers;
 
     public StatusEffectEntry(Identifier id, JsonObject obj) {
         this.id = id;
@@ -60,17 +59,7 @@ public class StatusEffectEntry implements RegistrationEntry {
         StatusEffect effect = new StatusEffect(category, color) {};
 
         for (var entry : modifiers.entrySet()) {
-            effect.getAttributeModifiers().put(entry.getKey(), new AttributeModifierCreator() {
-                @Override
-                public UUID getUuid() {
-                    return entry.getValue().getId();
-                }
-
-                @Override
-                public EntityAttributeModifier createAttributeModifier(int amplifier) {
-                    return entry.getValue();
-                }
-            });
+            effect.addAttributeModifier(entry.getKey(), entry.getValue().id(), entry.getValue().value(), entry.getValue().operation());
         }
 
         ctx.register(Registries.STATUS_EFFECT, id, effect);

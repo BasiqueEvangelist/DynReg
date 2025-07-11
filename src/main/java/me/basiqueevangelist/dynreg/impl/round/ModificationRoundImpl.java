@@ -240,20 +240,8 @@ public class ModificationRoundImpl implements ModificationRound {
 
                 if (reloadDataPacks) {
                     ResourcePackManager resourcePackManager = server.getDataPackManager();
-                    SaveProperties saveProperties = server.getSaveProperties();
-                    Collection<String> enabledDataPacks = resourcePackManager.getEnabledNames();
-                    resourcePackManager.scanPacks();
-                    Collection<String> dataPacks = Lists.newArrayList(enabledDataPacks);
-                    Collection<String> disabledDataPacks = saveProperties.getDataConfiguration().dataPacks().getDisabled();
-
-                    for (String string : resourcePackManager.getNames()) {
-                        if (!disabledDataPacks.contains(string) && !dataPacks.contains(string)) {
-                            dataPacks.add(string);
-                        }
-                    }
-
-                    reloadFuture = server.reloadResources(dataPacks);
-
+                    Collection<String> collection = resourcePackManager.getEnabledIds();
+                    reloadFuture = server.reloadResources(collection);
                 }
             }
 

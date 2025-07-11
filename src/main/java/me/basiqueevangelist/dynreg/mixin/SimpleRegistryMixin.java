@@ -1,22 +1,25 @@
 package me.basiqueevangelist.dynreg.mixin;
 
+import com.google.common.collect.Iterators;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.serialization.Lifecycle;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
+import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import me.basiqueevangelist.dynreg.api.event.RegistryEntryDeletedCallback;
 import me.basiqueevangelist.dynreg.api.event.RegistryFrozenCallback;
 import me.basiqueevangelist.dynreg.impl.access.ExtendedRegistry;
-import me.basiqueevangelist.dynreg.impl.util.StackTracingMap;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.fabricmc.fabric.api.event.registry.RegistryEntryRemovedCallback;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -25,14 +28,11 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Mixin(value = SimpleRegistry.class)
 public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Registry<T> {
@@ -60,14 +60,8 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
     @Shadow
     @Final
     private Map<T, RegistryEntry.Reference<T>> valueToEntry;
-    @Shadow
-    @Final
-    private Map<T, Lifecycle> entryToLifecycle;
-    @Shadow
-    @Nullable
-    private List<RegistryEntry.Reference<T>> cachedEntries;
-    @Shadow private int nextId;
 
+    @Shadow @Final private Map<RegistryKey<T>, RegistryEntryInfo> keyToEntryInfo;
     @SuppressWarnings("unchecked") private final Event<RegistryEntryDeletedCallback<T>> dynreg$entryDeletedEvent = EventFactory.createArrayBacked(RegistryEntryDeletedCallback.class, callbacks -> (rawId, entry) -> {
         for (var callback : callbacks) {
             callback.onEntryDeleted(rawId, entry);
@@ -81,7 +75,7 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
             callback.onRegistryFrozen();
         }
     });
-    private final IntList dynreg$freeIds = new IntArrayList();
+    private final IntSortedSet dynreg$freeIds = new IntAVLTreeSet();
     private boolean dynreg$intrusive;
 
     @Override
@@ -109,25 +103,33 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
 
         int rawId = entryToRawId.getInt(entry.value());
         dynreg$entryDeletedEvent.invoker().onEntryDeleted(rawId, entry);
-        RegistryEntryRemovedCallback.event(this).invoker().onEntryRemoved(rawId, entry.registryKey().getValue(), entry.value());
 
         rawIdToEntry.set(rawId, null);
         entryToRawId.removeInt(entry.value());
         idToEntry.remove(key.getValue());
         keyToEntry.remove(key);
         valueToEntry.remove(entry.value());
-        entryToLifecycle.remove(entry.value());
+        keyToEntryInfo.remove(key);
         dynreg$freeIds.add(rawId);
-
-        cachedEntries = null;
     }
 
-    @Redirect(method = "add", at = @At(value = "FIELD", target = "Lnet/minecraft/registry/SimpleRegistry;nextId:I"))
-    private int getNextId(SimpleRegistry<T> instance) {
-        if (!dynreg$freeIds.isEmpty())
-            return dynreg$freeIds.removeInt(0);
+    @ModifyExpressionValue(method = "add", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectList;size()I"))
+    private int getNextId(int original) {
+        if (!dynreg$freeIds.isEmpty()) {
+            int first = dynreg$freeIds.firstInt();
+            dynreg$freeIds.remove(first);
+            return first;
+        }
 
-        return nextId;
+        return original;
+    }
+
+    @WrapOperation(method = "add", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/ObjectList;add(Ljava/lang/Object;)Z"))
+    private boolean notAddButSet(ObjectList<Object> instance, Object o, Operation<Boolean> original, @Local int id) {
+        if (id == instance.size()) return original.call(instance, o);
+
+        instance.set(id, o);
+        return true;
     }
 
     @Override
@@ -136,8 +138,6 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
 
         if (dynreg$intrusive)
             this.intrusiveValueToEntry = new IdentityHashMap<>();
-
-        cachedEntries = null;
     }
 
     @Inject(method = "freeze", at = @At("HEAD"))
@@ -145,8 +145,9 @@ public abstract class SimpleRegistryMixin<T> implements ExtendedRegistry<T>, Reg
         dynreg$registryFrozenEvent.invoker().onRegistryFrozen();
     }
 
-    @Override
-    public void dynreg$installStackTracingMap() {
-        this.idToEntry = new StackTracingMap<>(this.idToEntry);
+
+    @ModifyArg(method = "iterator", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Iterators;transform(Ljava/util/Iterator;Lcom/google/common/base/Function;)Ljava/util/Iterator;"))
+    private Iterator<RegistryEntry.Reference<T>> removeNulls(Iterator<RegistryEntry.Reference<T>> iterator) {
+        return Iterators.filter(iterator, Objects::nonNull);
     }
 }

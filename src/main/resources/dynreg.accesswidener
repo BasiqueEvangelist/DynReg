@@ -3,7 +3,6 @@ accessWidener v2 named
 accessible field net/minecraft/block/DispenserBlock BEHAVIORS Ljava/util/Map;
 accessible field net/minecraft/item/SpawnEggItem SPAWN_EGGS Ljava/util/Map;
 accessible field net/minecraft/recipe/FireworkStarRecipe TYPE_MODIFIER_MAP Ljava/util/Map;
-accessible field net/minecraft/item/MusicDiscItem MUSIC_DISCS Ljava/util/Map;
 accessible field net/minecraft/item/DyeItem DYES Ljava/util/Map;
 accessible field net/minecraft/world/poi/PointOfInterestTypes POI_STATES_TO_TYPE Ljava/util/Map;
 accessible field net/minecraft/item/AxeItem STRIPPED_BLOCKS Ljava/util/Map;
@@ -23,12 +22,7 @@ accessible field net/minecraft/world/chunk/PalettedContainer data Lnet/minecraft
 accessible class net/minecraft/world/chunk/PalettedContainer$Data
 accessible field net/minecraft/client/render/item/ItemModels modelIds Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
 accessible class net/minecraft/world/chunk/PaletteResizeListener
-accessible field net/minecraft/item/Item$Settings maxCount I
-accessible field net/minecraft/item/Item$Settings maxDamage I
 accessible field net/minecraft/item/Item$Settings recipeRemainder Lnet/minecraft/item/Item;
-accessible field net/minecraft/item/Item$Settings rarity Lnet/minecraft/util/Rarity;
-accessible field net/minecraft/item/Item$Settings foodComponent Lnet/minecraft/item/FoodComponent;
-accessible field net/minecraft/item/Item$Settings fireproof Z
 accessible field net/minecraft/block/AbstractBlock$Settings collidable Z
 accessible field net/minecraft/block/AbstractBlock$Settings soundGroup Lnet/minecraft/sound/BlockSoundGroup;
 accessible field net/minecraft/block/AbstractBlock$Settings resistance F
@@ -38,7 +32,7 @@ accessible field net/minecraft/block/AbstractBlock$Settings randomTicks Z
 accessible field net/minecraft/block/AbstractBlock$Settings slipperiness F
 accessible field net/minecraft/block/AbstractBlock$Settings velocityMultiplier F
 accessible field net/minecraft/block/AbstractBlock$Settings jumpVelocityMultiplier F
-accessible field net/minecraft/block/AbstractBlock$Settings lootTableId Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/block/AbstractBlock$Settings lootTableKey Lnet/minecraft/registry/RegistryKey;
 accessible field net/minecraft/block/AbstractBlock$Settings opaque Z
 accessible field net/minecraft/block/AbstractBlock$Settings isAir Z
 accessible field net/minecraft/block/AbstractBlock$Settings dynamicBounds Z
@@ -47,7 +41,7 @@ accessible field net/minecraft/block/AbstractBlock$Settings forceSolid Z
 accessible field net/minecraft/block/AbstractBlock$Settings forceNotSolid Z
 accessible field net/minecraft/block/AbstractBlock$Settings liquid Z
 accessible field net/minecraft/block/AbstractBlock$Settings blockBreakParticles Z
-accessible field net/minecraft/block/AbstractBlock$Settings instrument Lnet/minecraft/block/enums/Instrument;
+accessible field net/minecraft/block/AbstractBlock$Settings instrument Lnet/minecraft/block/enums/NoteBlockInstrument;
 accessible field net/minecraft/block/AbstractBlock$Settings replaceable Z
 accessible field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
 mutable field net/minecraft/block/entity/BlockEntityType blocks Ljava/util/Set;
@@ -55,4 +49,3 @@ accessible field net/minecraft/server/MinecraftServer session Lnet/minecraft/wor
 accessible field net/minecraft/client/render/entity/EntityRenderers RENDERER_FACTORIES Ljava/util/Map;
 accessible field net/minecraft/entity/SpawnRestriction RESTRICTIONS Ljava/util/Map;
 accessible field net/minecraft/entity/attribute/DefaultAttributeRegistry DEFAULT_ATTRIBUTE_REGISTRY Ljava/util/Map;
-accessible field net/minecraft/entity/attribute/EntityAttributeModifier name Ljava/lang/String;

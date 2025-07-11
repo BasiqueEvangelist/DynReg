@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.impl.client;
 
 import me.basiqueevangelist.dynreg.api.entry.RegistrationEntry;
 import me.basiqueevangelist.dynreg.impl.DynRegNetworking;
+import me.basiqueevangelist.dynreg.impl.RoundFinishedS2CPacket;
 import me.basiqueevangelist.dynreg.impl.entry.RegistrationEntriesImpl;
 import me.basiqueevangelist.dynreg.impl.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.impl.round.ModificationRoundImpl;
@@ -18,14 +19,14 @@ public class DynRegClientNetworking {
 
     @SuppressWarnings("UnstableApiUsage")
     public static void init() {
-        ClientConfigurationNetworking.registerGlobalReceiver(DynRegNetworking.ROUND_FINISHED, (client, handler, buf, responseSender) -> {
+        ClientConfigurationNetworking.registerGlobalReceiver(RoundFinishedS2CPacket.ID, (packet, ctx) -> {
             try {
                 RegistrySyncManager.unmap();
             } catch (RemapException e) {
                 LOGGER.error("Failed to unmap registries", e);
             }
 
-            long serverHash = buf.readLong();
+            long serverHash = packet.hash();
             long clientHash = LoadedEntryHolder.hash();
 
             if (serverHash == clientHash) {
@@ -35,27 +36,17 @@ public class DynRegClientNetworking {
 
             LOGGER.info("Applying dynamic round on client");
 
-            var round = new ModificationRoundImpl(client);
+            var round = new ModificationRoundImpl(ctx.client());
 
-            if (buf.readBoolean())
+            if (packet.reloadResources())
                 round.reloadResourcePacks();
 
             for (var entryId : LoadedEntryHolder.entries().keySet()) {
                 round.removeEntry(entryId);
             }
 
-            var addedEntriesCount = buf.readVarInt();
-
-            for (int i = 0; i < addedEntriesCount; i++) {
-                Identifier typeId = buf.readIdentifier();
-                Identifier entryId = buf.readIdentifier();
-                try {
-                    RegistrationEntry entry = RegistrationEntriesImpl.getNetworkData(typeId).deserializer().apply(entryId, buf);
-
-                    round.entry(entry);
-                } catch (Exception e) {
-                    LOGGER.error("Encountered error while loading {}", entryId, e);
-                }
+            for (var entry : packet.addedEntries()) {
+                round.entry(entry);
             }
 
             round.run();

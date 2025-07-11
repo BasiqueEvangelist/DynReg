@@ -38,7 +38,7 @@ public class ExecutorFreezer {
             synchronized (closeable) {
                 if (!closeable.closed) {
                     try {
-                        closeable.wait(TimeUnit.SECONDS.toMillis(5));
+                        closeable.wait(TimeUnit.SECONDS.toMillis(10));
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

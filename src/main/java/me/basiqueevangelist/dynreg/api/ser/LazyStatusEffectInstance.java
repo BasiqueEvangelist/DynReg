@@ -36,7 +36,7 @@ public class LazyStatusEffectInstance {
     }
 
     public LazyStatusEffectInstance(JsonObject obj) {
-        this.type = new LazyEntryRef<>(Registries.STATUS_EFFECT, new Identifier(JsonHelper.getString(obj, "effect")));
+        this.type = new LazyEntryRef<>(Registries.STATUS_EFFECT, Identifier.of(JsonHelper.getString(obj, "effect")));
         this.amplifier = JsonHelper.getByte(obj, "amplifier");
         this.duration = JsonHelper.getInt(obj, "duration");
         this.ambient = JsonHelper.getBoolean(obj, "ambient", false);
@@ -107,7 +107,7 @@ public class LazyStatusEffectInstance {
     }
 
     public StatusEffectInstance build() {
-        return new StatusEffectInstance(type.get(), duration, amplifier, ambient, showParticles, showIcon);
+        return new StatusEffectInstance(type.getEntry(), duration, amplifier, ambient, showParticles, showIcon);
     }
 
     @Override

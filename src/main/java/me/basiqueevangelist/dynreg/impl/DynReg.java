@@ -6,6 +6,7 @@ import me.basiqueevangelist.dynreg.impl.holder.LoadedEntryHolder;
 import me.basiqueevangelist.dynreg.impl.holder.ReactiveEntryTracker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -19,7 +20,7 @@ public class DynReg implements ModInitializer {
     public static MinecraftServer SERVER;
 
     public static Identifier id(String path) {
-        return new Identifier(MODID, path);
+        return Identifier.of(MODID, path);
     }
 
     @Override
@@ -40,8 +41,7 @@ public class DynReg implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(server -> SERVER = server);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> SERVER = null);
 
-//        if (DEBUG) {
-//            ((ExtendedRegistry<?>) Registry.BLOCK).dynreg$installStackTracingMap();
-//        }
+        PayloadTypeRegistry.configurationS2C().register(RoundFinishedS2CPacket.ID, RoundFinishedS2CPacket.PACKET_CODEC);
+
     }
 }

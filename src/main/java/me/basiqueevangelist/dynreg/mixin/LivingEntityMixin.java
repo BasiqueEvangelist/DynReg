@@ -5,6 +5,7 @@ import me.basiqueevangelist.dynreg.impl.fixer.StatusEffectFixer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
-    @Shadow @Final private Map<StatusEffect, StatusEffectInstance> activeStatusEffects;
+    @Shadow @Final private Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects;
     private int dynreg$effectsVersion = StatusEffectFixer.EFFECTS_VERSION.getVersion();
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
@@ -35,11 +36,11 @@ public class LivingEntityMixin {
         if (dynreg$effectsVersion != currentVersion) {
             dynreg$effectsVersion = currentVersion;
 
-            Map<StatusEffect, StatusEffectInstance> newEffects = new HashMap<>();
+            Map<RegistryEntry<StatusEffect>, StatusEffectInstance> newEffects = new HashMap<>();
 
             activeStatusEffects.entrySet().removeIf(x -> {
-                if (x.getKey().wasDeleted()) {
-                    StatusEffect adapted = UpgradeUtil.upgradeEffect(x.getKey());
+                if (x.getKey().value().wasDeleted()) {
+                    RegistryEntry<StatusEffect> adapted = UpgradeUtil.upgradeEffect(x.getKey());
 
                     if (adapted != null)
                         newEffects.put(adapted, x.getValue());

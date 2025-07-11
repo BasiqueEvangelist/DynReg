@@ -55,11 +55,11 @@ public class RegistryEntryLoader implements IdentifiableResourceReloadListener {
 
         for (Map.Entry<Identifier, Resource> entry : resources.entrySet()) {
             Identifier id = entry.getKey();
-            var realId = new Identifier(id.getNamespace(), id.getPath().substring("entries".length() + 1, id.getPath().length() - 5));
+            var realId = Identifier.of(id.getNamespace(), id.getPath().substring("entries".length() + 1, id.getPath().length() - 5));
 
             try (var br = new BufferedReader(new InputStreamReader(entry.getValue().getInputStream()))) {
                 JsonObject obj = JsonHelper.deserialize(br, true);
-                Identifier type = new Identifier(JsonHelper.getString(obj, "type"));
+                Identifier type = Identifier.of(JsonHelper.getString(obj, "type"));
                 var reader = RegistrationEntriesImpl.getReader(type);
 
                 if (reader == null) {

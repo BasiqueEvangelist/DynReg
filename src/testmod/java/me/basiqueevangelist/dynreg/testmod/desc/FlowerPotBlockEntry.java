@@ -32,7 +32,7 @@ public class FlowerPotBlockEntry implements RegistrationEntry {
 
     public FlowerPotBlockEntry(Identifier id, JsonObject obj) {
         this.id = id;
-        this.content = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(obj, "content")));
+        this.content = new LazyEntryRef<>(Registries.BLOCK, Identifier.of(JsonHelper.getString(obj, "content")));
         this.settings = SimpleReaders.readBlockSettings(obj);
     }
 

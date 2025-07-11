@@ -5,6 +5,7 @@ import me.basiqueevangelist.dynreg.impl.fixer.StatusEffectFixer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(StatusEffectInstance.class)
 public class StatusEffectInstanceMixin {
     @Mutable
-    @Shadow @Final private StatusEffect type;
-    @Shadow int duration;
+    @Shadow @Final private RegistryEntry<StatusEffect> type;
+    @Shadow private int duration;
 
     private int dynreg$effectsVersion = StatusEffectFixer.EFFECTS_VERSION.getVersion();
 
@@ -31,7 +32,7 @@ public class StatusEffectInstanceMixin {
         if (dynreg$effectsVersion != currentVersion) {
             dynreg$effectsVersion = currentVersion;
 
-            if (type != null && type.wasDeleted()) {
+            if (type != null && type.value().wasDeleted()) {
                 type = UpgradeUtil.upgradeEffect(type);
 
                 if (type == null) {

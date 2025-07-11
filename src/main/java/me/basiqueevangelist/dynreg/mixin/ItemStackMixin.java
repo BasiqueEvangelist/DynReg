@@ -1,6 +1,8 @@
 package me.basiqueevangelist.dynreg.mixin;
 
 import me.basiqueevangelist.dynreg.impl.fixer.ItemFixer;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -23,10 +25,9 @@ public abstract class ItemStackMixin {
     @Shadow
     public abstract void setCount(int count);
 
-    @Shadow
-    private @Nullable NbtCompound nbt;
+    @Shadow @Final ComponentMapImpl components;
 
-    @Inject(method = {"getItem", "getCount", "getName", "getCount", "getNbt", "getOrCreateNbt", "getOrCreateSubNbt", "isEmpty"}, at = @At("HEAD"))
+    @Inject(method = {"getItem", "getCount", "getName", "getCount", "getComponents", "set", "isEmpty"}, at = @At("HEAD"))
     private void itemHook(CallbackInfoReturnable<Integer> cir) {
         checkItem();
     }
@@ -45,7 +46,7 @@ public abstract class ItemStackMixin {
 
                 if (item == null) {
                     setCount(0);
-                    nbt = null;
+                    components.setChanges(ComponentChanges.EMPTY);
                 }
             }
         }

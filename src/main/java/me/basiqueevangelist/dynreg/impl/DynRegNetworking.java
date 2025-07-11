@@ -16,22 +16,8 @@ public final class DynRegNetworking {
 
     }
 
-    public static Identifier ROUND_FINISHED = new Identifier("dynreg", "round_finished");
-
     public static Packet<?> makeRoundFinishedPacket(long hash, boolean reloadResources,
                                                     Collection<RegistrationEntry> addedEntries) {
-        PacketByteBuf buf = PacketByteBufs.create();
-
-        buf.writeLong(hash);
-        buf.writeBoolean(reloadResources);
-
-        buf.writeVarInt(addedEntries.size());
-        for (var entry : addedEntries) {
-            buf.writeIdentifier(entry.typeId());
-            buf.writeIdentifier(entry.id());
-
-            RegistrationEntriesImpl.getNetworkData(entry).serializer().accept(entry, buf);
-        }
-        return ServerConfigurationNetworking.createS2CPacket(ROUND_FINISHED, buf);
+        return ServerConfigurationNetworking.createS2CPacket(new RoundFinishedS2CPacket(hash, reloadResources, addedEntries));
     }
 }

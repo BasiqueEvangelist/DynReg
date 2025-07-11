@@ -48,6 +48,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
     private final boolean summonable;
     private final boolean fireImmune;
     private final boolean spawnableFarFromPlayer;
+    private final float spawnBoxScale;
     private final int maxTrackingRange;
     private final int trackingTickInterval;
     private final EntityDimensions dimensions;
@@ -65,13 +66,14 @@ public class SimpleEntityEntry implements RegistrationEntry {
             "spawnable_far_from_player",
             spawnGroup == SpawnGroup.CREATURE || spawnGroup == SpawnGroup.MISC
         );
+        this.spawnBoxScale = JsonHelper.getFloat(obj, "spawn_box_scale", 1.0F);
         this.maxTrackingRange = JsonHelper.getInt(obj, "max_tracking_range", 5);
         this.trackingTickInterval = JsonHelper.getInt(obj, "tracking_tick_interval", 3);
         this.dimensions = SimpleReaders.readEntityDimensions(obj.get("dimensions"));
 
         for (JsonElement el : JsonHelper.getArray(obj, "can_spawn_inside", new JsonArray())) {
             canSpawnInside.add(
-                new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.asString(el, "<array element>"))));
+                new LazyEntryRef<>(Registries.BLOCK, Identifier.of(JsonHelper.asString(el, "<array element>"))));
         }
     }
 
@@ -83,6 +85,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
         this.summonable = buf.readBoolean();
         this.fireImmune = buf.readBoolean();
         this.spawnableFarFromPlayer = buf.readBoolean();
+        this.spawnBoxScale = buf.readFloat();
         this.maxTrackingRange = buf.readVarInt();
         this.trackingTickInterval = buf.readVarInt();
         this.dimensions = SimpleSerializers.readEntityDimensions(buf);
@@ -99,7 +102,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
     public void register(EntryRegisterContext ctx) {
         entityType = new EntityType<>(SimpleEntity::new, spawnGroup, saveable, summonable, fireImmune,
             spawnableFarFromPlayer, canSpawnInside.stream().map(LazyEntryRef::get).collect(ImmutableSet.toImmutableSet()),
-            dimensions, maxTrackingRange, trackingTickInterval, FeatureSet.empty());
+            dimensions, spawnBoxScale, maxTrackingRange, trackingTickInterval, FeatureSet.empty());
 
         ctx.register(Registries.ENTITY_TYPE, id, entityType);
         FabricDefaultAttributeRegistry.register(entityType,
@@ -119,6 +122,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
         buf.writeBoolean(summonable);
         buf.writeBoolean(fireImmune);
         buf.writeBoolean(spawnableFarFromPlayer);
+        buf.writeFloat(spawnBoxScale);
         buf.writeVarInt(maxTrackingRange);
         buf.writeVarInt(trackingTickInterval);
         SimpleSerializers.writeEntityDimensions(buf, dimensions);
@@ -138,6 +142,7 @@ public class SimpleEntityEntry implements RegistrationEntry {
         result = 31 * result + (summonable ? 1 : 0);
         result = 31 * result + (fireImmune ? 1 : 0);
         result = 31 * result + (spawnableFarFromPlayer ? 1 : 0);
+        result = 31 * result + Float.hashCode(spawnBoxScale);
         result = 31 * result + maxTrackingRange;
         result = 31 * result + trackingTickInterval;
         result = 31 * result + dimensions.hashCode();

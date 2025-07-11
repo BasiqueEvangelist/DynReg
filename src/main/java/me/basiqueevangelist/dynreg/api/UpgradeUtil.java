@@ -9,6 +9,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -26,9 +27,9 @@ public final class UpgradeUtil {
      *
      * @return the new version of the effect or {@code null} if there is none
      */
-    public static @Nullable StatusEffect upgradeEffect(StatusEffect effect) {
+    public static @Nullable RegistryEntry<StatusEffect> upgradeEffect(RegistryEntry<StatusEffect> effect) {
         return Registries.STATUS_EFFECT
-            .getOrEmpty(((DeletableObjectInternal) effect).dynreg$getId())
+            .getEntry(((DeletableObjectInternal) effect).dynreg$getId())
             .orElse(null);
     }
 
@@ -63,8 +64,7 @@ public final class UpgradeUtil {
         var tag = property
             .getValueCodec()
             .encodeStart(NbtOps.INSTANCE, property.createValue(oldState))
-            .get()
-            .left()
+            .result()
             .orElse(null);
 
         if (tag == null) return newState;
@@ -76,8 +76,7 @@ public final class UpgradeUtil {
         var val = newProperty
             .getValueCodec()
             .decode(NbtOps.INSTANCE, tag)
-            .get()
-            .left()
+            .result()
             .map(Pair::getFirst)
             .orElse(null);
 

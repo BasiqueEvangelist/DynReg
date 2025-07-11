@@ -2,6 +2,7 @@ package me.basiqueevangelist.dynreg.api.ser;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 /**
@@ -12,7 +13,7 @@ public class LazyEntryRef<T> {
     private final Registry<T> registry;
     private final Identifier id;
 
-    private T instance;
+    private RegistryEntry<T> instanceEntry;
 
     public LazyEntryRef(Registry<T> registry, Identifier id) {
         this.registry = registry;
@@ -42,15 +43,25 @@ public class LazyEntryRef<T> {
      * @throws IllegalStateException if the registry entry doesn't exist
      */
     public T get() {
-        if (instance == null) {
-            instance = registry.get(id);
+        return getEntry().value();
+    }
 
-            if (instance == null) {
+    /**
+     * Resolves and gets the registry entry.
+     *
+     * @return the referenced registry entry
+     * @throws IllegalStateException if the registry entry doesn't exist
+     */
+    public RegistryEntry<T> getEntry() {
+        if (instanceEntry == null) {
+            instanceEntry = registry.getEntry(id).orElse(null);
+
+            if (instanceEntry == null) {
                 throw new IllegalStateException("'" + registry.getKey().getValue() + "' doesn't have an entry with id '" + id + "'");
             }
         }
 
-        return instance;
+        return instanceEntry;
     }
 
     @Override

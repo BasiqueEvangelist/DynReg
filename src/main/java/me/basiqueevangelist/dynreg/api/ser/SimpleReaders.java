@@ -8,6 +8,9 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -27,13 +30,13 @@ public final class SimpleReaders {
     }
 
     public static AbstractBlock.Settings readBlockSettings(JsonObject obj) {
-        FabricBlockSettings settings = FabricBlockSettings.create();
+        AbstractBlock.Settings settings = AbstractBlock.Settings.create();
 
         if (obj.has("color"))
             settings.mapColor(NamedEntries.MAP_COLORS.get(JsonHelper.getString(obj, "color").toUpperCase(Locale.ROOT)));
 
         if (obj.has("collidable"))
-            settings.collidable(JsonHelper.getBoolean(obj, "collidable"));
+            settings.collidable = JsonHelper.getBoolean(obj, "collidable");
 
         if (obj.has("sounds"))
             settings.sounds(readBlockSoundGroup(obj.get("sounds")));
@@ -60,7 +63,7 @@ public final class SimpleReaders {
             settings.jumpVelocityMultiplier(JsonHelper.getFloat(obj, "jump_velocity_multiplier"));
 
         if (obj.has("drops_like"))
-            settings.drops(new Identifier(JsonHelper.getString(obj, "drops_like")));
+            settings.lootTableKey = RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of(JsonHelper.getString(obj, "drops_like")));
 
         if (JsonHelper.getBoolean(obj, "non_opaque", false))
             settings.nonOpaque();
@@ -90,7 +93,7 @@ public final class SimpleReaders {
             settings.noBlockBreakParticles();
 
         if (obj.has("instrument"))
-            settings.instrument(NamedEntries.INSTRUMENTS.get(JsonHelper.getString(obj, "instrument")));
+            settings.instrument(NamedEntries.NOTE_BLOCK_INSTRUMENTS.get(JsonHelper.getString(obj, "instrument")));
 
         if (JsonHelper.getBoolean(obj, "replaceable", false))
             settings.replaceable();
@@ -117,7 +120,7 @@ public final class SimpleReaders {
     }
 
     private static SoundEvent getSoundEvent(JsonObject obj, String key) {
-        return Registries.SOUND_EVENT.get(new Identifier(JsonHelper.getString(obj, key)));
+        return Registries.SOUND_EVENT.get(Identifier.of(JsonHelper.getString(obj, key)));
     }
 
 //    private static ItemGroup readItemGroup(JsonObject obj, String key) {
@@ -130,11 +133,11 @@ public final class SimpleReaders {
 //        return group;
 //    }
 
-    public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(JsonObject obj) {
-        Map<EntityAttribute, EntityAttributeModifier> map = new HashMap<>();
+    public static Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> readAttributeModifiers(JsonObject obj) {
+        Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> map = new HashMap<>();
 
         for (var entry : obj.entrySet()) {
-            EntityAttribute attribute = Registries.ATTRIBUTE.get(new Identifier(entry.getKey()));
+            RegistryEntry<EntityAttribute> attribute = Registries.ATTRIBUTE.getEntry(Identifier.of(entry.getKey())).orElse(null);
 
             if (attribute == null) throw new JsonSyntaxException(entry.getKey() + " is an invalid attribute");
 
@@ -142,15 +145,14 @@ public final class SimpleReaders {
 
             double value = JsonHelper.getDouble(modifier, "value");
             EntityAttributeModifier.Operation op = switch (JsonHelper.getString(modifier, "operation")) {
-                case "addition" -> EntityAttributeModifier.Operation.ADDITION;
-                case "multiply_base" -> EntityAttributeModifier.Operation.MULTIPLY_BASE;
-                case "multiply_total" -> EntityAttributeModifier.Operation.MULTIPLY_TOTAL;
+                case "addition" -> EntityAttributeModifier.Operation.ADD_VALUE;
+                case "multiply_base" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+                case "multiply_total" -> EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
                 default -> throw new IllegalStateException("invalid operation type");
             };
-            String name = JsonHelper.getString(modifier, "name");
-            UUID uuid = UUID.fromString(JsonHelper.getString(modifier, "uuid"));
+            Identifier id = Identifier.of(JsonHelper.getString(modifier, "id"));
 
-            map.put(attribute, new EntityAttributeModifier(uuid, name, value, op));
+            map.put(attribute, new EntityAttributeModifier(id, value, op));
         }
 
         return map;
@@ -162,11 +164,13 @@ public final class SimpleReaders {
         } else {
             var obj = JsonHelper.asObject(value, "dimensions");
 
-            return new EntityDimensions(
-                JsonHelper.getFloat(obj, "width"),
-                JsonHelper.getFloat(obj, "height"),
+            float width = JsonHelper.getFloat(obj, "width");
+            float height = JsonHelper.getFloat(obj, "height");
+
+            return
                 JsonHelper.getBoolean(obj, "fixed", true)
-            );
+                    ? EntityDimensions.fixed(width, height)
+                    : EntityDimensions.changing(width, height);
         }
     }
 }

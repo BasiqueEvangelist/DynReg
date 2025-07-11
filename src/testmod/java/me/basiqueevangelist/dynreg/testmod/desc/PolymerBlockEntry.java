@@ -34,7 +34,7 @@ public class PolymerBlockEntry implements RegistrationEntry {
 
     public PolymerBlockEntry(Identifier id, JsonObject json) {
         this.id = id;
-        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, new Identifier(JsonHelper.getString(json, "source_block")));
+        this.sourceBlock = new LazyEntryRef<>(Registries.BLOCK, Identifier.of(JsonHelper.getString(json, "source_block")));
         this.blockSettings = SimpleReaders.readBlockSettings(json);
         this.itemSettings = new LazyItemSettings(json);
     }
@@ -97,8 +97,8 @@ public class PolymerBlockEntry implements RegistrationEntry {
         }
 
         @Override
-        public Block getPolymerBlock(BlockState state) {
-            return source;
+        public BlockState getPolymerBlockState(BlockState blockState) {
+            return source.getDefaultState();
         }
     }
 }

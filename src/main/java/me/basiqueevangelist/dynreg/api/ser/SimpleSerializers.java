@@ -5,12 +5,16 @@ import me.basiqueevangelist.dynreg.impl.util.NamedEntries;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.loot.LootTable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -34,9 +38,9 @@ public class SimpleSerializers {
         buf.writeFloat(settings.velocityMultiplier);
         buf.writeFloat(settings.jumpVelocityMultiplier);
 
-        buf.writeBoolean(settings.lootTableId != null);
-        if (settings.lootTableId != null) {
-            buf.writeIdentifier(settings.lootTableId);
+        buf.writeBoolean(settings.lootTableKey != null);
+        if (settings.lootTableKey != null) {
+            buf.writeIdentifier(settings.lootTableKey.getValue());
         }
 
         buf.writeBoolean(settings.opaque);
@@ -62,12 +66,12 @@ public class SimpleSerializers {
         float slipperiness = buf.readFloat();
         float velocityMultiplier = buf.readFloat();
         float jumpVelocityMultiplier = buf.readFloat();
-        Identifier lootTableId;
+        RegistryKey<LootTable> lootTableKey;
 
         if (buf.readBoolean())
-            lootTableId = buf.readIdentifier();
+            lootTableKey = buf.readRegistryKey(RegistryKeys.LOOT_TABLE);
         else
-            lootTableId = null;
+            lootTableKey = null;
 
         boolean opaque = buf.readBoolean();
         boolean isAir = buf.readBoolean();
@@ -77,12 +81,12 @@ public class SimpleSerializers {
         boolean forceNotSolid = buf.readBoolean();
         boolean liquid = buf.readBoolean();
         boolean blockBreakParticles = buf.readBoolean();
-        Instrument instrument = buf.readEnumConstant(Instrument.class);
+        NoteBlockInstrument instrument = buf.readEnumConstant(NoteBlockInstrument.class);
         boolean replaceable = buf.readBoolean();
 
-        FabricBlockSettings settings = FabricBlockSettings.create();
+        AbstractBlock.Settings settings = AbstractBlock.Settings.create();
         settings.mapColor(color);
-        settings.collidable(collidable);
+        settings.collidable = collidable;
         settings.sounds(soundGroup);
         settings.resistance(resistance);
         settings.hardness(hardness);
@@ -91,7 +95,7 @@ public class SimpleSerializers {
         settings.slipperiness(slipperiness);
         settings.velocityMultiplier(velocityMultiplier);
         settings.jumpVelocityMultiplier(jumpVelocityMultiplier);
-        if (lootTableId != null) settings.drops(lootTableId);
+        if (lootTableKey != null) settings.lootTableKey = lootTableKey;
         if (!opaque) settings.nonOpaque();
         if (isAir) settings.air();
         if (dynamicBounds) settings.dynamicBounds();
@@ -138,36 +142,42 @@ public class SimpleSerializers {
         return new BlockSoundGroup(volume, pitch, breakSound, stepSound, placeSound, hitSound, fallSound);
     }
 
-    public static void writeAttributeModifiers(PacketByteBuf buf, Map<EntityAttribute, EntityAttributeModifier> map) {
+    public static void writeAttributeModifiers(PacketByteBuf buf, Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> map) {
         buf.writeMap(map,
-            (buf2, key) -> buf2.writeIdentifier(Registries.ATTRIBUTE.getId(key)),
+            (buf2, key) -> buf2.writeIdentifier(key.getKey().orElseThrow().getValue()),
             (buf2, modifier) -> {
-                buf2.writeDouble(modifier.getValue());
-                buf2.writeEnumConstant(modifier.getOperation());
-                buf2.writeString(modifier.name);
-                buf2.writeUuid(modifier.getId());
+                buf2.writeDouble(modifier.value());
+                buf2.writeEnumConstant(modifier.operation());
+                buf2.writeIdentifier(modifier.id());
             });
     }
 
-    public static Map<EntityAttribute, EntityAttributeModifier> readAttributeModifiers(PacketByteBuf buf) {
+    public static Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> readAttributeModifiers(PacketByteBuf buf) {
         return buf.readMap(
-            (buf2) -> Registries.ATTRIBUTE.get(buf2.readIdentifier()),
+            (buf2) -> Registries.ATTRIBUTE.getEntry(buf2.readIdentifier()).orElseThrow(),
             (buf2) -> {
                 double value = buf2.readDouble();
                 EntityAttributeModifier.Operation op = buf2.readEnumConstant(EntityAttributeModifier.Operation.class);
-                String name = buf2.readString();
-                UUID uuid = buf2.readUuid();
-                return new EntityAttributeModifier(uuid, name, value, op);
+                Identifier id = buf2.readIdentifier();
+                return new EntityAttributeModifier(id, value, op);
             });
     }
 
     public static void writeEntityDimensions(PacketByteBuf buf, EntityDimensions dimensions) {
-        buf.writeFloat(dimensions.width);
-        buf.writeFloat(dimensions.height);
-        buf.writeBoolean(dimensions.fixed);
+        buf.writeFloat(dimensions.width());
+        buf.writeFloat(dimensions.height());
+        buf.writeFloat(dimensions.eyeHeight());
+        buf.writeBoolean(dimensions.fixed());
     }
 
     public static EntityDimensions readEntityDimensions(PacketByteBuf buf) {
-        return new EntityDimensions(buf.readFloat(), buf.readFloat(), buf.readBoolean());
+        float width = buf.readFloat();
+        float height = buf.readFloat();
+        float eyeHight = buf.readFloat();
+        boolean fixed = buf.readBoolean();
+
+        EntityDimensions dims = fixed ? EntityDimensions.fixed(width, height) : EntityDimensions.changing(width, height);
+
+        return dims.withEyeHeight(eyeHight);
     }
 }

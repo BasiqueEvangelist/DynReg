@@ -5,7 +5,7 @@ import com.google.common.collect.HashBiMap;
 import me.basiqueevangelist.dynreg.ap.NamesFor;
 import me.basiqueevangelist.dynreg.generated.NamedEntriesSetters;
 import net.minecraft.block.MapColor;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Rarity;
@@ -22,7 +22,7 @@ public final class NamedEntries {
 
     public static final BiMap<String, SpawnGroup> SPAWN_GROUPS = HashBiMap.create();
 
-    public static final BiMap<String, Instrument> INSTRUMENTS = HashBiMap.create();
+    public static final BiMap<String, NoteBlockInstrument> NOTE_BLOCK_INSTRUMENTS = HashBiMap.create();
 
     private NamedEntries() {
 
@@ -35,8 +35,8 @@ public final class NamedEntries {
             SPAWN_GROUPS.put(group.asString(), group);
         }
 
-        for (Instrument instrument : Instrument.values()) {
-            INSTRUMENTS.put(instrument.asString(), instrument);
+        for (NoteBlockInstrument instrument : NoteBlockInstrument.values()) {
+            NOTE_BLOCK_INSTRUMENTS.put(instrument.asString(), instrument);
         }
     }
 }

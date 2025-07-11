@@ -6,6 +6,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class SimpleHashers {
         return ByteBufUtil.hashCode(buf);
     }
 
-    public static int hash(Map<EntityAttribute, EntityAttributeModifier> modifiers) {
+    public static int hash(Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers) {
         PacketByteBuf buf = PacketByteBufs.create();
         SimpleSerializers.writeAttributeModifiers(buf, modifiers);
         return ByteBufUtil.hashCode(buf);
